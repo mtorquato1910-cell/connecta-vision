@@ -50,12 +50,12 @@ function ProdutosPage() {
         <Reveal>
           <span className="eyebrow">Catálogo completo</span>
           <h1 className="mt-4 font-serif text-5xl md:text-6xl lg:text-7xl text-ink leading-[1.02] max-w-4xl">
-            {activeCat ? activeCat.nome : "Equipamentos veterinários sob curadoria técnica."}
+            {activeCat ? activeCat.nome : t("products.title")}
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-ink-soft">
             {activeCat
               ? `${filtered.length} produtos nesta linha clínica, com suporte e treinamento inclusos.`
-              : "Mais de 230 produtos organizados em 8 linhas clínicas. Importação direta com garantia e treinamento."}
+              : t("products.subtitle")}
           </p>
         </Reveal>
 
@@ -71,8 +71,8 @@ function ProdutosPage() {
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Buscar por modelo, nome ou categoria"
-              aria-label="Buscar produtos"
+              placeholder={t("products.search_placeholder")}
+              aria-label={t("products.search_placeholder")}
               className="flex-1 bg-transparent outline-none text-sm py-2 placeholder:text-ink-mute"
             />
             {query && (

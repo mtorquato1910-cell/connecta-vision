@@ -21,7 +21,16 @@
       "Bash(python -c ' *)",
       "Bash(mv src/routes/produtos.tsx src/routes/produtos.index.tsx)",
       "Bash(mv src/routes/blog.tsx src/routes/blog.index.tsx)",
-      "Bash(mv src/routes/eventos.tsx src/routes/eventos.index.tsx)"
+      "Bash(mv src/routes/eventos.tsx src/routes/eventos.index.tsx)",
+      "Bash(rm -f src/routeTree.gen.ts)",
+      "Bash(rm -rf node_modules/.vite)",
+      "Bash(grep -n 'ProdutosIndex\\\\|getParentRoute\\\\|/\\\\$slug' src/routeTree.gen.ts)",
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(python -c \"import cv2; print\\('cv2 ok', cv2.__version__\\)\")",
+      "Bash(python -m pip install --quiet --disable-pip-version-check opencv-python numpy requests)",
+      "Bash(python *)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/baixar-amostra.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/remover-marca-dagua.py images/teste-originais images/teste-limpas --debug)"
     ]
   }
 }

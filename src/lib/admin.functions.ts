@@ -50,21 +50,34 @@ export const meSouAdmin = createServerFn({ method: "GET" })
 export const dashboardStats = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
-    const [{ count: produtos }, { count: categorias }, { count: orcamentos }, { count: novos }] =
-      await Promise.all([
-        supabaseAdmin.from("produtos").select("id", { count: "exact", head: true }),
-        supabaseAdmin.from("categorias").select("id", { count: "exact", head: true }),
-        supabaseAdmin.from("orcamentos").select("id", { count: "exact", head: true }),
-        supabaseAdmin
-          .from("orcamentos")
-          .select("id", { count: "exact", head: true })
-          .eq("status", "novo"),
-      ]);
+    const [
+      { count: produtos },
+      { count: categorias },
+      { count: orcamentos },
+      { count: novos },
+      { count: formularios },
+      { count: formulariosNovos },
+    ] = await Promise.all([
+      supabaseAdmin.from("produtos").select("id", { count: "exact", head: true }),
+      supabaseAdmin.from("categorias").select("id", { count: "exact", head: true }),
+      supabaseAdmin.from("orcamentos").select("id", { count: "exact", head: true }),
+      supabaseAdmin
+        .from("orcamentos")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "novo"),
+      supabaseAdmin.from("formularios").select("id", { count: "exact", head: true }),
+      supabaseAdmin
+        .from("formularios")
+        .select("id", { count: "exact", head: true })
+        .eq("status", "novo"),
+    ]);
     return {
       produtos: produtos ?? 0,
       categorias: categorias ?? 0,
       orcamentos: orcamentos ?? 0,
       orcamentosNovos: novos ?? 0,
+      formularios: formularios ?? 0,
+      formulariosNovos: formulariosNovos ?? 0,
     };
   });
 

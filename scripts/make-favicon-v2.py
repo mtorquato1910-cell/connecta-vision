@@ -1,20 +1,53 @@
 """
-Gera favicons a partir da imagem do Gemini (C + erlenmeyer já recortado).
+Gera favicons a partir da imagem do Gemini (C + erlenmeyer).
 
-Diferente do v1 (que detectava ciano na logo inteira), aqui a fonte já é o
-ícone pronto com fundo transparente — só precisa de padding + resize.
+A imagem do Gemini vem com FUNDO XADREZ desenhado (não é transparência real).
+Pipeline:
+  1. Remove o xadrez via flood-fill a partir dos 4 cantos
+     (preserva o branco interno da tampa do erlenmeyer porque ele
+     nao esta conectado ao fundo)
+  2. Centra num canvas quadrado com padding
+  3. Gera todos os tamanhos + favicon.ico multi-size
 """
 from __future__ import annotations
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "Gemini_Generated_Image_kmx6flkmx6flkmx6.png"
 PUBLIC = ROOT / "public"
 
+# Cor sentinela que marca onde estava o fundo (improvavel de existir no logo).
+MARKER = (255, 0, 255)
+# Tolerancia do flood-fill (o xadrez tem branco e cinza claro proximos).
+FLOOD_THRESH = 70
+
+
+def remove_checker_background(img: Image.Image) -> Image.Image:
+    """Floor-fill dos 4 cantos com cor sentinela; depois converte para RGBA
+    com alpha=0 onde estiver a cor sentinela."""
+    rgb = img.convert("RGB").copy()
+    w, h = rgb.size
+
+    for corner in [(0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1)]:
+        ImageDraw.floodfill(rgb, corner, MARKER, thresh=FLOOD_THRESH)
+
+    rgba = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    src_pixels = rgb.load()
+    dst_pixels = rgba.load()
+    cleared = 0
+    for y in range(h):
+        for x in range(w):
+            r, g, b = src_pixels[x, y]
+            if (r, g, b) == MARKER:
+                cleared += 1
+                continue
+            dst_pixels[x, y] = (r, g, b, 255)
+    print(f"  Removidos {cleared} pixels de fundo xadrez")
+    return rgba
+
 
 def trim_transparent_borders(img: Image.Image) -> Image.Image:
-    """Remove margens transparentes para centralizar o ícone."""
     rgba = img.convert("RGBA")
     bbox = rgba.getbbox()
     if not bbox:
@@ -22,8 +55,7 @@ def trim_transparent_borders(img: Image.Image) -> Image.Image:
     return rgba.crop(bbox)
 
 
-def make_padded_square(img: Image.Image, padding_ratio: float = 0.08) -> Image.Image:
-    """Centra o ícone num canvas quadrado transparente, com folga."""
+def make_padded_square(img: Image.Image, padding_ratio: float = 0.06) -> Image.Image:
     w, h = img.size
     side = max(w, h)
     pad = int(side * padding_ratio)
@@ -37,17 +69,20 @@ def make_padded_square(img: Image.Image, padding_ratio: float = 0.08) -> Image.I
 
 def main() -> None:
     print(f"Lendo {SRC}")
-    img = Image.open(SRC).convert("RGBA")
-    print(f"Tamanho original: {img.size}")
+    img = Image.open(SRC)
+    print(f"Tamanho original: {img.size}, modo: {img.mode}")
 
-    trimmed = trim_transparent_borders(img)
-    print(f"Após remover bordas transparentes: {trimmed.size}")
+    cleaned = remove_checker_background(img)
+    print(f"Fundo removido: {cleaned.size}")
+
+    trimmed = trim_transparent_borders(cleaned)
+    print(f"Apos cortar bordas vazias: {trimmed.size}")
 
     padded = make_padded_square(trimmed)
     print(f"Quadrado com padding: {padded.size}")
 
     padded.save(PUBLIC / "favicon-source.png", "PNG", optimize=True)
-    print("  favicon-source.png (referência)")
+    print("  favicon-source.png")
 
     sizes = [16, 32, 48, 96, 180, 192, 512]
     for s in sizes:
@@ -75,7 +110,7 @@ def main() -> None:
     )
     print("  favicon.ico (multi-size 16/32/48)")
 
-    print("\n✅ Favicons regenerados em public/")
+    print("\nOK Favicons regenerados em public/")
 
 
 if __name__ == "__main__":

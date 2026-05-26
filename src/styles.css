@@ -48,7 +48,7 @@
   --color-flask-blue: var(--flask-blue);
 
   --font-serif: "Instrument Serif", "Times New Roman", Georgia, serif;
-  --font-sans: "Work Sans", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -121,15 +121,22 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    /* Inter — alternativas estilísticas para parecerem mais limpas */
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   }
   h1, h2, h3, h4 {
     font-family: var(--font-serif);
     font-weight: 400; /* Instrument Serif fica mais elegante em regular */
-    letter-spacing: -0.015em;
-    line-height: 1.1;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  p {
+    line-height: 1.6;
   }
 }
 
@@ -187,6 +194,7 @@
     padding: 0.5rem 0.75rem;
     font-family: var(--font-sans);
     font-size: 0.875rem;
+    line-height: 1.4;
     color: var(--ink);
     transition: all 150ms ease-out;
   }
@@ -216,19 +224,34 @@
     margin-top: 0.375rem;
   }
 
-  /* ─── Tipografia global do painel admin ─────────────────────
-     Tudo dentro do shell admin usa Instrument Serif (mesma fonte
-     do título de produto). Sobrescreve heranças padrão dos inputs,
-     textareas, buttons e selects, e também classes utilitárias
-     `.font-sans` / `.font-mono` aplicadas em sub-componentes. */
+  /* ─── Tipografia do painel admin ─────────────────────
+     Admin usa 100% Inter (sans-serif moderna desenhada para UI).
+     Inputs, textareas, buttons e qualquer classe `font-serif`
+     aplicada em sub-componentes herdam Inter. */
   [data-admin-shell],
   [data-admin-shell] input,
   [data-admin-shell] textarea,
   [data-admin-shell] select,
   [data-admin-shell] button,
-  [data-admin-shell] .input,
-  [data-admin-shell] .font-sans,
-  [data-admin-shell] .font-mono {
-    font-family: var(--font-serif);
+  [data-admin-shell] .font-serif {
+    font-family: var(--font-sans);
+  }
+  /* Headings dentro do admin ficam em Inter SemiBold (não serif).
+     Sobrescreve a regra global h1..h4 → serif. */
+  [data-admin-shell] h1,
+  [data-admin-shell] h2,
+  [data-admin-shell] h3,
+  [data-admin-shell] h4 {
+    font-family: var(--font-sans);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+  }
+
+  /* ─── Tipografia de uppercase (tags, eyebrows, badges) ──────
+     Letras maiúsculas precisam de tracking maior para respirar.
+     Quem quiser tracking ainda maior usa tracking-* do Tailwind. */
+  .uppercase {
+    letter-spacing: 0.05em;
   }
 }

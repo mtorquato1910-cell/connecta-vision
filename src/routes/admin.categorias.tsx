@@ -200,10 +200,12 @@ function CategoriaDialog({
               rows={3}
             />
           </div>
-          <Field
-            label="Imagem (URL)"
+          <ImageUpload
             value={form.imagem_url ?? ""}
             onChange={(v) => setForm({ ...form, imagem_url: v })}
+            folder="categorias"
+            label="Imagem da categoria"
+            aspect="aspect-square"
           />
           <Field
             label="Ordem"

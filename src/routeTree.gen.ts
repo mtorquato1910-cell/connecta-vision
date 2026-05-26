@@ -18,6 +18,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProdutosSlugRouteImport } from './routes/produtos.$slug'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
+import { Route as AdminPaginaInicialRouteImport } from './routes/admin.pagina-inicial'
 import { Route as AdminPerfilRouteImport } from './routes/admin.perfil'
 import { Route as AdminPaginaInicialRouteImport } from './routes/admin.pagina-inicial'
 import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
@@ -434,13 +435,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

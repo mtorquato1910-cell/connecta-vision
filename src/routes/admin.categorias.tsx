@@ -1,247 +1,316 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ExternalLink,
+  FolderTree,
+  Pencil,
+  RotateCcw,
+  Star,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
-import {
-  listAllCategorias,
-  upsertCategoria,
-  deleteCategoria,
-} from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ImageUpload } from "@/components/admin/ImageUpload";
-import { Card } from "@/components/ui/card";
+import { PageHeader } from "@/components/admin/PageHeader";
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+  getAll as getAllCategorias,
+  reorder as reorderCategorias,
+  reset as resetCategorias,
+  update as updateCategoria,
+  type Categoria,
+} from "@/lib/admin-categorias-repo";
+import { getAll as getAllProdutos } from "@/lib/admin-produtos-repo";
 
 export const Route = createFileRoute("/admin/categorias")({
-  component: AdminCategorias,
+  component: AdminCategoriasPage,
 });
 
-type Cat = {
-  id: string;
-  slug: string;
-  nome: string;
-  numero: string;
-  descricao: string | null;
-  imagem_url: string | null;
-  ordem: number;
-};
+function AdminCategoriasPage() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [editing, setEditing] = useState<Categoria | null>(null);
+  const refresh = () => setRefreshKey((k) => k + 1);
 
-function AdminCategorias() {
-  const listFn = useServerFn(listAllCategorias);
-  const upsertFn = useServerFn(upsertCategoria);
-  const deleteFn = useServerFn(deleteCategoria);
-  const qc = useQueryClient();
-  const { data, isLoading } = useQuery({ queryKey: ["admin", "categorias"], queryFn: () => listFn() });
+  const categorias = useMemo(() => getAllCategorias(), [refreshKey]);
+  const produtos = useMemo(() => getAllProdutos(), [refreshKey]);
 
-  const remove = useMutation({
-    mutationFn: (id: string) => deleteFn({ data: { id } }),
-    onSuccess: () => {
-      toast.success("Categoria removida.");
-      qc.invalidateQueries({ queryKey: ["admin", "categorias"] });
-    },
-    onError: (e: Error) => toast.error(e.message),
-  });
+  const countByCat = useMemo(() => {
+    const map: Record<string, number> = {};
+    for (const p of produtos) {
+      map[p.categoria_slug] = (map[p.categoria_slug] ?? 0) + 1;
+    }
+    return map;
+  }, [produtos]);
+
+  const moveUp = (id: string) => {
+    const ids = categorias.map((c) => c.id);
+    const i = ids.indexOf(id);
+    if (i <= 0) return;
+    [ids[i - 1], ids[i]] = [ids[i], ids[i - 1]];
+    reorderCategorias(ids);
+    refresh();
+  };
+
+  const moveDown = (id: string) => {
+    const ids = categorias.map((c) => c.id);
+    const i = ids.indexOf(id);
+    if (i < 0 || i >= ids.length - 1) return;
+    [ids[i + 1], ids[i]] = [ids[i], ids[i + 1]];
+    reorderCategorias(ids);
+    refresh();
+  };
+
+  const toggleDestaque = (cat: Categoria) => {
+    updateCategoria(cat.id, { destaque: !cat.destaque });
+    refresh();
+  };
+
+  const handleReset = () => {
+    if (!confirm("Restaurar categorias ao estado original?")) return;
+    resetCategorias();
+    toast.success("Categorias restauradas.");
+    refresh();
+  };
 
   return (
-    <div className="p-8 space-y-6">
-      <header className="flex items-end justify-between">
-        <div>
-          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Catálogo</div>
-          <h1 className="text-3xl font-serif font-normal mt-1">Categorias</h1>
-        </div>
-        <CategoriaDialog
-          trigger={<Button><Plus className="h-4 w-4 mr-2" />Nova categoria</Button>}
-          onSave={async (v) => {
-            await upsertFn({ data: v });
-            qc.invalidateQueries({ queryKey: ["admin", "categorias"] });
-            toast.success("Categoria salva.");
-          }}
-        />
-      </header>
+    <div>
+      <PageHeader
+        eyebrow="Catálogo"
+        title="Categorias"
+        description="8 linhas clínicas. Reordene, edite descrição e marque destaques que aparecem na home."
+        icon={FolderTree}
+        tone="violet"
+        actions={
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleReset}
+            className="gap-1.5"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Restaurar</span>
+          </Button>
+        }
+      />
 
-      <Card>
-        <div className="divide-y">
-          {isLoading && <div className="p-6 text-sm text-muted-foreground">Carregando...</div>}
-          {(data as Cat[] | undefined)?.map((c) => (
-            <div key={c.id} className="flex items-center gap-4 p-4">
-              <div className="w-10 h-10 rounded bg-muted flex items-center justify-center text-xs font-mono">
+      <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-5xl">
+        <div className="space-y-2">
+          {categorias.map((c, i) => (
+            <div
+              key={c.id}
+              className="bg-paper border border-line rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 hover:border-violet-300 transition-colors"
+            >
+              <div className="flex flex-col gap-0.5 shrink-0">
+                <button
+                  onClick={() => moveUp(c.id)}
+                  disabled={i === 0}
+                  aria-label="Mover para cima"
+                  className="h-6 w-6 rounded flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ArrowUp className="h-3.5 w-3.5" />
+                </button>
+                <button
+                  onClick={() => moveDown(c.id)}
+                  disabled={i === categorias.length - 1}
+                  aria-label="Mover para baixo"
+                  className="h-6 w-6 rounded flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ArrowDown className="h-3.5 w-3.5" />
+                </button>
+              </div>
+
+              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-100 to-violet-50 text-violet-700 flex items-center justify-center font-mono text-xs font-medium shrink-0">
                 {c.numero}
               </div>
+
               <div className="flex-1 min-w-0">
-                <div className="font-medium">{c.nome}</div>
-                <div className="text-xs text-muted-foreground truncate">/{c.slug}</div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="font-serif font-normal text-base sm:text-lg text-ink line-clamp-1">
+                    {c.nome}
+                  </h3>
+                  {c.destaque && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-amber-900 bg-amber-100 rounded-full px-2 py-0.5">
+                      <Star className="h-2.5 w-2.5" /> Destaque
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-ink-soft line-clamp-1 mt-0.5">
+                  {c.descricao_curta}
+                </p>
+                <p className="text-[11px] font-mono text-ink-mute mt-1">
+                  {countByCat[c.slug] ?? 0} produtos · /{c.slug}
+                </p>
               </div>
-              <div className="flex gap-2">
-                <CategoriaDialog
-                  initial={c}
-                  trigger={
-                    <Button variant="outline" size="sm">
-                      <Pencil className="h-3.5 w-3.5 mr-1" />Editar
-                    </Button>
-                  }
-                  onSave={async (v) => {
-                    await upsertFn({ data: { ...v, id: c.id } });
-                    qc.invalidateQueries({ queryKey: ["admin", "categorias"] });
-                    toast.success("Categoria atualizada.");
-                  }}
-                />
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm">
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Remover categoria?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Esta ação é irreversível. Produtos vinculados precisarão de nova categoria.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => remove.mutate(c.id)}>Remover</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+
+              <div className="flex items-center gap-1 shrink-0">
+                <a
+                  href={`/produtos/categoria/${c.slug}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  aria-label="Ver no site"
+                  className="h-8 w-8 rounded-md flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone transition-colors"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+                <button
+                  onClick={() => toggleDestaque(c)}
+                  aria-label={c.destaque ? "Remover destaque" : "Marcar destaque"}
+                  className={`h-8 w-8 rounded-md flex items-center justify-center transition-colors ${
+                    c.destaque
+                      ? "text-amber-600 bg-amber-50"
+                      : "text-ink-soft hover:text-amber-700 hover:bg-amber-50"
+                  }`}
+                >
+                  <Star className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setEditing(c)}
+                  aria-label="Editar"
+                  className="h-8 w-8 rounded-md flex items-center justify-center text-ink-soft hover:text-conecta-blue hover:bg-blue-50 transition-colors"
+                >
+                  <Pencil className="h-4 w-4" />
+                </button>
               </div>
             </div>
           ))}
         </div>
-      </Card>
+
+        <div className="mt-6 rounded-xl border border-line bg-bone/40 p-4 text-xs text-ink-soft">
+          <strong>📌 Estrutura fixa:</strong> as 8 categorias vêm da planilha
+          Shinova e não podem ser adicionadas/removidas pelo painel — apenas
+          editadas e reordenadas. Para mudanças estruturais, fale com o suporte.
+        </div>
+      </div>
+
+      {editing && (
+        <CategoriaForm
+          categoria={editing}
+          onClose={() => setEditing(null)}
+          onSave={(input) => {
+            updateCategoria(editing.id, input);
+            toast.success("Categoria atualizada.");
+            setEditing(null);
+            refresh();
+          }}
+        />
+      )}
     </div>
   );
 }
 
-type CatForm = Omit<Cat, "id"> & { id?: string };
-
-function CategoriaDialog({
-  initial,
-  trigger,
+function CategoriaForm({
+  categoria,
+  onClose,
   onSave,
 }: {
-  initial?: Cat;
-  trigger: React.ReactNode;
-  onSave: (v: CatForm) => Promise<void>;
+  categoria: Categoria;
+  onClose: () => void;
+  onSave: (data: Partial<Categoria>) => void;
 }) {
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState<CatForm>(
-    initial ?? { slug: "", nome: "", numero: "", descricao: "", imagem_url: "", ordem: 0 },
-  );
-  const [saving, setSaving] = useState(false);
+  const [nome, setNome] = useState(categoria.nome);
+  const [descricao, setDescricao] = useState(categoria.descricao_curta);
+  const [destaque, setDestaque] = useState(categoria.destaque);
 
-  async function submit(e: React.FormEvent) {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
-    try {
-      await onSave({
-        ...form,
-        descricao: form.descricao || null,
-        imagem_url: form.imagem_url || null,
-      });
-      setOpen(false);
-    } catch (e) {
-      toast.error((e as Error).message);
-    } finally {
-      setSaving(false);
+    if (!nome.trim()) {
+      toast.error("Nome obrigatório.");
+      return;
     }
-  }
+    onSave({
+      nome: nome.trim(),
+      descricao_curta: descricao.trim(),
+      destaque,
+    });
+  };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{initial ? "Editar categoria" : "Nova categoria"}</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={submit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <Field label="Nome" value={form.nome} onChange={(v) => setForm({ ...form, nome: v })} required />
-            <Field
-              label="Número"
-              value={form.numero}
-              onChange={(v) => setForm({ ...form, numero: v })}
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-paper rounded-2xl w-full max-w-lg max-h-[92vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <header className="border-b border-line px-5 sm:px-6 py-4 flex items-center justify-between">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.2em] text-ink-soft font-mono">
+              Editar categoria · {categoria.numero}
+            </div>
+            <h2 className="font-serif text-xl text-ink mt-0.5">{categoria.nome}</h2>
+          </div>
+          <button
+            onClick={onClose}
+            aria-label="Fechar"
+            className="h-9 w-9 rounded-md text-ink-soft hover:text-ink hover:bg-bone flex items-center justify-center"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </header>
+
+        <form onSubmit={handleSubmit} className="px-5 sm:px-6 py-5 space-y-4">
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-ink">Nome</label>
+            <input
               required
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              className="input"
             />
           </div>
-          <Field
-            label="Slug"
-            value={form.slug}
-            onChange={(v) => setForm({ ...form, slug: v.toLowerCase().replace(/[^a-z0-9-]/g, "-") })}
-            required
-          />
-          <div className="space-y-2">
-            <Label>Descrição</Label>
-            <Textarea
-              value={form.descricao ?? ""}
-              onChange={(e) => setForm({ ...form, descricao: e.target.value })}
-              rows={3}
-            />
-          </div>
-          <ImageUpload
-            value={form.imagem_url ?? ""}
-            onChange={(v) => setForm({ ...form, imagem_url: v })}
-            folder="categorias"
-            label="Imagem da categoria"
-            aspect="aspect-square"
-          />
-          <Field
-            label="Ordem"
-            type="number"
-            value={String(form.ordem)}
-            onChange={(v) => setForm({ ...form, ordem: parseInt(v) || 0 })}
-          />
-          <DialogFooter>
-            <Button type="submit" disabled={saving}>
-              {saving ? "Salvando..." : "Salvar"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
-function Field({
-  label,
-  value,
-  onChange,
-  required,
-  type = "text",
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  required?: boolean;
-  type?: string;
-}) {
-  return (
-    <div className="space-y-2">
-      <Label>{label}</Label>
-      <Input type={type} value={value} onChange={(e) => onChange(e.target.value)} required={required} />
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-ink">
+              Descrição curta
+            </label>
+            <textarea
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              rows={3}
+              maxLength={250}
+              className="input min-h-[80px] resize-y"
+            />
+            <p className="text-xs text-ink-soft">
+              Aparece em listagens e na home (máx 250 caracteres).
+            </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-ink">Slug (URL)</label>
+            <input
+              value={categoria.slug}
+              disabled
+              className="input bg-bone cursor-not-allowed font-mono text-xs"
+            />
+            <p className="text-xs text-ink-soft">
+              O slug não pode ser alterado para preservar links existentes.
+            </p>
+          </div>
+
+          <label className="flex items-center gap-2 cursor-pointer pt-2">
+            <input
+              type="checkbox"
+              checked={destaque}
+              onChange={(e) => setDestaque(e.target.checked)}
+              className="h-4 w-4 accent-conecta-orange"
+            />
+            <span className="text-sm text-ink">Exibir como destaque na home</span>
+          </label>
+        </form>
+
+        <footer className="border-t border-line px-5 sm:px-6 py-3 flex justify-end gap-2">
+          <Button variant="outline" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button
+            onClick={handleSubmit}
+            className="bg-conecta-blue hover:bg-conecta-blue-deep text-white"
+          >
+            Salvar
+          </Button>
+        </footer>
+      </div>
     </div>
   );
 }

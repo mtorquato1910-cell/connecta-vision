@@ -70,7 +70,7 @@ function AdminCategorias() {
       <header className="flex items-end justify-between">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Catálogo</div>
-          <h1 className="text-3xl font-semibold mt-1">Categorias</h1>
+          <h1 className="text-3xl font-serif font-normal mt-1">Categorias</h1>
         </div>
         <CategoriaDialog
           trigger={<Button><Plus className="h-4 w-4 mr-2" />Nova categoria</Button>}

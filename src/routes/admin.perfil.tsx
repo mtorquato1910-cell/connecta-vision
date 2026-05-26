@@ -93,7 +93,7 @@ function AdminPerfil() {
     <div className="p-8 space-y-8 max-w-3xl">
       <header>
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Conta</div>
-        <h1 className="text-3xl font-semibold mt-1">Meu perfil</h1>
+        <h1 className="text-3xl font-serif font-normal mt-1">Meu perfil</h1>
         <p className="text-sm text-muted-foreground mt-2">
           Atualize seu email de acesso e sua senha de administrador.
         </p>
@@ -105,7 +105,7 @@ function AdminPerfil() {
             <User className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold leading-none">Identificação</h2>
+            <h2 className="text-lg font-serif font-normal leading-none">Identificação</h2>
             <p className="text-sm text-muted-foreground mt-1">Email atualmente usado para login.</p>
           </div>
         </div>
@@ -127,7 +127,7 @@ function AdminPerfil() {
             <Mail className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold leading-none">Trocar email</h2>
+            <h2 className="text-lg font-serif font-normal leading-none">Trocar email</h2>
             <p className="text-sm text-muted-foreground mt-1">
               A alteração é aplicada imediatamente. Use o novo email no próximo login.
             </p>
@@ -157,7 +157,7 @@ function AdminPerfil() {
             <KeyRound className="h-4 w-4" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold leading-none">Trocar senha</h2>
+            <h2 className="text-lg font-serif font-normal leading-none">Trocar senha</h2>
             <p className="text-sm text-muted-foreground mt-1">
               Mínimo 6 caracteres. A sessão atual permanece ativa após a troca.
             </p>

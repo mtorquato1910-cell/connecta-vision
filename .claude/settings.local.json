@@ -32,7 +32,8 @@
       "Bash(PYTHONIOENCODING=utf-8 python scripts/baixar-amostra.py)",
       "Bash(PYTHONIOENCODING=utf-8 python scripts/remover-marca-dagua.py images/teste-originais images/teste-limpas --debug)",
       "Bash(rm -f images/teste-limpas/*)",
-      "Bash(PYTHONIOENCODING=utf-8 python scripts/remover-marca-dagua-v2.py images/teste-originais images/teste-limpas --debug)"
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/remover-marca-dagua-v2.py images/teste-originais images/teste-limpas --debug)",
+      "Bash(npx tsc *)"
     ]
   }
 }

@@ -501,6 +501,92 @@
 
 ---
 
+# 📱 SPRINT-R — Responsividade Mobile/Tablet (4 dias) ✅ NOVA
+
+**Adicionada em 2026-05-26 por solicitação do cliente.**
+
+**Objetivo:** Site público e Painel Admin precisam abrir bem em celular e tablet. Todas as telas devem se redimensionar conforme a largura da viewport. Especial atenção ao admin que hoje é desktop-only (sidebar 288px fixa quebra em mobile).
+
+## R-01 — Auditoria de breakpoints atuais 🟢 S
+**AC:**
+- Documentar quais páginas/componentes hoje quebram em mobile (< 768px), tablet (768-1024px) e desktop (≥ 1024px)
+- Inventariar uso atual de `sm:`, `md:`, `lg:`, `xl:` no projeto
+- Lista priorizada de hotspots críticos
+
+**Breakpoints alvo (Tailwind defaults):**
+| Token | Largura | Dispositivo |
+|---|---|---|
+| `sm` | ≥ 640px | mobile landscape / phablet |
+| `md` | ≥ 768px | tablet portrait |
+| `lg` | ≥ 1024px | tablet landscape / desktop pequeno |
+| `xl` | ≥ 1280px | desktop padrão |
+| `2xl` | ≥ 1536px | desktop wide |
+
+## R-02 — Painel admin: sidebar → drawer no mobile 🟡 M
+**Hoje:** sidebar fixa `w-72` (288px) sempre visível → no mobile estoura horizontal scroll.
+**AC:**
+- Em `< lg` (1024px): sidebar fica oculta, abre via botão hamburger fixo no topo do main
+- Drawer com animação slide-in da esquerda (Framer Motion)
+- Backdrop escuro com `bg-ink/60` clicável para fechar
+- Esc fecha o drawer
+- Após navegar entre rotas, drawer fecha automaticamente
+- Em `≥ lg`: sidebar fixa como hoje
+- Botão hamburger só aparece em `< lg`
+- Layout main com `padding-top` ajustado em mobile para não cobrir conteúdo
+
+## R-03 — Dashboard admin responsivo 🟢 S
+**Hoje:** banner topo e grid 6 cards ficam estouradas em mobile.
+**AC:**
+- Banner topo com padding responsivo (`px-6 md:px-10` e `py-8 md:py-14`)
+- Grid de stats: 1 coluna em mobile, 2 em `sm`, 3 em `lg`
+- Saudação `text-3xl sm:text-4xl md:text-5xl` (clamp via classes)
+- Cards mantêm proporção sem overflow horizontal
+- Atalhos: 1 col mobile, 3 col `md+`
+
+## R-04 — Páginas admin internas responsivas 🟡 M
+**AC para CADA página admin (blog, eventos, produtos, categorias, formularios, perfil, configuracoes):**
+- Padding lateral mínimo `px-4` mobile, `px-6 md:px-10` desktop
+- PageHeader: ícone + texto colapsam bem em mobile
+- Tabs com scroll horizontal em mobile se overflow
+- Cards de listagem: empilham bem em mobile, sem barras de scroll horizontal
+- Modais (criar post, rejeitar) ocupam quase tela inteira em mobile (`max-w-md` desktop → `max-w-[95vw]` mobile)
+- Botões de ação não saem da viewport
+
+## R-05 — Site público: revisão mobile 🟡 M
+**Hoje:** já tem responsivo básico, mas vou auditar pontos críticos.
+**AC:**
+- Hero: title clamp 32-72px mobile-friendly (já tem `text-5xl md:text-6xl lg:text-7xl` — revisar)
+- Navbar mobile: hamburger drawer existe — testar abertura/fechamento + links de Blog/Eventos
+- Catálogo: filtros laterais viram chips horizontais com scroll em mobile (`< lg`)
+- Página de produto: galeria empilha acima do detalhe em mobile
+- Página de evento: lightbox funciona em touch (swipe + pinch zoom opcional)
+- Formulários: inputs com `w-full`, botões `w-full` em mobile, `auto` em desktop
+- WhatsApp FAB: posição ajustada (bottom-right) sem cobrir conteúdo crítico
+
+## R-06 — Tabela de produtos no admin (responsiva) 🟢 S
+**AC:**
+- Em mobile: tabela vira lista de cards (cada produto = card com modelo, nome, status, ações)
+- Em tablet+: tabela tradicional com colunas
+- Filtros laterais: colapsam em accordion mobile
+
+## R-07 — Testes em viewports reais 🟢 S
+**AC:**
+- Testar manualmente em 320px (iPhone SE), 375px (iPhone 14), 768px (iPad portrait), 1024px (iPad landscape), 1280px (laptop), 1920px (desktop wide)
+- Sem scroll horizontal em nenhuma viewport
+- Touch targets ≥ 44px em mobile
+- Botões WhatsApp FAB visível em todas
+- Formulários submetem corretamente em touch
+
+## R-08 — Meta viewport + safe areas (iOS notch) 🟢 S
+**AC:**
+- `<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">` presente (já tem)
+- `env(safe-area-inset-*)` no header sticky e navbar mobile pro iPhone com notch
+- Sem corte de conteúdo em "landscape" no notch
+
+**Duração estimada:** 4 dias úteis
+
+---
+
 # 📊 Resumo macro
 
 | Sprint | Duração | Status | Pode rodar? |
@@ -510,7 +596,8 @@
 | Sprint 2 — Blog | 5 dias | ✅ | **Sim, depois da S0** |
 | Sprint 3 — Eventos | 4 dias | ✅ | **Sim, depois da S0** |
 | Sprint 4 — Admin completo | 6 dias | ✅ | **Sim, depois da S0** |
-| Sprint 5 — i18n + SEO | 5 dias | ✅ | **Sim, depois da S1+S2+S3+S4** |
+| **Sprint R — Responsividade** | **4 dias** | **✅ NOVA** | **Sim, em paralelo a S1-S4** |
+| Sprint 5 — i18n + SEO | 5 dias | ✅ | **Sim, depois da S1+S2+S3+S4+R** |
 | Sprint 6 — Banco real | 5 dias | 🚫 | **Bloqueado: acesso servidor** |
 | Sprint 7 — Go-live | 2 dias | 🚫 | **Bloqueado: S6 concluída** |
 

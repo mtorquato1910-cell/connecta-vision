@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Calendar, ExternalLink, ImageIcon, MapPin } from "lucide-react";
+import { Calendar, Camera, ExternalLink, ImageIcon, MapPin, Plus } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import {
   formatEventDate,
   getAllEventos,
 } from "@/lib/eventos-data";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/admin/PageHeader";
 
 export const Route = createFileRoute("/admin/eventos")({
   component: AdminEventosPage,
@@ -15,23 +16,28 @@ function AdminEventosPage() {
   const eventos = getAllEventos();
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl">
-      <header className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-semibold">Galeria de eventos</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Gerencie feiras, congressos e eventos que a Conecta participa.
-          </p>
-        </div>
-        <Button disabled className="gap-2" title="Disponível após integração do banco">
-          + Novo evento
-        </Button>
-      </header>
+    <div>
+      <PageHeader
+        eyebrow="Conteúdo"
+        title="Galeria de eventos"
+        description="Gerencie feiras, congressos e eventos onde a Conecta esteve presente. Cada evento tem capa, descrição e galeria de fotos."
+        icon={Camera}
+        tone="rose"
+        actions={
+          <Button disabled className="gap-2" title="Disponível após integração do banco">
+            <Plus className="h-4 w-4" /> Novo evento
+          </Button>
+        }
+      />
 
-      <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm rounded-md p-4 mb-6">
-        <strong>📌 Modo somente leitura.</strong> Upload de fotos e CRUD completo
-        serão habilitados quando o banco for integrado. Os eventos abaixo vêm do
-        mock <code className="bg-amber-100 px-1 rounded">src/data/eventos.json</code>.
+      <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-7xl">
+      <div className="bg-amber-50 border border-amber-200 text-amber-900 text-sm rounded-2xl p-4 mb-6 flex items-start gap-3">
+        <div className="h-8 w-8 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">📌</div>
+        <div>
+          <strong>Modo somente leitura.</strong> Upload de fotos e CRUD completo
+          serão habilitados quando o banco for integrado. Os eventos abaixo vêm do
+          mock <code className="bg-amber-100 px-1 rounded text-xs">src/data/eventos.json</code>.
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -62,7 +68,7 @@ function AdminEventosPage() {
                   {ev.galeria.length} fotos
                 </span>
               </div>
-              <h3 className="font-semibold text-lg">{ev.nome}</h3>
+              <h3 className="font-serif font-normal text-xl">{ev.nome}</h3>
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                 {ev.descricao_curta}
               </p>
@@ -87,6 +93,7 @@ function AdminEventosPage() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

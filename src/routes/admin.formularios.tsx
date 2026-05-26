@@ -60,7 +60,7 @@ function AdminFormularios() {
     <div className="p-8 space-y-6">
       <header>
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Inbox</div>
-        <h1 className="text-3xl font-semibold mt-1">Formulários</h1>
+        <h1 className="text-3xl font-serif font-normal mt-1">Formulários</h1>
         <p className="text-sm text-muted-foreground mt-2">
           Todas as mensagens enviadas pelos formulários do site.
         </p>
@@ -78,7 +78,7 @@ function AdminFormularios() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-1 min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold">{o.nome}</h3>
+                  <h3 className="font-serif font-normal text-lg">{o.nome}</h3>
                   <Badge variant="outline">{o.tipo}</Badge>
                   <Badge>{STATUS_LABEL[o.status] ?? o.status}</Badge>
                   {!o.lido && <Badge variant="secondary">Não lido</Badge>}

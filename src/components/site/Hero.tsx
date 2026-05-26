@@ -6,25 +6,25 @@ import { Reveal } from "./Reveal";
 export function Hero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="container-edge pt-16 md:pt-24 pb-20 md:pb-28 grid lg:grid-cols-12 gap-12 items-center">
+      <div className="container-edge pt-10 sm:pt-16 md:pt-24 pb-16 md:pb-28 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         <div className="lg:col-span-7">
           <Reveal>
             <span className="eyebrow">Equipamentos veterinários premium</span>
           </Reveal>
           <Reveal delay={0.05}>
-            <h1 className="mt-6 font-serif text-[44px] md:text-[64px] leading-[1.02] tracking-tight text-ink">
+            <h1 className="mt-5 sm:mt-6 font-serif text-[32px] sm:text-[40px] md:text-[52px] lg:text-[64px] leading-[1.02] tracking-tight text-ink">
               Equipamentos veterinários <em className="italic text-conecta-blue">de origem</em> — para quem não aceita aproximação clínica.
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
-            <p className="mt-6 text-lg text-ink-soft max-w-xl leading-relaxed">
+            <p className="mt-5 sm:mt-6 text-base sm:text-lg text-ink-soft max-w-xl leading-relaxed">
               Distribuímos a linha completa <strong className="text-ink">Shinova</strong> no Brasil — anestesia, monitoramento, imagem, laboratório,
               odontologia, cirurgia, oftalmologia e estética veterinária. Mais de 230 equipamentos em catálogo,
               importação direta, suporte técnico nacional.
             </p>
           </Reveal>
           <Reveal delay={0.15}>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 sm:mt-8 flex flex-wrap gap-3">
               <Link to="/produtos" className="btn-primary">
                 Explorar catálogo <ArrowRight className="h-4 w-4" />
               </Link>

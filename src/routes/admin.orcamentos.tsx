@@ -67,7 +67,7 @@ function AdminOrcamentos() {
     <div className="p-8 space-y-6">
       <header>
         <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Pipeline</div>
-        <h1 className="text-3xl font-semibold mt-1">Orçamentos</h1>
+        <h1 className="text-3xl font-serif font-normal mt-1">Orçamentos</h1>
         <p className="text-sm text-muted-foreground mt-2">
           Pedidos recebidos via formulário do site.
         </p>
@@ -85,7 +85,7 @@ function AdminOrcamentos() {
             <div className="flex flex-wrap items-start justify-between gap-4">
               <div className="space-y-1 min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="font-semibold">{o.nome}</h3>
+                  <h3 className="font-serif font-normal text-lg">{o.nome}</h3>
                   <Badge variant={STATUS_VARIANT[o.status]}>{STATUS_LABEL[o.status]}</Badge>
                   <span className="text-xs text-muted-foreground">
                     {new Date(o.created_at).toLocaleString("pt-BR")}

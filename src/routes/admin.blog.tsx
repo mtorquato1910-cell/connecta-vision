@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Check, Clock, FileText, Plus, Trash2, X } from "lucide-react";
+import { Check, Clock, FileText, Newspaper, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import {
   adminCreatePost,
@@ -13,6 +13,7 @@ import {
   type BlogStatus,
 } from "@/lib/blog-data";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/admin/PageHeader";
 
 export const Route = createFileRoute("/admin/blog")({
   component: AdminBlogPage,
@@ -59,38 +60,53 @@ function AdminBlogPage() {
     refresh();
   };
 
-  return (
-    <div className="p-6 md:p-8 max-w-7xl">
-      <header className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <h1 className="text-2xl font-semibold">Blog</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Modere submissões públicas e crie posts próprios.
-            {pendingCount > 0 && (
-              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-amber-100 text-amber-900 px-2 py-0.5 text-xs">
-                <Clock className="h-3 w-3" /> {pendingCount} aguardando moderação
-              </span>
-            )}
-          </p>
-        </div>
-        <Button onClick={() => setShowCreate(true)} className="gap-2">
-          <Plus className="h-4 w-4" /> Novo artigo
-        </Button>
-      </header>
+  const tabCounts: Record<Tab, number> = {
+    todos: all.length,
+    pendente: all.filter((p) => p.status === "pendente").length,
+    publicado: all.filter((p) => p.status === "publicado").length,
+    rejeitado: all.filter((p) => p.status === "rejeitado").length,
+  };
 
-      <nav className="border-b mb-4 flex gap-1">
+  return (
+    <div>
+      <PageHeader
+        eyebrow="Conteúdo"
+        title="Blog editorial"
+        description="Modere submissões públicas e publique conteúdo técnico próprio para a comunidade veterinária."
+        icon={Newspaper}
+        tone="orange"
+        badge={
+          pendingCount > 0
+            ? { label: `${pendingCount} aguardando moderação`, tone: "amber" }
+            : undefined
+        }
+        actions={
+          <Button onClick={() => setShowCreate(true)} className="gap-2 bg-conecta-orange hover:bg-conecta-orange-light text-white">
+            <Plus className="h-4 w-4" /> Novo artigo
+          </Button>
+        }
+      />
+
+      <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-7xl">
+      <nav className="bg-paper border border-line rounded-full p-1 mb-6 inline-flex gap-1 max-w-full overflow-x-auto">
         {(["pendente", "publicado", "rejeitado", "todos"] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium relative transition-colors capitalize ${
-              tab === t ? "text-foreground" : "text-muted-foreground hover:text-foreground"
+            className={`px-4 py-1.5 text-sm font-medium rounded-full transition-all capitalize inline-flex items-center gap-2 ${
+              tab === t
+                ? "bg-conecta-blue text-white shadow-sm"
+                : "text-ink-soft hover:text-ink hover:bg-bone"
             }`}
           >
             {t}
-            {tab === t && (
-              <span className="absolute left-0 right-0 -bottom-px h-0.5 bg-primary" />
-            )}
+            <span
+              className={`text-[10px] font-mono rounded-full px-1.5 py-0.5 ${
+                tab === t ? "bg-white/20" : "bg-bone"
+              }`}
+            >
+              {tabCounts[t]}
+            </span>
           </button>
         ))}
       </nav>
@@ -135,6 +151,7 @@ function AdminBlogPage() {
           onConfirm={handleReject}
         />
       )}
+      </div>
     </div>
   );
 }
@@ -168,7 +185,7 @@ function PostRow({
             {formatDate(post.criado_em)}
           </span>
         </div>
-        <h3 className="mt-1 font-semibold text-base line-clamp-1">{post.titulo}</h3>
+        <h3 className="mt-1 font-serif font-normal text-base line-clamp-1">{post.titulo}</h3>
         <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
           {post.resumo}
         </p>
@@ -267,7 +284,7 @@ function CreateModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b flex items-center justify-between">
-          <h2 className="font-semibold text-lg">Novo artigo</h2>
+          <h2 className="font-serif font-normal text-xl">Novo artigo</h2>
           <button onClick={onClose}>
             <X className="h-5 w-5" />
           </button>
@@ -351,7 +368,7 @@ function RejectModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6 border-b">
-          <h2 className="font-semibold text-lg">Rejeitar artigo</h2>
+          <h2 className="font-serif font-normal text-xl">Rejeitar artigo</h2>
           <p className="text-sm text-muted-foreground mt-1 line-clamp-1">
             "{post.titulo}"
           </p>

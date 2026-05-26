@@ -89,7 +89,7 @@ function AdminHome() {
       <header className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Home</div>
-          <h1 className="text-3xl font-semibold mt-1">Página inicial</h1>
+          <h1 className="text-3xl font-serif font-normal mt-1">Página inicial</h1>
           <p className="text-sm text-muted-foreground mt-2">
             Ative, desative e reordene as seções exibidas na home. Salve para aplicar.
           </p>

@@ -79,7 +79,7 @@ function AdminProdutos() {
       <header className="flex items-end justify-between">
         <div>
           <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Catálogo</div>
-          <h1 className="text-3xl font-semibold mt-1">Produtos</h1>
+          <h1 className="text-3xl font-serif font-normal mt-1">Produtos</h1>
         </div>
         <ProdutoDialog
           categorias={(cats as { id: string; nome: string }[] | undefined) ?? []}

@@ -223,3 +223,144 @@ export const deleteOrcamento = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ---------- Formularios (públicos) ----------
+const formularioSchema = z.object({
+  tipo: z.string().min(1).max(40).default("contato"),
+  nome: z.string().min(2).max(160),
+  email: z.string().email().max(200),
+  telefone: z.string().max(40).optional().nullable(),
+  empresa: z.string().max(160).optional().nullable(),
+  cidade: z.string().max(120).optional().nullable(),
+  mensagem: z.string().max(4000).optional().nullable(),
+  origem: z.string().max(200).optional().nullable(),
+  payload: z.record(z.string(), z.any()).optional().default({}),
+});
+
+export const submitFormulario = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) => formularioSchema.parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("formularios").insert(data);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const listFormularios = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("formularios")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(500);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const updateFormulario = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        status: z.string().min(1).max(40).optional(),
+        lido: z.boolean().optional(),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { id, ...rest } = data;
+    const { error } = await supabaseAdmin.from("formularios").update(rest).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteFormulario = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("formularios").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ---------- Conteúdo do site (key/value JSON) ----------
+export const listConteudo = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("conteudo_site")
+      .select("chave, valor, updated_at")
+      .order("chave");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const upsertConteudo = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        chave: z.string().min(1).max(120).regex(/^[a-z0-9_.-]+$/i),
+        valor: z.any(),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin
+      .from("conteudo_site")
+      .upsert({ chave: data.chave, valor: data.valor }, { onConflict: "chave" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteConteudo = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ chave: z.string().min(1).max(120) }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin.from("conteudo_site").delete().eq("chave", data.chave);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ---------- Configurações da empresa (key/value JSON) ----------
+export const listConfigEmpresa = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("configuracoes_empresa")
+      .select("chave, valor, updated_at")
+      .order("chave");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const upsertConfigEmpresa = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        chave: z.string().min(1).max(120).regex(/^[a-z0-9_.-]+$/i),
+        valor: z.any(),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin
+      .from("configuracoes_empresa")
+      .upsert({ chave: data.chave, valor: data.valor }, { onConflict: "chave" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteConfigEmpresa = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ chave: z.string().min(1).max(120) }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin
+      .from("configuracoes_empresa")
+      .delete()
+      .eq("chave", data.chave);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });

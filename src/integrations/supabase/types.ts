@@ -14,16 +14,227 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categorias: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          id: string
+          imagem_url: string | null
+          nome: string
+          numero: string
+          ordem: number
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_url?: string | null
+          nome: string
+          numero: string
+          ordem?: number
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_url?: string | null
+          nome?: string
+          numero?: string
+          ordem?: number
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      configuracoes: {
+        Row: {
+          chave: string
+          id: string
+          updated_at: string
+          valor: Json
+        }
+        Insert: {
+          chave: string
+          id?: string
+          updated_at?: string
+          valor: Json
+        }
+        Update: {
+          chave?: string
+          id?: string
+          updated_at?: string
+          valor?: Json
+        }
+        Relationships: []
+      }
+      orcamentos: {
+        Row: {
+          cidade: string | null
+          clinica: string | null
+          created_at: string
+          email: string
+          id: string
+          mensagem: string | null
+          nome: string
+          origem: string | null
+          produto_id: string | null
+          produto_nome: string | null
+          produto_slug: string | null
+          status: Database["public"]["Enums"]["orcamento_status"]
+          telefone: string
+          updated_at: string
+        }
+        Insert: {
+          cidade?: string | null
+          clinica?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          mensagem?: string | null
+          nome: string
+          origem?: string | null
+          produto_id?: string | null
+          produto_nome?: string | null
+          produto_slug?: string | null
+          status?: Database["public"]["Enums"]["orcamento_status"]
+          telefone: string
+          updated_at?: string
+        }
+        Update: {
+          cidade?: string | null
+          clinica?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          mensagem?: string | null
+          nome?: string
+          origem?: string | null
+          produto_id?: string | null
+          produto_nome?: string | null
+          produto_slug?: string | null
+          status?: Database["public"]["Enums"]["orcamento_status"]
+          telefone?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orcamentos_produto_id_fkey"
+            columns: ["produto_id"]
+            isOneToOne: false
+            referencedRelation: "produtos"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      produtos: {
+        Row: {
+          aplicacoes: Json
+          categoria_id: string
+          created_at: string
+          descricao: string | null
+          destaque: boolean
+          diferenciais: Json
+          especificacoes: Json
+          galeria: Json
+          id: string
+          imagem_url: string | null
+          modelo: string
+          nome: string
+          ordem: number
+          publicado: boolean
+          resumo: string | null
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          aplicacoes?: Json
+          categoria_id: string
+          created_at?: string
+          descricao?: string | null
+          destaque?: boolean
+          diferenciais?: Json
+          especificacoes?: Json
+          galeria?: Json
+          id?: string
+          imagem_url?: string | null
+          modelo: string
+          nome: string
+          ordem?: number
+          publicado?: boolean
+          resumo?: string | null
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          aplicacoes?: Json
+          categoria_id?: string
+          created_at?: string
+          descricao?: string | null
+          destaque?: boolean
+          diferenciais?: Json
+          especificacoes?: Json
+          galeria?: Json
+          id?: string
+          imagem_url?: string | null
+          modelo?: string
+          nome?: string
+          ordem?: number
+          publicado?: boolean
+          resumo?: string | null
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "produtos_categoria_id_fkey"
+            columns: ["categoria_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
+      orcamento_status: "novo" | "em_andamento" | "concluido" | "arquivado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +361,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+      orcamento_status: ["novo", "em_andamento", "concluido", "arquivado"],
+    },
   },
 } as const

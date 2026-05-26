@@ -5,7 +5,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { QuoteModal } from "@/components/site/QuoteModal";
 import { Reveal } from "@/components/site/Reveal";
-import { findProduto, produtosRelacionados, waLink } from "@/lib/site-data";
+import { findProduto, produtosRelacionados, waLink, type Produto, type Especificacao } from "@/lib/site-data";
 
 export const Route = createFileRoute("/produtos/$slug")({
   loader: ({ params }) => {

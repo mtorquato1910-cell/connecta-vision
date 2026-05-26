@@ -1,26 +1,45 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { TopBar } from "@/components/site/TopBar";
+import { Navbar } from "@/components/site/Navbar";
+import { Footer } from "@/components/site/Footer";
+import { WhatsAppFab } from "@/components/site/WhatsAppFab";
+import { Hero } from "@/components/site/Hero";
+import { CategoriesBanner } from "@/components/site/CategoriesBanner";
+import { FeaturedProducts } from "@/components/site/FeaturedProducts";
+import { Principles } from "@/components/site/Principles";
+import { AboutBanner } from "@/components/site/AboutBanner";
+import { Testimonial } from "@/components/site/Testimonial";
+import { ContactSection } from "@/components/site/ContactSection";
 
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "Conecta — Equipamentos Veterinários Premium | Distribuidor oficial Shinova" },
+      { name: "description", content: "Distribuidora brasileira oficial da linha Shinova. 230+ equipamentos veterinários em catálogo: anestesia, imagem, laboratório, odontologia, oftalmologia, grooming e mais. Importação direta, suporte técnico nacional." },
+      { property: "og:title", content: "Conecta — Equipamentos Veterinários Premium" },
+      { property: "og:description", content: "230+ equipamentos veterinários Shinova com importação direta e suporte técnico nacional." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
+  component: HomePage,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function HomePage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-bone">
+      <TopBar />
+      <Navbar />
+      <main>
+        <Hero />
+        <CategoriesBanner />
+        <FeaturedProducts />
+        <Principles />
+        <AboutBanner />
+        <Testimonial />
+        <ContactSection />
+      </main>
+      <Footer />
+      <WhatsAppFab />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }

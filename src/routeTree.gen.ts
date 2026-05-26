@@ -22,6 +22,7 @@ import { Route as AdminPerfilRouteImport } from './routes/admin.perfil'
 import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminFormulariosRouteImport } from './routes/admin.formularios'
+import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as ProdutosCategoriaSlugRouteImport } from './routes/produtos.categoria.$slug'
 
@@ -90,6 +91,11 @@ const AdminFormulariosRoute = AdminFormulariosRouteImport.update({
   path: '/formularios',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminConteudoRoute = AdminConteudoRouteImport.update({
+  id: '/conteudo',
+  path: '/conteudo',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
@@ -125,6 +132,7 @@ export interface FileRoutesByTo {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
@@ -143,6 +151,7 @@ export interface FileRoutesById {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/conteudo': typeof AdminConteudoRoute
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
@@ -162,6 +171,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/admin/categorias'
+    | '/admin/conteudo'
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
@@ -178,6 +188,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/admin/categorias'
+    | '/admin/conteudo'
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
@@ -195,6 +206,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/admin/categorias'
+    | '/admin/conteudo'
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
@@ -307,6 +319,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFormulariosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/conteudo': {
+      id: '/admin/conteudo'
+      path: '/conteudo'
+      fullPath: '/admin/conteudo'
+      preLoaderRoute: typeof AdminConteudoRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categorias': {
       id: '/admin/categorias'
       path: '/categorias'
@@ -326,6 +345,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
+  AdminConteudoRoute: typeof AdminConteudoRoute
   AdminFormulariosRoute: typeof AdminFormulariosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrcamentosRoute: typeof AdminOrcamentosRoute
@@ -336,6 +356,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
+  AdminConteudoRoute: AdminConteudoRoute,
   AdminFormulariosRoute: AdminFormulariosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrcamentosRoute: AdminOrcamentosRoute,
@@ -371,3 +392,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

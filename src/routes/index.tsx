@@ -39,7 +39,7 @@ const DEFAULT_BLOCOS: Bloco[] = [
   { id: "contato", visivel: true },
 ];
 
-const BLOCK_COMPONENTS: Record<string, () => JSX.Element | null> = {
+const BLOCK_COMPONENTS: Record<string, React.ComponentType> = {
   hero: Hero,
   marcas: () => null,
   categorias: CategoriesBanner,

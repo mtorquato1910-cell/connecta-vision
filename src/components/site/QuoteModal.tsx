@@ -17,6 +17,8 @@ type FormData = {
 export function QuoteModal({ produto, open, onClose }: { produto: Produto; open: boolean; onClose: () => void }) {
   const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm<FormData>();
   const [sent, setSent] = useState(false);
+  const [erro, setErro] = useState<string | null>(null);
+  const enviar = useServerFn(criarOrcamento);
 
   useEffect(() => {
     if (open) {
@@ -30,11 +32,26 @@ export function QuoteModal({ produto, open, onClose }: { produto: Produto; open:
   if (!open) return null;
 
   const onSubmit = async (data: FormData) => {
-    // Phase 3 will persist to DB. For now, just simulate.
-    await new Promise((r) => setTimeout(r, 600));
-    console.log("orcamento", { produto: produto.slug, ...data });
-    setSent(true);
-    reset();
+    setErro(null);
+    try {
+      await enviar({
+        data: {
+          produto_slug: produto.slug,
+          produto_nome: `${produto.modelo} — ${produto.nome}`,
+          nome: data.nome,
+          clinica: data.clinica,
+          email: data.email,
+          telefone: data.telefone,
+          cidade: data.cidade,
+          mensagem: data.mensagem,
+          origem: "produto-detalhe",
+        },
+      });
+      setSent(true);
+      reset();
+    } catch (e) {
+      setErro(e instanceof Error ? e.message : "Não foi possível enviar. Tente novamente ou use o WhatsApp.");
+    }
   };
 
   const waMsg = `Olá! Tenho interesse no ${produto.modelo} — ${produto.nome}. Pode me enviar um orçamento?`;

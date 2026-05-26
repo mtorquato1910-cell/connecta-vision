@@ -15,7 +15,8 @@
       "Bash(python scripts/inspect-xlsx.py)",
       "Bash(PYTHONIOENCODING=utf-8 python scripts/extract-products.py)",
       "Bash(mkdir -p src/data)",
-      "Bash(cp data/produtos.json data/categorias.json src/data/)"
+      "Bash(cp data/produtos.json data/categorias.json src/data/)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/make-favicon.py)"
     ]
   }
 }

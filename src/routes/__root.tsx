@@ -79,12 +79,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Conecta — Equipamentos Veterinários" },
       { property: "og:description", content: "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários premium." },
       { name: "twitter:description", content: "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários premium." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8da9fa51-deb3-4a79-9998-56a801b0eb6d/id-preview-2b944c00--4c2c37b9-75df-4b4e-87b6-4368baed09ff.lovable.app-1779800480105.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/8da9fa51-deb3-4a79-9998-56a801b0eb6d/id-preview-2b944c00--4c2c37b9-75df-4b4e-87b6-4368baed09ff.lovable.app-1779800480105.png" },
+      { property: "og:image", content: "/icon-512.png" },
+      { name: "twitter:image", content: "/icon-512.png" },
       { property: "og:type", content: "website" },
+      { name: "theme-color", content: "#1A1F8F" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      // Favicons: 'c' da logo com erlenmeyer
+      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
+      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
+      { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96.png" },
+      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/site.webmanifest" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {

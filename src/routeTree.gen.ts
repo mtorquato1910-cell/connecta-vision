@@ -12,20 +12,27 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SolucoesRouteImport } from './routes/solucoes'
 import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as ProdutosRouteImport } from './routes/produtos'
+import { Route as EventosRouteImport } from './routes/eventos'
 import { Route as ContatoRouteImport } from './routes/contato'
+import { Route as BlogRouteImport } from './routes/blog'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProdutosSlugRouteImport } from './routes/produtos.$slug'
+import { Route as EventosSlugRouteImport } from './routes/eventos.$slug'
+import { Route as BlogEnviarRouteImport } from './routes/blog.enviar'
+import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as AdminPerfilRouteImport } from './routes/admin.perfil'
 import { Route as AdminPaginaInicialRouteImport } from './routes/admin.pagina-inicial'
 import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminFormulariosRouteImport } from './routes/admin.formularios'
+import { Route as AdminEventosRouteImport } from './routes/admin.eventos'
 import { Route as AdminConteudoRouteImport } from './routes/admin.conteudo'
 import { Route as AdminConfiguracoesRouteImport } from './routes/admin.configuracoes'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
+import { Route as AdminBlogRouteImport } from './routes/admin.blog'
 import { Route as ProdutosCategoriaSlugRouteImport } from './routes/produtos.categoria.$slug'
 
 const SolucoesRoute = SolucoesRouteImport.update({
@@ -43,9 +50,19 @@ const ProdutosRoute = ProdutosRouteImport.update({
   path: '/produtos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventosRoute = EventosRouteImport.update({
+  id: '/eventos',
+  path: '/eventos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ContatoRoute = ContatoRouteImport.update({
   id: '/contato',
   path: '/contato',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -67,6 +84,21 @@ const ProdutosSlugRoute = ProdutosSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
   getParentRoute: () => ProdutosRoute,
+} as any)
+const EventosSlugRoute = EventosSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => EventosRoute,
+} as any)
+const BlogEnviarRoute = BlogEnviarRouteImport.update({
+  id: '/enviar',
+  path: '/enviar',
+  getParentRoute: () => BlogRoute,
+} as any)
+const BlogSlugRoute = BlogSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => BlogRoute,
 } as any)
 const AdminProdutosRoute = AdminProdutosRouteImport.update({
   id: '/produtos',
@@ -98,6 +130,11 @@ const AdminFormulariosRoute = AdminFormulariosRouteImport.update({
   path: '/formularios',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminEventosRoute = AdminEventosRouteImport.update({
+  id: '/eventos',
+  path: '/eventos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminConteudoRoute = AdminConteudoRouteImport.update({
   id: '/conteudo',
   path: '/conteudo',
@@ -113,6 +150,11 @@ const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
   path: '/categorias',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminBlogRoute = AdminBlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => AdminRoute,
+} as any)
 const ProdutosCategoriaSlugRoute = ProdutosCategoriaSlugRouteImport.update({
   id: '/categoria/$slug',
   path: '/categoria/$slug',
@@ -122,38 +164,52 @@ const ProdutosCategoriaSlugRoute = ProdutosCategoriaSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
   '/contato': typeof ContatoRoute
+  '/eventos': typeof EventosRouteWithChildren
   '/produtos': typeof ProdutosRouteWithChildren
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
+  '/admin/blog': typeof AdminBlogRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/eventos': typeof AdminEventosRoute
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
   '/admin/pagina-inicial': typeof AdminPaginaInicialRoute
   '/admin/perfil': typeof AdminPerfilRoute
   '/admin/produtos': typeof AdminProdutosRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/enviar': typeof BlogEnviarRoute
+  '/eventos/$slug': typeof EventosSlugRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/produtos/categoria/$slug': typeof ProdutosCategoriaSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/blog': typeof BlogRouteWithChildren
   '/contato': typeof ContatoRoute
+  '/eventos': typeof EventosRouteWithChildren
   '/produtos': typeof ProdutosRouteWithChildren
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
+  '/admin/blog': typeof AdminBlogRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/eventos': typeof AdminEventosRoute
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
   '/admin/pagina-inicial': typeof AdminPaginaInicialRoute
   '/admin/perfil': typeof AdminPerfilRoute
   '/admin/produtos': typeof AdminProdutosRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/enviar': typeof BlogEnviarRoute
+  '/eventos/$slug': typeof EventosSlugRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
   '/admin': typeof AdminIndexRoute
   '/produtos/categoria/$slug': typeof ProdutosCategoriaSlugRoute
@@ -162,19 +218,26 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRouteWithChildren
+  '/blog': typeof BlogRouteWithChildren
   '/contato': typeof ContatoRoute
+  '/eventos': typeof EventosRouteWithChildren
   '/produtos': typeof ProdutosRouteWithChildren
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
+  '/admin/blog': typeof AdminBlogRoute
   '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/configuracoes': typeof AdminConfiguracoesRoute
   '/admin/conteudo': typeof AdminConteudoRoute
+  '/admin/eventos': typeof AdminEventosRoute
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
   '/admin/pagina-inicial': typeof AdminPaginaInicialRoute
   '/admin/perfil': typeof AdminPerfilRoute
   '/admin/produtos': typeof AdminProdutosRoute
+  '/blog/$slug': typeof BlogSlugRoute
+  '/blog/enviar': typeof BlogEnviarRoute
+  '/eventos/$slug': typeof EventosSlugRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/produtos/categoria/$slug': typeof ProdutosCategoriaSlugRoute
@@ -184,38 +247,52 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/blog'
     | '/contato'
+    | '/eventos'
     | '/produtos'
     | '/sobre'
     | '/solucoes'
+    | '/admin/blog'
     | '/admin/categorias'
     | '/admin/configuracoes'
     | '/admin/conteudo'
+    | '/admin/eventos'
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
     | '/admin/pagina-inicial'
     | '/admin/perfil'
     | '/admin/produtos'
+    | '/blog/$slug'
+    | '/blog/enviar'
+    | '/eventos/$slug'
     | '/produtos/$slug'
     | '/admin/'
     | '/produtos/categoria/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/blog'
     | '/contato'
+    | '/eventos'
     | '/produtos'
     | '/sobre'
     | '/solucoes'
+    | '/admin/blog'
     | '/admin/categorias'
     | '/admin/configuracoes'
     | '/admin/conteudo'
+    | '/admin/eventos'
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
     | '/admin/pagina-inicial'
     | '/admin/perfil'
     | '/admin/produtos'
+    | '/blog/$slug'
+    | '/blog/enviar'
+    | '/eventos/$slug'
     | '/produtos/$slug'
     | '/admin'
     | '/produtos/categoria/$slug'
@@ -223,19 +300,26 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/blog'
     | '/contato'
+    | '/eventos'
     | '/produtos'
     | '/sobre'
     | '/solucoes'
+    | '/admin/blog'
     | '/admin/categorias'
     | '/admin/configuracoes'
     | '/admin/conteudo'
+    | '/admin/eventos'
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
     | '/admin/pagina-inicial'
     | '/admin/perfil'
     | '/admin/produtos'
+    | '/blog/$slug'
+    | '/blog/enviar'
+    | '/eventos/$slug'
     | '/produtos/$slug'
     | '/admin/'
     | '/produtos/categoria/$slug'
@@ -244,7 +328,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRouteWithChildren
+  BlogRoute: typeof BlogRouteWithChildren
   ContatoRoute: typeof ContatoRoute
+  EventosRoute: typeof EventosRouteWithChildren
   ProdutosRoute: typeof ProdutosRouteWithChildren
   SobreRoute: typeof SobreRoute
   SolucoesRoute: typeof SolucoesRoute
@@ -273,11 +359,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/eventos': {
+      id: '/eventos'
+      path: '/eventos'
+      fullPath: '/eventos'
+      preLoaderRoute: typeof EventosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/contato': {
       id: '/contato'
       path: '/contato'
       fullPath: '/contato'
       preLoaderRoute: typeof ContatoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -307,6 +407,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/produtos/$slug'
       preLoaderRoute: typeof ProdutosSlugRouteImport
       parentRoute: typeof ProdutosRoute
+    }
+    '/eventos/$slug': {
+      id: '/eventos/$slug'
+      path: '/$slug'
+      fullPath: '/eventos/$slug'
+      preLoaderRoute: typeof EventosSlugRouteImport
+      parentRoute: typeof EventosRoute
+    }
+    '/blog/enviar': {
+      id: '/blog/enviar'
+      path: '/enviar'
+      fullPath: '/blog/enviar'
+      preLoaderRoute: typeof BlogEnviarRouteImport
+      parentRoute: typeof BlogRoute
+    }
+    '/blog/$slug': {
+      id: '/blog/$slug'
+      path: '/$slug'
+      fullPath: '/blog/$slug'
+      preLoaderRoute: typeof BlogSlugRouteImport
+      parentRoute: typeof BlogRoute
     }
     '/admin/produtos': {
       id: '/admin/produtos'
@@ -350,6 +471,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminFormulariosRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/eventos': {
+      id: '/admin/eventos'
+      path: '/eventos'
+      fullPath: '/admin/eventos'
+      preLoaderRoute: typeof AdminEventosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/conteudo': {
       id: '/admin/conteudo'
       path: '/conteudo'
@@ -371,6 +499,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCategoriasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/blog': {
+      id: '/admin/blog'
+      path: '/blog'
+      fullPath: '/admin/blog'
+      preLoaderRoute: typeof AdminBlogRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/produtos/categoria/$slug': {
       id: '/produtos/categoria/$slug'
       path: '/categoria/$slug'
@@ -382,9 +517,11 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminBlogRoute: typeof AdminBlogRoute
   AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminConfiguracoesRoute: typeof AdminConfiguracoesRoute
   AdminConteudoRoute: typeof AdminConteudoRoute
+  AdminEventosRoute: typeof AdminEventosRoute
   AdminFormulariosRoute: typeof AdminFormulariosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrcamentosRoute: typeof AdminOrcamentosRoute
@@ -395,9 +532,11 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminBlogRoute: AdminBlogRoute,
   AdminCategoriasRoute: AdminCategoriasRoute,
   AdminConfiguracoesRoute: AdminConfiguracoesRoute,
   AdminConteudoRoute: AdminConteudoRoute,
+  AdminEventosRoute: AdminEventosRoute,
   AdminFormulariosRoute: AdminFormulariosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrcamentosRoute: AdminOrcamentosRoute,
@@ -408,6 +547,29 @@ const AdminRouteChildren: AdminRouteChildren = {
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface BlogRouteChildren {
+  BlogSlugRoute: typeof BlogSlugRoute
+  BlogEnviarRoute: typeof BlogEnviarRoute
+}
+
+const BlogRouteChildren: BlogRouteChildren = {
+  BlogSlugRoute: BlogSlugRoute,
+  BlogEnviarRoute: BlogEnviarRoute,
+}
+
+const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
+
+interface EventosRouteChildren {
+  EventosSlugRoute: typeof EventosSlugRoute
+}
+
+const EventosRouteChildren: EventosRouteChildren = {
+  EventosSlugRoute: EventosSlugRoute,
+}
+
+const EventosRouteWithChildren =
+  EventosRoute._addFileChildren(EventosRouteChildren)
 
 interface ProdutosRouteChildren {
   ProdutosSlugRoute: typeof ProdutosSlugRoute
@@ -426,7 +588,9 @@ const ProdutosRouteWithChildren = ProdutosRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
+  BlogRoute: BlogRouteWithChildren,
   ContatoRoute: ContatoRoute,
+  EventosRoute: EventosRouteWithChildren,
   ProdutosRoute: ProdutosRouteWithChildren,
   SobreRoute: SobreRoute,
   SolucoesRoute: SolucoesRoute,

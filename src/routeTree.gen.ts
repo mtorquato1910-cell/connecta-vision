@@ -17,7 +17,10 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProdutosSlugRouteImport } from './routes/produtos.$slug'
+import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
+import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as ProdutosCategoriaSlugRouteImport } from './routes/produtos.categoria.$slug'
 
 const SolucoesRoute = SolucoesRouteImport.update({
@@ -60,9 +63,24 @@ const ProdutosSlugRoute = ProdutosSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ProdutosRoute,
 } as any)
+const AdminProdutosRoute = AdminProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrcamentosRoute = AdminOrcamentosRouteImport.update({
+  id: '/orcamentos',
+  path: '/orcamentos',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
+  id: '/categorias',
+  path: '/categorias',
   getParentRoute: () => AdminRoute,
 } as any)
 const ProdutosCategoriaSlugRoute = ProdutosCategoriaSlugRouteImport.update({
@@ -78,7 +96,10 @@ export interface FileRoutesByFullPath {
   '/produtos': typeof ProdutosRouteWithChildren
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/orcamentos': typeof AdminOrcamentosRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/produtos/categoria/$slug': typeof ProdutosCategoriaSlugRoute
@@ -89,7 +110,10 @@ export interface FileRoutesByTo {
   '/produtos': typeof ProdutosRouteWithChildren
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/orcamentos': typeof AdminOrcamentosRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
   '/admin': typeof AdminIndexRoute
   '/produtos/categoria/$slug': typeof ProdutosCategoriaSlugRoute
@@ -102,7 +126,10 @@ export interface FileRoutesById {
   '/produtos': typeof ProdutosRouteWithChildren
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
+  '/admin/categorias': typeof AdminCategoriasRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/orcamentos': typeof AdminOrcamentosRoute
+  '/admin/produtos': typeof AdminProdutosRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/produtos/categoria/$slug': typeof ProdutosCategoriaSlugRoute
@@ -116,7 +143,10 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/sobre'
     | '/solucoes'
+    | '/admin/categorias'
     | '/admin/login'
+    | '/admin/orcamentos'
+    | '/admin/produtos'
     | '/produtos/$slug'
     | '/admin/'
     | '/produtos/categoria/$slug'
@@ -127,7 +157,10 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/sobre'
     | '/solucoes'
+    | '/admin/categorias'
     | '/admin/login'
+    | '/admin/orcamentos'
+    | '/admin/produtos'
     | '/produtos/$slug'
     | '/admin'
     | '/produtos/categoria/$slug'
@@ -139,7 +172,10 @@ export interface FileRouteTypes {
     | '/produtos'
     | '/sobre'
     | '/solucoes'
+    | '/admin/categorias'
     | '/admin/login'
+    | '/admin/orcamentos'
+    | '/admin/produtos'
     | '/produtos/$slug'
     | '/admin/'
     | '/produtos/categoria/$slug'
@@ -212,11 +248,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProdutosSlugRouteImport
       parentRoute: typeof ProdutosRoute
     }
+    '/admin/produtos': {
+      id: '/admin/produtos'
+      path: '/produtos'
+      fullPath: '/admin/produtos'
+      preLoaderRoute: typeof AdminProdutosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/orcamentos': {
+      id: '/admin/orcamentos'
+      path: '/orcamentos'
+      fullPath: '/admin/orcamentos'
+      preLoaderRoute: typeof AdminOrcamentosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/categorias': {
+      id: '/admin/categorias'
+      path: '/categorias'
+      fullPath: '/admin/categorias'
+      preLoaderRoute: typeof AdminCategoriasRouteImport
       parentRoute: typeof AdminRoute
     }
     '/produtos/categoria/$slug': {
@@ -230,12 +287,18 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminCategoriasRoute: typeof AdminCategoriasRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminOrcamentosRoute: typeof AdminOrcamentosRoute
+  AdminProdutosRoute: typeof AdminProdutosRoute
   AdminIndexRoute: typeof AdminIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminCategoriasRoute: AdminCategoriasRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminOrcamentosRoute: AdminOrcamentosRoute,
+  AdminProdutosRoute: AdminProdutosRoute,
   AdminIndexRoute: AdminIndexRoute,
 }
 

@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { useServerFn } from "@tanstack/react-start";
+import { submitFormulario } from "@/lib/admin.functions";
+import { toast } from "sonner";
 
 const PROMISES = [
   "Resposta em até 4 horas em dias úteis",
@@ -11,6 +14,38 @@ const PROMISES = [
 
 export function ContactSection() {
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const submit = useServerFn(submitFormulario);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const nome = String(fd.get("nome") ?? "").trim();
+    const telefone = String(fd.get("telefone") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim();
+    const tipo_estabelecimento = String(fd.get("tipo_estabelecimento") ?? "").trim();
+    const mensagem = String(fd.get("mensagem") ?? "").trim();
+    setSubmitting(true);
+    try {
+      await submit({
+        data: {
+          tipo: "contato",
+          nome,
+          email,
+          telefone,
+          mensagem,
+          origem: typeof window !== "undefined" ? window.location.pathname : null,
+          payload: { tipo_estabelecimento },
+        },
+      });
+      setSent(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível enviar. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
 
   return (
     <section id="contato" className="bg-conecta-blue text-white">

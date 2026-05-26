@@ -21,6 +21,7 @@ import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as AdminPerfilRouteImport } from './routes/admin.perfil'
 import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminFormulariosRouteImport } from './routes/admin.formularios'
 import { Route as AdminCategoriasRouteImport } from './routes/admin.categorias'
 import { Route as ProdutosCategoriaSlugRouteImport } from './routes/produtos.categoria.$slug'
 
@@ -84,6 +85,11 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminFormulariosRoute = AdminFormulariosRouteImport.update({
+  id: '/formularios',
+  path: '/formularios',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCategoriasRoute = AdminCategoriasRouteImport.update({
   id: '/categorias',
   path: '/categorias',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
   '/admin/perfil': typeof AdminPerfilRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByTo {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
   '/admin/perfil': typeof AdminPerfilRoute
@@ -135,6 +143,7 @@ export interface FileRoutesById {
   '/sobre': typeof SobreRoute
   '/solucoes': typeof SolucoesRoute
   '/admin/categorias': typeof AdminCategoriasRoute
+  '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
   '/admin/perfil': typeof AdminPerfilRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/admin/categorias'
+    | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
     | '/admin/perfil'
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/admin/categorias'
+    | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
     | '/admin/perfil'
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/sobre'
     | '/solucoes'
     | '/admin/categorias'
+    | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
     | '/admin/perfil'
@@ -288,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/formularios': {
+      id: '/admin/formularios'
+      path: '/formularios'
+      fullPath: '/admin/formularios'
+      preLoaderRoute: typeof AdminFormulariosRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/categorias': {
       id: '/admin/categorias'
       path: '/categorias'
@@ -307,6 +326,7 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminCategoriasRoute: typeof AdminCategoriasRoute
+  AdminFormulariosRoute: typeof AdminFormulariosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrcamentosRoute: typeof AdminOrcamentosRoute
   AdminPerfilRoute: typeof AdminPerfilRoute
@@ -316,6 +336,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminCategoriasRoute: AdminCategoriasRoute,
+  AdminFormulariosRoute: AdminFormulariosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrcamentosRoute: AdminOrcamentosRoute,
   AdminPerfilRoute: AdminPerfilRoute,

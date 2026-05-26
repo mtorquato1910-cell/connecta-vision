@@ -91,6 +91,7 @@ function AdminLayout() {
           <NavItem to="/admin/produtos" icon={<Package className="h-4 w-4" />}>Produtos</NavItem>
           <NavItem to="/admin/categorias" icon={<FolderTree className="h-4 w-4" />}>Categorias</NavItem>
           <NavItem to="/admin/orcamentos" icon={<Inbox className="h-4 w-4" />}>Orçamentos</NavItem>
+          <NavItem to="/admin/perfil" icon={<UserCog className="h-4 w-4" />}>Meu perfil</NavItem>
         </nav>
         <div className="p-3 border-t">
           <Button

@@ -1,6 +1,9 @@
 import { useState } from "react";
-import { Check } from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { useServerFn } from "@tanstack/react-start";
+import { submitFormulario } from "@/lib/admin.functions";
+import { toast } from "sonner";
 
 const PROMISES = [
   "Resposta em até 4 horas em dias úteis",
@@ -11,6 +14,38 @@ const PROMISES = [
 
 export function ContactSection() {
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const submit = useServerFn(submitFormulario);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const fd = new FormData(e.currentTarget);
+    const nome = String(fd.get("nome") ?? "").trim();
+    const telefone = String(fd.get("telefone") ?? "").trim();
+    const email = String(fd.get("email") ?? "").trim();
+    const tipo_estabelecimento = String(fd.get("tipo_estabelecimento") ?? "").trim();
+    const mensagem = String(fd.get("mensagem") ?? "").trim();
+    setSubmitting(true);
+    try {
+      await submit({
+        data: {
+          tipo: "contato",
+          nome,
+          email,
+          telefone,
+          mensagem,
+          origem: typeof window !== "undefined" ? window.location.pathname : null,
+          payload: { tipo_estabelecimento },
+        },
+      });
+      setSent(true);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Não foi possível enviar. Tente novamente.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
 
   return (
     <section id="contato" className="bg-conecta-blue text-white">
@@ -60,7 +95,7 @@ export function ContactSection() {
 
         <Reveal delay={0.1} className="lg:col-span-5">
           <form
-            onSubmit={(e) => { e.preventDefault(); setSent(true); }}
+            onSubmit={handleSubmit}
             className="bg-paper text-ink rounded-2xl p-6 md:p-8 shadow-2xl max-w-[480px] mx-auto w-full"
           >
             {sent ? (
@@ -77,11 +112,11 @@ export function ContactSection() {
                 <p className="text-sm text-ink-soft mt-1">Resposta em até 4 horas úteis.</p>
                 <div className="mt-5 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <input required placeholder="Nome" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
-                    <input required placeholder="WhatsApp" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
+                    <input name="nome" required placeholder="Nome" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
+                    <input name="telefone" required placeholder="WhatsApp" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
                   </div>
-                  <input type="email" required placeholder="E-mail" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
-                  <select required defaultValue="" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue bg-paper">
+                  <input name="email" type="email" required placeholder="E-mail" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
+                  <select name="tipo_estabelecimento" required defaultValue="" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue bg-paper">
                     <option value="" disabled>Tipo de estabelecimento</option>
                     <option>Clínica veterinária</option>
                     <option>Hospital veterinário</option>
@@ -90,8 +125,10 @@ export function ContactSection() {
                     <option>Pet shop / Grooming</option>
                     <option>Outro</option>
                   </select>
-                  <textarea required rows={3} placeholder="Como podemos ajudar?" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue resize-none" />
-                  <button type="submit" className="btn-primary w-full justify-center">Enviar solicitação</button>
+                  <textarea name="mensagem" required rows={3} placeholder="Como podemos ajudar?" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue resize-none" />
+                  <button type="submit" disabled={submitting} className="btn-primary w-full justify-center disabled:opacity-60">
+                    {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar solicitação"}
+                  </button>
                   <p className="text-[11px] text-ink-soft leading-relaxed">
                     Ao enviar, você concorda com nossa política de privacidade (LGPD). Seus dados serão usados apenas para esse contato.
                   </p>
@@ -100,6 +137,7 @@ export function ContactSection() {
             )}
           </form>
         </Reveal>
+
       </div>
     </section>
   );

@@ -66,7 +66,7 @@ function ProdutoPage() {
             </div>
             {p.galeria && p.galeria.length > 1 && (
               <div className="mt-4 grid grid-cols-4 gap-3">
-                {p.galeria.map((g) => (
+                {p.galeria.map((g: string) => (
                   <button
                     key={g}
                     onClick={() => setActiveImg(g)}
@@ -87,7 +87,7 @@ function ProdutoPage() {
 
               {p.diferenciais && p.diferenciais.length > 0 && (
                 <ul className="mt-6 space-y-2">
-                  {p.diferenciais.slice(0, 4).map((d) => (
+                  {p.diferenciais.slice(0, 4).map((d: string) => (
                     <li key={d} className="flex items-start gap-3 text-sm text-ink">
                       <span className="mt-0.5 h-5 w-5 rounded-full bg-conecta-orange/15 text-conecta-orange flex items-center justify-center shrink-0">
                         <Check className="h-3 w-3" />
@@ -141,7 +141,7 @@ function ProdutoPage() {
               <p>{p.descricao ?? p.resumo}</p>
               {p.diferenciais && (
                 <ul className="space-y-2 text-ink">
-                  {p.diferenciais.map((d) => (
+                  {p.diferenciais.map((d: string) => (
                     <li key={d} className="flex items-start gap-3">
                       <Check className="h-4 w-4 text-conecta-orange mt-1 shrink-0" />
                       <span>{d}</span>
@@ -155,7 +155,7 @@ function ProdutoPage() {
             <div className="bg-paper border border-line rounded-3xl overflow-hidden">
               {p.especificacoes && p.especificacoes.length > 0 ? (
                 <dl>
-                  {p.especificacoes.map((e, i) => (
+                  {p.especificacoes.map((e: Especificacao, i: number) => (
                     <div key={e.label} className={`grid grid-cols-3 gap-4 px-6 py-4 ${i % 2 ? "bg-bone/50" : ""}`}>
                       <dt className="text-sm font-mono uppercase tracking-wider text-ink-soft">{e.label}</dt>
                       <dd className="col-span-2 text-sm text-ink">{e.valor}</dd>
@@ -169,7 +169,7 @@ function ProdutoPage() {
           )}
           {tab === "uso" && (
             <div className="flex flex-wrap gap-2">
-              {(p.aplicacoes ?? ["Clínica geral", "Hospital veterinário"]).map((a) => (
+              {(p.aplicacoes ?? ["Clínica geral", "Hospital veterinário"]).map((a: string) => (
                 <span key={a} className="px-4 py-2 rounded-full bg-paper border border-line-strong text-sm text-ink">{a}</span>
               ))}
             </div>
@@ -189,7 +189,7 @@ function ProdutoPage() {
             </Link>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relacionados.map((r) => <ProductCard key={r.slug} p={r} />)}
+            {relacionados.map((r: Produto) => <ProductCard key={r.slug} p={r} />)}
           </div>
         </section>
       )}

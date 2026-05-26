@@ -61,7 +61,7 @@ function CategoriaPage() {
           </div>
         ) : (
           <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {produtos.map((p) => (
+            {produtos.map((p: Produto) => (
               <Reveal key={p.slug}><ProductCard p={p} /></Reveal>
             ))}
           </div>

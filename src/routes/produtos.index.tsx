@@ -57,29 +57,43 @@ function ProdutosPage() {
           </p>
         </Reveal>
 
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            navigate({ search: (prev: Search) => ({ ...prev, q: query || undefined }) });
-          }}
-          className="mt-10 flex items-center gap-3 max-w-2xl bg-paper border border-line-strong rounded-full pl-5 pr-2 py-2"
-        >
-          <Search className="h-4 w-4 text-ink-soft" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Buscar por modelo, nome ou categoria"
-            className="flex-1 bg-transparent outline-none text-sm py-2"
-          />
-          {query && (
-            <button type="button" onClick={() => { setQuery(""); navigate({ search: (prev: Search) => ({ ...prev, q: undefined }) }); }} className="h-8 w-8 rounded-full hover:bg-bone flex items-center justify-center">
-              <X className="h-4 w-4" />
+        <div className="mt-10 md:mt-12 flex justify-center">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              navigate({ search: (prev: Search) => ({ ...prev, q: query || undefined }) });
+            }}
+            className="w-full max-w-2xl flex items-center gap-3 bg-paper border border-line-strong rounded-full pl-5 pr-2 py-2.5 shadow-[0_2px_12px_-4px_rgba(10,10,10,0.06)]"
+          >
+            <Search className="h-4 w-4 text-ink-soft shrink-0" aria-hidden />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Buscar por modelo, nome ou categoria"
+              aria-label="Buscar produtos"
+              className="flex-1 bg-transparent outline-none text-sm py-2 placeholder:text-ink-mute"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  navigate({ search: (prev: Search) => ({ ...prev, q: undefined }) });
+                }}
+                aria-label="Limpar busca"
+                className="h-8 w-8 rounded-full hover:bg-bone flex items-center justify-center text-ink-soft hover:text-ink transition-colors"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+            <button
+              type="submit"
+              className="bg-conecta-blue text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-conecta-blue-deep transition-colors shrink-0"
+            >
+              Buscar
             </button>
-          )}
-          <button type="submit" className="bg-conecta-blue text-white text-sm font-medium px-5 py-2 rounded-full hover:opacity-90">
-            Buscar
-          </button>
-        </form>
+          </form>
+        </div>
       </section>
 
       <section className="container-edge pb-24">

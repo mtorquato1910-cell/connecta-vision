@@ -120,19 +120,3 @@ export function reset(): void {
     window.localStorage.removeItem(LS_KEY);
   }
 }
-
-export function parseFotosText(text: string): EventoFoto[] {
-  return text
-    .split("\n")
-    .map((l) => l.trim())
-    .filter(Boolean)
-    .map((url, i) => ({ url, ordem: i, alt: `foto ${i + 1}` }));
-}
-
-export function formatFotosText(fotos: EventoFoto[]): string {
-  return fotos
-    .slice()
-    .sort((a, b) => a.ordem - b.ordem)
-    .map((f) => f.url)
-    .join("\n");
-}

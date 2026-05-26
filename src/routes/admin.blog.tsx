@@ -14,6 +14,7 @@ import {
 } from "@/lib/blog-data";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { ImageInput } from "@/components/admin/ImageInput";
 
 export const Route = createFileRoute("/admin/blog")({
   component: AdminBlogPage,
@@ -325,13 +326,8 @@ function CreateModal({
               placeholder="anestesia, monitorização"
             />
           </Field>
-          <Field label="URL da capa" hint="Imagem usada se não houver vídeo.">
-            <input
-              value={capa}
-              onChange={(e) => setCapa(e.target.value)}
-              className="input"
-              placeholder="https://... (opcional)"
-            />
+          <Field label="Imagem de capa" hint="Imagem usada se não houver vídeo. Envie do computador ou cole uma URL.">
+            <ImageInput value={capa} onChange={setCapa} />
           </Field>
           <Field
             label="URL do vídeo YouTube"

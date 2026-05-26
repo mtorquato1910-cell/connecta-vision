@@ -17,11 +17,11 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { ImageInput } from "@/components/admin/ImageInput";
+import { ImagensEditor } from "@/components/admin/ImagensEditor";
 import {
   create as createEvento,
-  formatFotosText,
   getAll as getAllEventos,
-  parseFotosText,
   remove as removeEvento,
   reset as resetEventos,
   update as updateEvento,
@@ -255,7 +255,9 @@ function EventoForm({
   const [descricaoCurta, setDescricaoCurta] = useState(evento?.descricao_curta ?? "");
   const [descricaoLonga, setDescricaoLonga] = useState(evento?.descricao_longa ?? "");
   const [capaUrl, setCapaUrl] = useState(evento?.capa_url ?? "");
-  const [galeriaText, setGaleriaText] = useState(evento ? formatFotosText(evento.galeria) : "");
+  const [galeriaUrls, setGaleriaUrls] = useState<string[]>(
+    evento?.galeria?.map((g) => g.url).filter(Boolean) ?? [],
+  );
   const [publicado, setPublicado] = useState(evento?.publicado ?? true);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -272,7 +274,11 @@ function EventoForm({
       toast.error("Local do evento é obrigatório.");
       return;
     }
-    const galeria = parseFotosText(galeriaText);
+    const galeria = galeriaUrls.map((url, i) => ({
+      url,
+      ordem: i,
+      alt: `${nome.trim()} — foto ${i + 1}`,
+    }));
     onSave({
       slug: evento?.slug ?? "",
       nome: nome.trim(),
@@ -280,7 +286,7 @@ function EventoForm({
       local: local.trim(),
       descricao_curta: descricaoCurta.trim(),
       descricao_longa: descricaoLonga.trim() || descricaoCurta.trim(),
-      capa_url: capaUrl.trim() || galeria[0]?.url || "",
+      capa_url: capaUrl.trim() || galeriaUrls[0] || "",
       galeria,
       publicado,
     });
@@ -364,25 +370,20 @@ function EventoForm({
             />
           </Field>
 
-          <Field label="URL da capa *">
-            <input
-              value={capaUrl}
-              onChange={(e) => setCapaUrl(e.target.value)}
-              placeholder="https://..."
-              className="input"
-            />
+          <Field label="Imagem de capa *" hint="Envie do computador ou cole uma URL.">
+            <ImageInput value={capaUrl} onChange={setCapaUrl} />
           </Field>
 
           <Field
-            label="Galeria de fotos (1 URL por linha)"
-            hint="Cada linha é uma foto na galeria. Será exibida em ordem."
+            label="Galeria de fotos"
+            hint="Adicione múltiplas imagens. A primeira é a destaque da galeria."
           >
-            <textarea
-              value={galeriaText}
-              onChange={(e) => setGaleriaText(e.target.value)}
-              rows={6}
-              placeholder={"https://exemplo.com/foto1.jpg\nhttps://exemplo.com/foto2.jpg"}
-              className="input min-h-[120px] resize-y font-mono text-xs"
+            <ImagensEditor
+              capa={galeriaUrls[0] ?? ""}
+              galeria={galeriaUrls.slice(1)}
+              onChange={({ capa, galeria }) =>
+                setGaleriaUrls(capa ? [capa, ...galeria] : galeria)
+              }
             />
           </Field>
 

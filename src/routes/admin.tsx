@@ -98,11 +98,11 @@ function AdminLayout() {
     .toUpperCase();
 
   return (
-    <div className="flex min-h-screen bg-bone">
+    <div data-admin-shell className="flex min-h-screen bg-bone">
       {/* Sidebar — desktop sempre visível, mobile como drawer */}
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-50 w-72 shrink-0
+          fixed lg:static inset-y-0 left-0 z-50 w-60 shrink-0
           flex flex-col
           bg-gradient-to-b from-[#0F1357] via-[#15186B] to-[#1A1F8F]
           text-white
@@ -120,7 +120,7 @@ function AdminLayout() {
         </button>
 
         {/* Logotipo oficial */}
-        <div className="px-6 py-6 border-b border-white/10">
+        <div className="px-4 py-5 border-b border-white/10">
           <Link to="/admin" className="block group">
             <div className="inline-flex items-center bg-white rounded-xl px-3 py-2 shadow-sm group-hover:shadow-md transition-shadow">
               <img
@@ -139,7 +139,7 @@ function AdminLayout() {
         </div>
 
         {/* Navegação */}
-        <nav className="flex-1 px-3 py-5 space-y-0.5 text-sm overflow-y-auto">
+        <nav className="flex-1 px-2.5 py-4 space-y-0.5 text-sm overflow-y-auto">
           <NavGroup title="Geral">
             <NavItem to="/admin" exact icon={<LayoutDashboard className="h-4 w-4" />}>
               Visão geral
@@ -186,7 +186,7 @@ function AdminLayout() {
         </nav>
 
         {/* Card do admin */}
-        <div className="px-3 py-4 border-t border-white/10 space-y-2">
+        <div className="px-2.5 py-3 border-t border-white/10 space-y-2">
           <a
             href="/"
             target="_blank"

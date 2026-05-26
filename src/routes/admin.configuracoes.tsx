@@ -4,6 +4,7 @@ import { Building2, Globe, Mail, RotateCcw, Save, Search, Share2 } from "lucide-
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { ImageInput } from "@/components/admin/ImageInput";
 import {
   getAll as getAllConfig,
   reset as resetConfig,
@@ -337,11 +338,11 @@ function SeoForm({
           className="input"
         />
       </Field>
-      <Field label="Imagem Open Graph (URL)" hint="Aparece ao compartilhar no WhatsApp/LinkedIn (1200x630px).">
-        <input
+      <Field label="Imagem Open Graph" hint="Aparece ao compartilhar no WhatsApp/LinkedIn (1200×630px). Envie do computador ou cole uma URL.">
+        <ImageInput
           value={data.og_imagem_url}
-          onChange={(e) => set("og_imagem_url", e.target.value)}
-          className="input"
+          onChange={(v) => set("og_imagem_url", v)}
+          maxDimension={1200}
         />
       </Field>
       <Field

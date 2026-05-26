@@ -1,12 +1,20 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
   ImagePlus,
+  Loader2,
   Star,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  ACCEPTED_IMAGE_EXTS,
+  ACCEPTED_IMAGE_TYPES,
+  MAX_FILE_SIZE_MB,
+  processImageFile,
+} from "@/lib/image-upload";
 
 export interface ImagensEditorProps {
   /** URL da imagem principal (capa). */
@@ -29,6 +37,10 @@ export interface ImagensEditorProps {
  */
 export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
   const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [dragOver, setDragOver] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const dragCounter = useRef(0);
 
   // Lista unificada: capa em [0] + galeria depois
   const all = capa ? [capa, ...galeria.filter((u) => u !== capa)] : [...galeria];
@@ -62,6 +74,36 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
     );
   };
 
+  const handleFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const valid = Array.from(files).filter((f) =>
+      ACCEPTED_IMAGE_TYPES.includes(f.type),
+    );
+    if (valid.length === 0) {
+      toast.error("Envie arquivos PNG, JPG ou WebP.");
+      return;
+    }
+    setBusy(true);
+    const added: string[] = [];
+    for (const file of valid) {
+      try {
+        const dataUrl = await processImageFile(file);
+        added.push(dataUrl);
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Falha ao processar.";
+        toast.error(`${file.name}: ${msg}`);
+      }
+    }
+    if (added.length > 0) {
+      setAll([...all, ...added]);
+      toast.success(
+        `${added.length} ${added.length === 1 ? "imagem enviada" : "imagens enviadas"}.`,
+      );
+    }
+    setBusy(false);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
   const setAsCover = (idx: number) => {
     if (idx === 0) return;
     const next = [...all];
@@ -89,10 +131,49 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
     setAll(next);
   };
 
+  const onDragEnter = (e: React.DragEvent) => {
+    if (!e.dataTransfer.types.includes("Files")) return;
+    e.preventDefault();
+    dragCounter.current += 1;
+    setDragOver(true);
+  };
+  const onDragOverHandler = (e: React.DragEvent) => {
+    if (!e.dataTransfer.types.includes("Files")) return;
+    e.preventDefault();
+  };
+  const onDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounter.current = Math.max(0, dragCounter.current - 1);
+    if (dragCounter.current === 0) setDragOver(false);
+  };
+  const onDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragCounter.current = 0;
+    setDragOver(false);
+    handleFiles(e.dataTransfer.files);
+  };
+
   return (
-    <div className="space-y-3">
-      {/* Input de URL */}
-      <div className="flex gap-2">
+    <div
+      className="space-y-3 relative"
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOverHandler}
+      onDragLeave={onDragLeave}
+      onDrop={onDrop}
+    >
+      {/* Overlay quando arrastando — cobre tudo, inclusive grid de imagens */}
+      {dragOver && (
+        <div className="absolute inset-0 z-20 rounded-xl border-2 border-dashed border-conecta-blue bg-conecta-blue/10 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none">
+          <Upload className="h-8 w-8 text-conecta-blue" />
+          <span className="mt-2 text-sm font-medium text-conecta-blue">
+            Solte os arquivos para adicionar à galeria
+          </span>
+          <span className="text-xs text-conecta-blue/80">PNG · JPG · WebP</span>
+        </div>
+      )}
+
+      {/* Input de URL + upload */}
+      <div className="flex flex-col sm:flex-row gap-2">
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -103,25 +184,49 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
             }
           }}
           placeholder="Cole a URL da imagem aqui (Enter para adicionar)"
-          className="input flex-1"
+          className="input flex-1 min-w-0"
         />
-        <button
-          type="button"
-          onClick={handleAdd}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-conecta-blue hover:bg-conecta-blue-deep text-white text-sm font-medium px-4 py-2 transition-colors whitespace-nowrap"
-        >
-          <ImagePlus className="h-4 w-4" />
-          Adicionar
-        </button>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-conecta-blue hover:bg-conecta-blue-deep text-white text-sm font-medium px-4 py-2 transition-colors whitespace-nowrap"
+          >
+            <ImagePlus className="h-4 w-4" />
+            URL
+          </button>
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            disabled={busy}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-paper hover:bg-bone text-ink text-sm font-medium px-4 py-2 transition-colors whitespace-nowrap disabled:opacity-60"
+          >
+            {busy ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
+            Enviar
+          </button>
+        </div>
       </div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept={ACCEPTED_IMAGE_EXTS}
+        multiple
+        className="hidden"
+        onChange={(e) => handleFiles(e.target.files)}
+      />
       <p className="text-xs text-ink-soft">
-        Pode colar várias URLs de uma vez separadas por espaço ou linha nova. A
-        primeira imagem é a capa principal — você pode mudar com ★.
+        Cole URLs ou envie PNG/JPG/WebP do computador (até {MAX_FILE_SIZE_MB} MB
+        cada). A primeira imagem é a capa — você pode mudar com ★. Pode arrastar
+        arquivos para esta área.
       </p>
 
       {all.length === 0 ? (
-        <div className="bg-bone/40 border border-dashed border-line rounded-xl py-10 text-center text-sm text-ink-soft">
-          Nenhuma imagem adicionada.
+        <div className="border border-dashed border-line bg-bone/40 rounded-xl py-10 text-center text-sm text-ink-soft">
+          Nenhuma imagem adicionada. Arraste arquivos aqui ou use os botões acima.
         </div>
       ) : (
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

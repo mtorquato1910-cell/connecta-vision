@@ -202,7 +202,7 @@ export const updateOrcamentoStatus = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        status: z.enum(["novo", "em_contato", "convertido", "arquivado"]),
+        status: z.enum(["novo", "em_andamento", "concluido", "arquivado"]),
       })
       .parse(i),
   )

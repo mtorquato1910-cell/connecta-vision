@@ -247,7 +247,7 @@ function ProdutoDialog({
           imagem_url: form.imagem_url || null,
           resumo: form.resumo || null,
           descricao: form.descricao || null,
-          galeria: linhas(form.galeria),
+          galeria: form.galeria,
           diferenciais: linhas(form.diferenciais),
           aplicacoes: linhas(form.aplicacoes),
           especificacoes: especs,

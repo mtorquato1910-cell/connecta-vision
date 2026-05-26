@@ -55,21 +55,21 @@
 :root {
   --radius: 0.625rem;
 
-  /* Brand — Navy Trust palette */
-  --conecta-blue: oklch(0.28 0.10 255);        /* #1e3a5f deep navy */
-  --conecta-blue-deep: oklch(0.20 0.09 258);   /* #0f1b3d midnight */
-  --conecta-blue-light: oklch(0.55 0.11 245);  /* #3b6fa0 steel */
-  --conecta-orange: oklch(0.74 0.13 70);       /* warm amber accent (CTA pop) */
-  --conecta-orange-light: oklch(0.82 0.11 78);
-  --flask-blue: oklch(0.92 0.03 240);          /* #e8edf3 mist */
+  /* Brand — direto da logo Conecta */
+  --conecta-blue: oklch(0.27 0.17 270);          /* navy profundo da wordmark */
+  --conecta-blue-deep: oklch(0.20 0.16 272);     /* midnight */
+  --conecta-blue-light: oklch(0.48 0.18 268);    /* navy claro p/ hovers */
+  --conecta-orange: oklch(0.70 0.20 50);         /* laranja vibrante dos pontos */
+  --conecta-orange-light: oklch(0.78 0.17 55);
+  --flask-blue: oklch(0.78 0.13 230);            /* ciano do frasco */
 
   /* Neutrals */
-  --bone: oklch(0.985 0.004 240);
+  --bone: oklch(0.985 0.004 250);
   --paper: oklch(1 0 0);
-  --ink: oklch(0.18 0.04 258);
-  --ink-soft: oklch(0.46 0.03 250);
-  --line: oklch(0.20 0.04 258 / 0.08);
-  --line-strong: oklch(0.20 0.04 258 / 0.14);
+  --ink: oklch(0.18 0.06 270);
+  --ink-soft: oklch(0.46 0.04 268);
+  --line: oklch(0.20 0.05 270 / 0.08);
+  --line-strong: oklch(0.20 0.05 270 / 0.14);
 
   /* Semantic mapping */
   --background: var(--bone);
@@ -79,15 +79,15 @@
   --popover: var(--paper);
   --popover-foreground: var(--ink);
   --primary: var(--conecta-blue);
-  --primary-foreground: oklch(0.99 0.005 240);
-  --secondary: oklch(0.95 0.012 245);
+  --primary-foreground: oklch(0.99 0.005 250);
+  --secondary: oklch(0.95 0.014 255);
   --secondary-foreground: var(--ink);
-  --muted: oklch(0.95 0.012 245);
+  --muted: oklch(0.95 0.014 255);
   --muted-foreground: var(--ink-soft);
   --accent: var(--conecta-orange);
-  --accent-foreground: oklch(0.15 0.04 258);
+  --accent-foreground: oklch(1 0 0);
   --destructive: oklch(0.58 0.22 27);
-  --destructive-foreground: oklch(0.99 0.005 240);
+  --destructive-foreground: oklch(0.99 0.005 250);
   --border: var(--line-strong);
   --input: var(--line-strong);
   --ring: var(--conecta-blue);

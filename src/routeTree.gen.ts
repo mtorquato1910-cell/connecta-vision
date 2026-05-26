@@ -73,11 +73,6 @@ const AdminProdutosRoute = AdminProdutosRouteImport.update({
   path: '/produtos',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminPaginaInicialRoute = AdminPaginaInicialRouteImport.update({
-  id: '/pagina-inicial',
-  path: '/pagina-inicial',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminPerfilRoute = AdminPerfilRouteImport.update({
   id: '/perfil',
   path: '/perfil',

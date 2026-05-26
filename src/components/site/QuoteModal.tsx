@@ -119,6 +119,7 @@ export function QuoteModal({ produto, open, onClose }: { produto: Produto; open:
                 <MessageCircle className="h-4 w-4" /> Prefiro WhatsApp
               </a>
             </div>
+            {erro && <p className="md:col-span-2 text-sm text-red-600">{erro}</p>}
             <p className="md:col-span-2 text-xs text-ink-soft">
               Atendimento comercial em até 1 dia útil. {SITE.email}
             </p>

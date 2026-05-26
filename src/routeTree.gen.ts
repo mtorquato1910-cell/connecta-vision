@@ -18,7 +18,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProdutosSlugRouteImport } from './routes/produtos.$slug'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
-import { Route as AdminPaginaInicialRouteImport } from './routes/admin.pagina-inicial'
 import { Route as AdminPerfilRouteImport } from './routes/admin.perfil'
 import { Route as AdminPaginaInicialRouteImport } from './routes/admin.pagina-inicial'
 import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
@@ -72,6 +71,11 @@ const ProdutosSlugRoute = ProdutosSlugRouteImport.update({
 const AdminProdutosRoute = AdminProdutosRouteImport.update({
   id: '/produtos',
   path: '/produtos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPaginaInicialRoute = AdminPaginaInicialRouteImport.update({
+  id: '/pagina-inicial',
+  path: '/pagina-inicial',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminPerfilRoute = AdminPerfilRouteImport.update({

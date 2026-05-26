@@ -155,7 +155,7 @@ type ProdForm = {
   imagem_url: string;
   resumo: string;
   descricao: string;
-  galeria: string;
+  galeria: string[];
   diferenciais: string;
   aplicacoes: string;
   especificacoes: string;
@@ -172,7 +172,7 @@ const EMPTY: ProdForm = {
   imagem_url: "",
   resumo: "",
   descricao: "",
-  galeria: "",
+  galeria: [],
   diferenciais: "",
   aplicacoes: "",
   especificacoes: "",

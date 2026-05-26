@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ImageUpload, GalleryUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/produtos")({
   component: AdminProdutos,
@@ -154,7 +155,7 @@ type ProdForm = {
   imagem_url: string;
   resumo: string;
   descricao: string;
-  galeria: string;
+  galeria: string[];
   diferenciais: string;
   aplicacoes: string;
   especificacoes: string;
@@ -171,7 +172,7 @@ const EMPTY: ProdForm = {
   imagem_url: "",
   resumo: "",
   descricao: "",
-  galeria: "",
+  galeria: [],
   diferenciais: "",
   aplicacoes: "",
   especificacoes: "",
@@ -210,7 +211,7 @@ function ProdutoDialog({
           imagem_url: row.imagem_url ?? "",
           resumo: row.resumo ?? "",
           descricao: row.descricao ?? "",
-          galeria: (row.galeria ?? []).join("\n"),
+          galeria: Array.isArray(row.galeria) ? row.galeria : [],
           diferenciais: (row.diferenciais ?? []).join("\n"),
           aplicacoes: (row.aplicacoes ?? []).join("\n"),
           especificacoes: (row.especificacoes ?? [])
@@ -246,7 +247,7 @@ function ProdutoDialog({
           imagem_url: form.imagem_url || null,
           resumo: form.resumo || null,
           descricao: form.descricao || null,
-          galeria: linhas(form.galeria),
+          galeria: form.galeria,
           diferenciais: linhas(form.diferenciais),
           aplicacoes: linhas(form.aplicacoes),
           especificacoes: especs,
@@ -294,10 +295,20 @@ function ProdutoDialog({
               </Select>
             </div>
           </div>
-          <FieldText label="Imagem principal (URL)" value={form.imagem_url} onChange={(v) => setForm({ ...form, imagem_url: v })} />
+          <ImageUpload
+            value={form.imagem_url}
+            onChange={(v) => setForm({ ...form, imagem_url: v })}
+            folder="produtos/capa"
+            label="Imagem de capa do produto"
+          />
           <FieldArea label="Resumo" value={form.resumo} onChange={(v) => setForm({ ...form, resumo: v })} rows={2} />
           <FieldArea label="Descrição" value={form.descricao} onChange={(v) => setForm({ ...form, descricao: v })} rows={4} />
-          <FieldArea label="Galeria (uma URL por linha)" value={form.galeria} onChange={(v) => setForm({ ...form, galeria: v })} rows={3} />
+          <GalleryUpload
+            value={form.galeria}
+            onChange={(v) => setForm({ ...form, galeria: v })}
+            folder="produtos/galeria"
+            label="Galeria (imagens adicionais)"
+          />
           <FieldArea label="Diferenciais (um por linha)" value={form.diferenciais} onChange={(v) => setForm({ ...form, diferenciais: v })} rows={3} />
           <FieldArea label="Aplicações (uma por linha)" value={form.aplicacoes} onChange={(v) => setForm({ ...form, aplicacoes: v })} rows={3} />
           <FieldArea

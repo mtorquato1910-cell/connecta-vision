@@ -2,6 +2,7 @@ import { TopBar } from "./TopBar";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { WhatsAppFab } from "./WhatsAppFab";
+import { CookieBanner } from "./CookieBanner";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   return (
@@ -11,6 +12,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       <main className="flex-1">{children}</main>
       <Footer />
       <WhatsAppFab />
+      <CookieBanner />
     </div>
   );
 }

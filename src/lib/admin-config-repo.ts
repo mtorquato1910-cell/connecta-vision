@@ -75,8 +75,8 @@ export const DEFAULT_CONFIG: ConfigAll = {
     horario_atendimento: "Segunda a sexta · 8h às 18h",
   },
   redes: {
-    instagram: "https://instagram.com/conectaequipamentosveterinarios",
-    facebook: "https://facebook.com/conectaequipamentos",
+    instagram: "https://www.instagram.com/conectavet2026/",
+    facebook: "",
     linkedin: "",
     youtube: "",
   },

@@ -117,8 +117,8 @@ function ProdutosPage() {
           <div>
             {filtered.length === 0 ? (
               <div className="bg-paper border border-line rounded-3xl p-16 text-center">
-                <h3 className="font-serif text-2xl text-ink">Nenhum produto encontrado</h3>
-                <p className="mt-2 text-ink-soft">Tente outra busca ou navegue por categoria.</p>
+                <h3 className="font-serif text-2xl text-ink">{t("products.empty")}</h3>
+                <p className="mt-2 text-ink-soft">{t("products.empty_hint")}</p>
               </div>
             ) : (
               <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">

@@ -2,8 +2,10 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { waLink } from "@/lib/site-data";
 import { Reveal } from "./Reveal";
+import { useLocale } from "@/hooks/useLocale";
 
 export function Hero() {
+  const { t } = useLocale();
   return (
     <section className="relative overflow-hidden">
       <div className="container-edge pt-10 sm:pt-16 md:pt-24 pb-16 md:pb-28 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
@@ -26,10 +28,10 @@ export function Hero() {
           <Reveal delay={0.15}>
             <div className="mt-7 sm:mt-8 flex flex-wrap gap-3">
               <Link to="/produtos" className="btn-primary">
-                Explorar catálogo <ArrowRight className="h-4 w-4" />
+                {t("home.cta_primary")} <ArrowRight className="h-4 w-4" />
               </Link>
               <a href={waLink()} target="_blank" rel="noreferrer" className="btn-ghost">
-                Falar com especialista <ArrowRight className="h-4 w-4" />
+                {t("home.cta_secondary")} <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </Reveal>

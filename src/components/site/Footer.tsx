@@ -119,9 +119,19 @@ export function Footer() {
       <div className="border-t border-white/10">
         <div className="container-edge py-6 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/50">
           <span>{copyright}</span>
-          <span>
-            Desenvolvido por <span className="text-white/70">Adabtech</span>
-          </span>
+          <div className="flex items-center gap-4">
+            <Link to="/politica-privacidade" className="hover:text-white/80">
+              Política de privacidade
+            </Link>
+            <span className="opacity-50">·</span>
+            <Link to="/termos-de-uso" className="hover:text-white/80">
+              Termos de uso
+            </Link>
+            <span className="opacity-50">·</span>
+            <span>
+              Por <span className="text-white/70">Adabtech</span>
+            </span>
+          </div>
         </div>
       </div>
     </footer>

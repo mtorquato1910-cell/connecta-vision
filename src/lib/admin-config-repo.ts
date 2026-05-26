@@ -2,7 +2,7 @@
  * Repository de configurações da empresa (chave → JSON).
  */
 
-const LS_KEY = "conecta_admin_config_v1";
+const LS_KEY = "conecta_admin_config_v2";
 
 export type ConfigEmpresa = {
   nome: string;

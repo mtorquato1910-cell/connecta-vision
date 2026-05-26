@@ -2,7 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { CATEGORIAS, produtosPorCategoria, findCategoria } from "@/lib/site-data";
+import { CATEGORIAS, produtosPorCategoria, findCategoria, type Produto } from "@/lib/site-data";
 
 export const Route = createFileRoute("/produtos/categoria/$slug")({
   loader: ({ params }) => {

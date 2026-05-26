@@ -71,6 +71,99 @@ export type Database = {
         }
         Relationships: []
       }
+      configuracoes_empresa: {
+        Row: {
+          chave: string
+          id: string
+          updated_at: string
+          valor: Json
+        }
+        Insert: {
+          chave: string
+          id?: string
+          updated_at?: string
+          valor?: Json
+        }
+        Update: {
+          chave?: string
+          id?: string
+          updated_at?: string
+          valor?: Json
+        }
+        Relationships: []
+      }
+      conteudo_site: {
+        Row: {
+          chave: string
+          id: string
+          updated_at: string
+          valor: Json
+        }
+        Insert: {
+          chave: string
+          id?: string
+          updated_at?: string
+          valor?: Json
+        }
+        Update: {
+          chave?: string
+          id?: string
+          updated_at?: string
+          valor?: Json
+        }
+        Relationships: []
+      }
+      formularios: {
+        Row: {
+          cidade: string | null
+          created_at: string
+          email: string
+          empresa: string | null
+          id: string
+          lido: boolean
+          mensagem: string | null
+          nome: string
+          origem: string | null
+          payload: Json
+          status: string
+          telefone: string | null
+          tipo: string
+          updated_at: string
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string
+          email: string
+          empresa?: string | null
+          id?: string
+          lido?: boolean
+          mensagem?: string | null
+          nome: string
+          origem?: string | null
+          payload?: Json
+          status?: string
+          telefone?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string
+          email?: string
+          empresa?: string | null
+          id?: string
+          lido?: boolean
+          mensagem?: string | null
+          nome?: string
+          origem?: string | null
+          payload?: Json
+          status?: string
+          telefone?: string | null
+          tipo?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orcamentos: {
         Row: {
           cidade: string | null

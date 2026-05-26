@@ -211,7 +211,7 @@ function ProdutoDialog({
           imagem_url: row.imagem_url ?? "",
           resumo: row.resumo ?? "",
           descricao: row.descricao ?? "",
-          galeria: (row.galeria ?? []).join("\n"),
+          galeria: Array.isArray(row.galeria) ? row.galeria : [],
           diferenciais: (row.diferenciais ?? []).join("\n"),
           aplicacoes: (row.aplicacoes ?? []).join("\n"),
           especificacoes: (row.especificacoes ?? [])

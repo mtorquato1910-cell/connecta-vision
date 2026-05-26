@@ -19,6 +19,7 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProdutosSlugRouteImport } from './routes/produtos.$slug'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as AdminPerfilRouteImport } from './routes/admin.perfil'
+import { Route as AdminPaginaInicialRouteImport } from './routes/admin.pagina-inicial'
 import { Route as AdminOrcamentosRouteImport } from './routes/admin.orcamentos'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminFormulariosRouteImport } from './routes/admin.formularios'
@@ -77,6 +78,11 @@ const AdminPerfilRoute = AdminPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPaginaInicialRoute = AdminPaginaInicialRouteImport.update({
+  id: '/pagina-inicial',
+  path: '/pagina-inicial',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrcamentosRoute = AdminOrcamentosRouteImport.update({
   id: '/orcamentos',
   path: '/orcamentos',
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
+  '/admin/pagina-inicial': typeof AdminPaginaInicialRoute
   '/admin/perfil': typeof AdminPerfilRoute
   '/admin/produtos': typeof AdminProdutosRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
+  '/admin/pagina-inicial': typeof AdminPaginaInicialRoute
   '/admin/perfil': typeof AdminPerfilRoute
   '/admin/produtos': typeof AdminProdutosRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/admin/formularios': typeof AdminFormulariosRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/orcamentos': typeof AdminOrcamentosRoute
+  '/admin/pagina-inicial': typeof AdminPaginaInicialRoute
   '/admin/perfil': typeof AdminPerfilRoute
   '/admin/produtos': typeof AdminProdutosRoute
   '/produtos/$slug': typeof ProdutosSlugRoute
@@ -185,6 +194,7 @@ export interface FileRouteTypes {
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
+    | '/admin/pagina-inicial'
     | '/admin/perfil'
     | '/admin/produtos'
     | '/produtos/$slug'
@@ -203,6 +213,7 @@ export interface FileRouteTypes {
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
+    | '/admin/pagina-inicial'
     | '/admin/perfil'
     | '/admin/produtos'
     | '/produtos/$slug'
@@ -222,6 +233,7 @@ export interface FileRouteTypes {
     | '/admin/formularios'
     | '/admin/login'
     | '/admin/orcamentos'
+    | '/admin/pagina-inicial'
     | '/admin/perfil'
     | '/admin/produtos'
     | '/produtos/$slug'
@@ -310,6 +322,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPerfilRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pagina-inicial': {
+      id: '/admin/pagina-inicial'
+      path: '/pagina-inicial'
+      fullPath: '/admin/pagina-inicial'
+      preLoaderRoute: typeof AdminPaginaInicialRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orcamentos': {
       id: '/admin/orcamentos'
       path: '/orcamentos'
@@ -369,6 +388,7 @@ interface AdminRouteChildren {
   AdminFormulariosRoute: typeof AdminFormulariosRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminOrcamentosRoute: typeof AdminOrcamentosRoute
+  AdminPaginaInicialRoute: typeof AdminPaginaInicialRoute
   AdminPerfilRoute: typeof AdminPerfilRoute
   AdminProdutosRoute: typeof AdminProdutosRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -381,6 +401,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminFormulariosRoute: AdminFormulariosRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminOrcamentosRoute: AdminOrcamentosRoute,
+  AdminPaginaInicialRoute: AdminPaginaInicialRoute,
   AdminPerfilRoute: AdminPerfilRoute,
   AdminProdutosRoute: AdminProdutosRoute,
   AdminIndexRoute: AdminIndexRoute,
@@ -413,3 +434,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

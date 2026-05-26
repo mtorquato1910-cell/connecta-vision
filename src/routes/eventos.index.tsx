@@ -9,6 +9,7 @@ import {
   eventoYears,
   type Evento,
 } from "@/lib/eventos-data";
+import { useLocale } from "@/hooks/useLocale";
 
 export const Route = createFileRoute("/eventos/")({
   head: () => ({
@@ -28,6 +29,7 @@ function EventosPage() {
   const eventos = getAllEventos();
   const [year, setYear] = useState<number | null>(null);
   const years = useMemo(() => eventoYears(), []);
+  const { t } = useLocale();
 
   const filtered = year
     ? eventos.filter((e) => new Date(e.data_evento).getFullYear() === year)
@@ -39,12 +41,9 @@ function EventosPage() {
         <Reveal>
           <span className="eyebrow">Feiras & Eventos</span>
           <h1 className="mt-4 font-serif text-5xl md:text-6xl lg:text-7xl text-ink leading-[1.02] max-w-4xl">
-            Onde a Conecta encontra o mercado veterinário.
+            {t("events.title")}
           </h1>
-          <p className="mt-5 max-w-2xl text-lg text-ink-soft">
-            Estamos nos principais congressos e feiras do Brasil apresentando
-            tecnologia, treinamentos e novos lançamentos da Shinova.
-          </p>
+          <p className="mt-5 max-w-2xl text-lg text-ink-soft">{t("events.subtitle")}</p>
         </Reveal>
       </section>
 
@@ -83,9 +82,7 @@ function EventosPage() {
 
       <section className="container-edge pb-24">
         {filtered.length === 0 ? (
-          <div className="py-16 text-center text-ink-soft">
-            Nenhum evento nesse ano.
-          </div>
+          <div className="py-16 text-center text-ink-soft">{t("events.empty")}</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {filtered.map((e) => (

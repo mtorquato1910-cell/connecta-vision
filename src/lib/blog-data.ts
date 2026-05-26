@@ -14,6 +14,7 @@ export type BlogPost = {
   resumo: string;
   conteudo: string;
   capa_url: string;
+  video_url?: string | null;
   autor_nome: string;
   autor_email: string;
   tags: string[];
@@ -75,6 +76,7 @@ export function submitPost(input: {
   resumo: string;
   conteudo: string;
   capa_url?: string;
+  video_url?: string;
   autor_nome: string;
   autor_email: string;
   tags?: string[];
@@ -89,6 +91,7 @@ export function submitPost(input: {
     capa_url:
       input.capa_url ||
       "https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?w=1600&q=85",
+    video_url: input.video_url?.trim() || null,
     autor_nome: input.autor_nome.trim(),
     autor_email: input.autor_email.trim(),
     tags: input.tags ?? [],
@@ -134,6 +137,7 @@ export function adminCreatePost(input: {
   resumo: string;
   conteudo: string;
   capa_url?: string;
+  video_url?: string;
   tags?: string[];
 }): BlogPost {
   const slug = slugify(input.titulo) + "-" + Date.now().toString(36);
@@ -147,6 +151,7 @@ export function adminCreatePost(input: {
     capa_url:
       input.capa_url ||
       "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?w=1600&q=85",
+    video_url: input.video_url?.trim() || null,
     autor_nome: "Equipe Conecta",
     autor_email: "editorial@conectavet.com.br",
     tags: input.tags ?? [],

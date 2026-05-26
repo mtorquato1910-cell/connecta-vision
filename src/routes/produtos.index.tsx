@@ -5,6 +5,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
 import { CATEGORIAS, PRODUTOS } from "@/lib/site-data";
+import { useLocale } from "@/hooks/useLocale";
 
 type Search = { q?: string; cat?: string };
 
@@ -26,6 +27,7 @@ function ProdutosPage() {
   const { q, cat } = Route.useSearch();
   const navigate = useNavigate({ from: "/produtos" });
   const [query, setQuery] = useState(q ?? "");
+  const { t } = useLocale();
 
   const filtered = useMemo(() => {
     const term = (q ?? "").trim().toLowerCase();

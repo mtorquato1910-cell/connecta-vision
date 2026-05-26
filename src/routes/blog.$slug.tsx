@@ -3,8 +3,10 @@ import { ArrowLeft, MessageCircle } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
+import { YouTubeEmbed } from "@/components/shared/YouTubeEmbed";
 import { articleSchema } from "@/lib/schema-org";
 import { formatDate, getPostBySlug } from "@/lib/blog-data";
+import { isYoutubeUrl } from "@/lib/youtube";
 import { waLink } from "@/lib/site-data";
 
 export const Route = createFileRoute("/blog/$slug")({
@@ -82,13 +84,21 @@ function PostPage() {
         </header>
 
         <div className="container-edge mt-8 md:mt-12">
-          <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line">
-            <img
-              src={post.capa_url}
-              alt={post.titulo}
-              className="h-full w-full object-cover"
+          {isYoutubeUrl(post.video_url) ? (
+            <YouTubeEmbed
+              url={post.video_url!}
+              title={post.titulo}
+              className="max-h-[560px]"
             />
-          </div>
+          ) : (
+            <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line">
+              <img
+                src={post.capa_url}
+                alt={post.titulo}
+                className="h-full w-full object-cover"
+              />
+            </div>
+          )}
         </div>
 
         <div className="container-edge py-12 md:py-16">

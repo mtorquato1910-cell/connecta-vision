@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { Reveal } from "./Reveal";
-import { useServerFn } from "@tanstack/react-start";
-import { submitFormulario } from "@/lib/admin.functions";
+import { addNew as addFormulario } from "@/lib/admin-formularios-repo";
 import { toast } from "sonner";
 
 const PROMISES = [
@@ -15,7 +14,6 @@ const PROMISES = [
 export function ContactSection() {
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const submit = useServerFn(submitFormulario);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,20 +25,24 @@ export function ContactSection() {
     const mensagem = String(fd.get("mensagem") ?? "").trim();
     setSubmitting(true);
     try {
-      await submit({
-        data: {
-          tipo: "contato",
-          nome,
-          email,
-          telefone,
-          mensagem,
-          origem: typeof window !== "undefined" ? window.location.pathname : null,
-          payload: { tipo_estabelecimento },
-        },
+      await new Promise((r) => setTimeout(r, 300));
+      addFormulario({
+        tipo: "contato",
+        nome,
+        email,
+        whatsapp: telefone,
+        tipo_estabelecimento: tipo_estabelecimento || null,
+        mensagem,
+        origem_pagina: typeof window !== "undefined" ? window.location.pathname : "/",
       });
       setSent(true);
+      toast.success("Mensagem enviada! Retornamos em até 1 dia útil.");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Não foi possível enviar. Tente novamente.");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Não foi possível enviar. Tente novamente ou use o WhatsApp.",
+      );
     } finally {
       setSubmitting(false);
     }

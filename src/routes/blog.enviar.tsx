@@ -30,6 +30,7 @@ const schema = z.object({
   conteudo: z.string().min(200, "Texto de no mínimo 200 caracteres"),
   tags: z.string().optional(),
   capa_url: z.string().url("URL inválida").optional().or(z.literal("")),
+  video_url: z.string().url("URL inválida").optional().or(z.literal("")),
   honeypot: z.string().max(0, "spam"),
   consent: z.literal(true, { message: "Necessário concordar" }),
 });
@@ -63,6 +64,7 @@ function SubmitPage() {
       resumo: data.resumo,
       conteudo: data.conteudo,
       capa_url: data.capa_url || undefined,
+      video_url: data.video_url || undefined,
       autor_nome: data.autor_nome,
       autor_email: data.autor_email,
       tags,
@@ -197,6 +199,18 @@ function SubmitPage() {
               />
             </Field>
           </Grid>
+
+          <Field
+            label="URL do vídeo YouTube"
+            hint="Opcional. Cole o link do YouTube — se preenchido, o post abre com o vídeo em vez da imagem."
+            error={errors.video_url?.message}
+          >
+            <input
+              {...register("video_url")}
+              className="input"
+              placeholder="https://youtu.be/..."
+            />
+          </Field>
 
           <label className="flex items-start gap-3 text-sm text-ink-soft">
             <input

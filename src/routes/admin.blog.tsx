@@ -254,6 +254,7 @@ function CreateModal({
   const [conteudo, setConteudo] = useState("");
   const [tags, setTags] = useState("");
   const [capa, setCapa] = useState("");
+  const [videoUrl, setVideoUrl] = useState("");
 
   const submit = () => {
     if (titulo.length < 10 || resumo.length < 30 || conteudo.length < 100) {
@@ -265,6 +266,7 @@ function CreateModal({
       resumo: resumo.trim(),
       conteudo: conteudo.trim(),
       capa_url: capa.trim() || undefined,
+      video_url: videoUrl.trim() || undefined,
       tags: tags
         .split(",")
         .map((t) => t.trim().toLowerCase())
@@ -323,12 +325,23 @@ function CreateModal({
               placeholder="anestesia, monitorização"
             />
           </Field>
-          <Field label="URL da capa">
+          <Field label="URL da capa" hint="Imagem usada se não houver vídeo.">
             <input
               value={capa}
               onChange={(e) => setCapa(e.target.value)}
               className="input"
               placeholder="https://... (opcional)"
+            />
+          </Field>
+          <Field
+            label="URL do vídeo YouTube"
+            hint="Cole o link do YouTube (youtu.be/... ou youtube.com/watch?v=...). Se preenchido, o post abre com o vídeo em vez da capa."
+          >
+            <input
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              className="input"
+              placeholder="https://youtu.be/... (opcional)"
             />
           </Field>
         </div>

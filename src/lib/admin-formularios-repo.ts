@@ -61,6 +61,45 @@ export function getAll(): Formulario[] {
     );
 }
 
+export type NewFormularioInput = Partial<Omit<Formulario, "id" | "criado_em" | "status">> & {
+  tipo: FormularioTipo;
+  nome: string;
+  email: string;
+  mensagem: string;
+};
+
+/**
+ * Adiciona um novo formulário (chamado pelos forms do site).
+ * Persiste no localStorage do admin. Quando o banco real estiver disponível,
+ * substituir por POST para /api/formularios + envio SMTP.
+ */
+export function addNew(input: NewFormularioInput): Formulario {
+  const novo: Formulario = {
+    id: `form-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
+    tipo: input.tipo,
+    nome: input.nome.trim(),
+    email: input.email.trim().toLowerCase(),
+    whatsapp: input.whatsapp ?? null,
+    telefone: input.telefone ?? null,
+    tipo_estabelecimento: input.tipo_estabelecimento ?? null,
+    nome_estabelecimento: input.nome_estabelecimento ?? null,
+    cidade: input.cidade ?? null,
+    estado: input.estado ?? null,
+    cargo: input.cargo ?? null,
+    produto_id: input.produto_id ?? null,
+    produto_modelo: input.produto_modelo ?? null,
+    produto_nome: input.produto_nome ?? null,
+    mensagem: input.mensagem.trim(),
+    status: "novo",
+    notas_internas: null,
+    origem_pagina: input.origem_pagina ?? "/",
+    criado_em: new Date().toISOString(),
+  };
+  const all = [novo, ...getAll()];
+  writeLs(all);
+  return novo;
+}
+
 export function getById(id: string): Formulario | undefined {
   return getAll().find((f) => f.id === id);
 }

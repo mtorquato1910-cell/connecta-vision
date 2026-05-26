@@ -16,13 +16,12 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
+import { ImagensEditor } from "@/components/admin/ImagensEditor";
 import {
   create as createProduto,
   formatEspecsText,
-  formatGaleriaText,
   getAll as getAllProdutos,
   parseEspecsText,
-  parseGaleriaText,
   remove as removeProduto,
   reset as resetProdutos,
   update as updateProduto,
@@ -384,8 +383,27 @@ function ProductForm({
   const [subcategoria, setSubcategoria] = useState(produto?.subcategoria ?? "");
   const [descricaoCurta, setDescricaoCurta] = useState(produto?.descricao_curta ?? "");
   const [descricaoLonga, setDescricaoLonga] = useState(produto?.descricao_longa ?? "");
-  const [imagemPrincipal, setImagemPrincipal] = useState(produto?.imagem_principal ?? "");
-  const [galeriaText, setGaleriaText] = useState(produto ? formatGaleriaText(produto.galeria) : "");
+  // Estado das imagens: capa em [0] da `galeriaUrls`. O ImagensEditor cuida da ordem.
+  const initialUrls = (() => {
+    if (!produto) return [];
+    const urls = (produto.galeria ?? [])
+      .slice()
+      .sort((a, b) => a.ordem - b.ordem)
+      .map((g) => g.url);
+    if (produto.imagem_principal && !urls.includes(produto.imagem_principal)) {
+      urls.unshift(produto.imagem_principal);
+    } else if (produto.imagem_principal) {
+      // Garante que capa esteja em [0]
+      const idx = urls.indexOf(produto.imagem_principal);
+      if (idx > 0) {
+        urls.splice(idx, 1);
+        urls.unshift(produto.imagem_principal);
+      }
+    }
+    return urls;
+  })();
+  const [imagemCapa, setImagemCapa] = useState<string>(initialUrls[0] ?? "");
+  const [imagemRest, setImagemRest] = useState<string[]>(initialUrls.slice(1));
   const [especsText, setEspecsText] = useState(produto ? formatEspecsText(produto.especificacoes) : "");
   const [urlFabricante, setUrlFabricante] = useState(produto?.url_fabricante ?? "");
   const [destaque, setDestaque] = useState(produto?.destaque ?? false);
@@ -402,7 +420,12 @@ function ProductForm({
       toast.error("Categoria inválida.");
       return;
     }
-    const galeria = parseGaleriaText(galeriaText);
+    const allUrls = [imagemCapa, ...imagemRest].filter(Boolean);
+    const galeria = allUrls.map((url, ordem) => ({
+      url,
+      ordem,
+      alt: `${modelo} - imagem ${ordem + 1}`,
+    }));
     const especificacoes = parseEspecsText(especsText);
     onSave({
       ...(produto ?? {}),
@@ -419,7 +442,7 @@ function ProductForm({
       descricao_longa: descricaoLonga.trim() || null,
       especificacoes,
       configuracoes: produto?.configuracoes ?? null,
-      imagem_principal: imagemPrincipal.trim() || galeria[0]?.url || null,
+      imagem_principal: imagemCapa || allUrls[0] || null,
       galeria,
       url_fabricante: urlFabricante.trim() || null,
       destaque,
@@ -531,26 +554,14 @@ function ProductForm({
 
           {/* Imagens */}
           <Section title="Imagens">
-            <Field label="Imagem principal (URL)">
-              <input
-                value={imagemPrincipal}
-                onChange={(e) => setImagemPrincipal(e.target.value)}
-                placeholder="https://..."
-                className="input"
-              />
-            </Field>
-            <Field
-              label="Galeria (uma URL por linha)"
-              hint="Cada linha vira uma imagem na galeria. Se vazio, usa a imagem principal."
-            >
-              <textarea
-                value={galeriaText}
-                onChange={(e) => setGaleriaText(e.target.value)}
-                rows={6}
-                placeholder={"https://exemplo.com/imagem1.jpg\nhttps://exemplo.com/imagem2.jpg"}
-                className="input min-h-[120px] resize-y font-mono text-xs"
-              />
-            </Field>
+            <ImagensEditor
+              capa={imagemCapa}
+              galeria={imagemRest}
+              onChange={({ capa, galeria }) => {
+                setImagemCapa(capa);
+                setImagemRest(galeria);
+              }}
+            />
           </Section>
 
           {/* Especificações */}

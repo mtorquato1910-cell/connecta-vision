@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, Link, useRouter, useRouterState } from "@tanst
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, Package, FolderTree, Inbox, LogOut, Loader2, UserCog, MessageSquare, FileText, Settings } from "lucide-react";
+import { LayoutDashboard, Package, FolderTree, Inbox, LogOut, Loader2, UserCog, MessageSquare, FileText, Settings, Home } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 import { meSouAdmin } from "@/lib/admin.functions";
 

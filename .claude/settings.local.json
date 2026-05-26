@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p \"c:/Users/mathe/OneDrive/Área de Trabalho/Projetos clientes correto/Site Conecta - Henrique/Projeto cursor conecta/connecta-vision/docs/prd\")",
+      "Bash(mkdir -p \"c:/Users/mathe/OneDrive/Área de Trabalho/Projetos clientes correto/Site Conecta - Henrique/Projeto cursor conecta/connecta-vision/docs/sprints\")",
+      "Bash(mkdir -p \"c:/Users/mathe/OneDrive/Área de Trabalho/Projetos clientes correto/Site Conecta - Henrique/Projeto cursor conecta/connecta-vision/docs/ux\")",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(mkdir -p public)",
+      "Bash(cp \"Logo Conecta.jpeg\" \"public/logo-conecta-original.jpeg\")",
+      "Bash(python -c \"from PIL import Image; print\\('Pillow OK', Image.__version__ if hasattr\\(Image,'__version__'\\) else 'available'\\)\")",
+      "Bash(python scripts/process-logo.py)",
+      "Bash(python -c \"import openpyxl\")",
+      "Bash(python -m pip install openpyxl --quiet)",
+      "Bash(python scripts/inspect-xlsx.py)",
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/extract-products.py)",
+      "Bash(mkdir -p src/data)",
+      "Bash(cp data/produtos.json data/categorias.json src/data/)"
+    ]
+  }
+}

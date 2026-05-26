@@ -47,8 +47,8 @@
   --color-conecta-orange-light: var(--conecta-orange-light);
   --color-flask-blue: var(--flask-blue);
 
-  --font-serif: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-sans: "DM Sans", "Inter", system-ui, sans-serif;
+  --font-serif: "Instrument Serif", "Times New Roman", Georgia, serif;
+  --font-sans: "Work Sans", "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
@@ -125,7 +125,12 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
   }
-  h1, h2, h3, h4 { font-family: var(--font-serif); font-weight: 600; letter-spacing: -0.02em; }
+  h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    font-weight: 400; /* Instrument Serif fica mais elegante em regular */
+    letter-spacing: -0.015em;
+    line-height: 1.1;
+  }
 }
 
 @layer utilities {

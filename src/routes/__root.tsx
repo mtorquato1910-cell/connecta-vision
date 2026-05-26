@@ -126,6 +126,7 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <ScrollToTop />
       <Outlet />
       <ToasterMount />
     </QueryClientProvider>
@@ -134,6 +135,7 @@ function RootComponent() {
 
 // Lazy load sonner to avoid SSR window access
 import { Toaster } from "@/components/ui/sonner";
+import { ScrollToTop } from "@/components/shared/ScrollToTop";
 function ToasterMount() {
   return <Toaster position="top-right" richColors />;
 }

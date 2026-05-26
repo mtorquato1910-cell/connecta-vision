@@ -16,7 +16,12 @@
       "Bash(PYTHONIOENCODING=utf-8 python scripts/extract-products.py)",
       "Bash(mkdir -p src/data)",
       "Bash(cp data/produtos.json data/categorias.json src/data/)",
-      "Bash(PYTHONIOENCODING=utf-8 python scripts/make-favicon.py)"
+      "Bash(PYTHONIOENCODING=utf-8 python scripts/make-favicon.py)",
+      "Bash(python -c \"import json; d=json.load\\(open\\('src/data/produtos.json','r',encoding='utf-8'\\)\\); destaques=[p for p in d if p.get\\('destaque'\\)]; print\\(f'Total destaques: {len\\(destaques\\)}'\\); [print\\(f\\\\\"  slug='{p['slug']}'  modelo='{p['modelo']}'\\\\\"\\) for p in destaques[:8]]\")",
+      "Bash(python -c ' *)",
+      "Bash(mv src/routes/produtos.tsx src/routes/produtos.index.tsx)",
+      "Bash(mv src/routes/blog.tsx src/routes/blog.index.tsx)",
+      "Bash(mv src/routes/eventos.tsx src/routes/eventos.index.tsx)"
     ]
   }
 }

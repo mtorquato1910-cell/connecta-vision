@@ -4,7 +4,7 @@ import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { getPublishedPosts, formatDate, type BlogPost } from "@/lib/blog-data";
 
-export const Route = createFileRoute("/blog")({
+export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
       { title: "Blog Conecta — Conteúdo técnico para veterinários" },

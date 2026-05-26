@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { PRODUTOS_DESTAQUE } from "@/lib/site-data";
+import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { Reveal } from "./Reveal";
 
 export function FeaturedProducts() {
@@ -40,11 +41,9 @@ export function FeaturedProducts() {
                   <img src={p.img} alt={p.nome} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
                 <div className="p-5">
-                  <div className="font-mono text-[10px] tracking-[0.18em] uppercase text-conecta-orange">
-                    {p.categoriaNome}
-                  </div>
-                  <h3 className="mt-2 font-serif text-2xl text-ink leading-tight">{p.modelo}</h3>
-                  <p className="mt-1 text-sm text-ink-soft line-clamp-2">{p.nome}</p>
+                  <CategoryBadge>{p.categoriaNome}</CategoryBadge>
+                  <div className="mt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-conecta-orange font-medium">{p.modelo}</div>
+                  <h3 className="mt-2 font-sans text-base font-normal text-ink-soft leading-snug line-clamp-2">{p.nome}</h3>
                   <div className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-conecta-blue">
                     Ver detalhes <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
                   </div>

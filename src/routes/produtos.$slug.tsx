@@ -1,10 +1,11 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import { ArrowLeft, Check, MessageCircle, Send } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { QuoteModal } from "@/components/site/QuoteModal";
 import { Reveal } from "@/components/site/Reveal";
+import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { findProduto, produtosRelacionados, waLink, type Produto, type Especificacao } from "@/lib/site-data";
 
 export const Route = createFileRoute("/produtos/$slug")({
@@ -40,18 +41,35 @@ export const Route = createFileRoute("/produtos/$slug")({
 
 function ProdutoPage() {
   const { p, relacionados } = Route.useLoaderData();
+  const router = useRouter();
   const [activeImg, setActiveImg] = useState(p.galeria?.[0] ?? p.img);
   const [tab, setTab] = useState<"desc" | "specs" | "uso">("desc");
   const [open, setOpen] = useState(false);
 
   const waMsg = `Olá! Tenho interesse no ${p.modelo} — ${p.nome}. Pode me enviar mais informações?`;
 
+  const goBack = () => {
+    // navigate(-1) equivalente em TanStack Router; fallback para /produtos se não houver histórico
+    if (window.history.length > 1) router.history.back();
+    else router.navigate({ to: "/produtos" });
+  };
+
   return (
     <SiteShell>
-      <section className="container-edge pt-10 md:pt-14 pb-16">
+      <section className="container-edge pt-8 pb-2">
+        <button
+          onClick={goBack}
+          className="group inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-ink-soft hover:text-ink transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1" />
+          Voltar para o catálogo
+        </button>
+      </section>
+
+      <section className="container-edge pt-4 md:pt-6 pb-16">
         <div className="flex items-center gap-2 text-sm text-ink-soft">
           <Link to="/produtos" className="hover:text-conecta-blue inline-flex items-center gap-1">
-            <ArrowLeft className="h-3.5 w-3.5" /> Catálogo
+            Catálogo
           </Link>
           <span>/</span>
           <Link to="/produtos/categoria/$slug" params={{ slug: p.categoriaSlug }} className="hover:text-conecta-blue">
@@ -81,7 +99,8 @@ function ProdutoPage() {
 
           <div>
             <Reveal>
-              <div className="font-mono text-[11px] tracking-[0.2em] uppercase text-conecta-orange">{p.modelo}</div>
+              <CategoryBadge>{p.categoriaNome}</CategoryBadge>
+              <div className="mt-4 font-mono text-[11px] tracking-[0.2em] uppercase text-conecta-orange">{p.modelo}</div>
               <h1 className="mt-3 font-serif text-4xl md:text-5xl text-ink leading-[1.05]">{p.nome}</h1>
               {p.resumo && <p className="mt-5 text-lg text-ink-soft leading-relaxed">{p.resumo}</p>}
 

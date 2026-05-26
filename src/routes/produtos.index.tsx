@@ -8,7 +8,7 @@ import { CATEGORIAS, PRODUTOS } from "@/lib/site-data";
 
 type Search = { q?: string; cat?: string };
 
-export const Route = createFileRoute("/produtos")({
+export const Route = createFileRoute("/produtos/")({
   head: () => ({
     meta: [
       { title: "Catálogo de Equipamentos Veterinários — Conecta" },

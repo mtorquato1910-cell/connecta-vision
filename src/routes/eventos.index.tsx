@@ -10,7 +10,7 @@ import {
   type Evento,
 } from "@/lib/eventos-data";
 
-export const Route = createFileRoute("/eventos")({
+export const Route = createFileRoute("/eventos/")({
   head: () => ({
     meta: [
       { title: "Feiras & Eventos — Conecta" },

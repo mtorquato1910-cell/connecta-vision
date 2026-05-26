@@ -1,10 +1,23 @@
 import { motion } from "framer-motion";
-import { waLink } from "@/lib/site-data";
+import { useEffect, useState } from "react";
+import { buildWaLink } from "@/hooks/useSiteConfig";
+import { waLink as fallbackWa } from "@/lib/site-data";
 
 export function WhatsAppFab() {
+  const [href, setHref] = useState<string>(fallbackWa());
+
+  useEffect(() => {
+    setHref(buildWaLink());
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "conecta_admin_config_v1") setHref(buildWaLink());
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   return (
     <motion.a
-      href={waLink()}
+      href={href}
       target="_blank"
       rel="noreferrer"
       aria-label="Fale conosco no WhatsApp"

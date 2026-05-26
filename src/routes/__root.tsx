@@ -112,6 +112,7 @@ function RootShell({ children }: { children: React.ReactNode }) {
     <html lang="pt-BR">
       <head>
         <HeadContent />
+        <SchemaOrg schema={organizationSchema()} />
       </head>
       <body>
         {children}
@@ -136,6 +137,8 @@ function RootComponent() {
 // Lazy load sonner to avoid SSR window access
 import { Toaster } from "@/components/ui/sonner";
 import { ScrollToTop } from "@/components/shared/ScrollToTop";
+import { SchemaOrg } from "@/components/shared/SchemaOrg";
+import { organizationSchema } from "@/lib/schema-org";
 function ToasterMount() {
   return <Toaster position="top-right" richColors />;
 }

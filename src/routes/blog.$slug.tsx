@@ -2,6 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
+import { SchemaOrg } from "@/components/shared/SchemaOrg";
+import { articleSchema } from "@/lib/schema-org";
 import { formatDate, getPostBySlug } from "@/lib/blog-data";
 import { waLink } from "@/lib/site-data";
 
@@ -42,6 +44,16 @@ function PostPage() {
 
   return (
     <SiteShell>
+      <SchemaOrg
+        schema={articleSchema({
+          titulo: post.titulo,
+          resumo: post.resumo,
+          capa: post.capa_url,
+          slug: post.slug,
+          autor: post.autor_nome,
+          publicado_em: post.publicado_em ?? post.criado_em,
+        })}
+      />
       <article>
         <header className="container-edge pt-10 md:pt-14">
           <Link

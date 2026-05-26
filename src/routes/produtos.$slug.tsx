@@ -6,6 +6,8 @@ import { ProductCard } from "@/components/site/ProductCard";
 import { QuoteModal } from "@/components/site/QuoteModal";
 import { Reveal } from "@/components/site/Reveal";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
+import { SchemaOrg } from "@/components/shared/SchemaOrg";
+import { productSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { findProduto, produtosRelacionados, waLink, type Produto, type Especificacao } from "@/lib/site-data";
 
 export const Route = createFileRoute("/produtos/$slug")({
@@ -56,6 +58,24 @@ function ProdutoPage() {
 
   return (
     <SiteShell>
+      <SchemaOrg
+        schema={productSchema({
+          modelo: p.modelo,
+          nome: p.nome,
+          descricao: p.descricao ?? p.resumo ?? p.nome,
+          imagem: p.img,
+          slug: p.slug,
+          categoria: p.categoriaNome,
+        })}
+      />
+      <SchemaOrg
+        schema={breadcrumbSchema([
+          { name: "Início", url: "/" },
+          { name: "Catálogo", url: "/produtos" },
+          { name: p.categoriaNome, url: `/produtos/categoria/${p.categoriaSlug}` },
+          { name: p.modelo, url: `/produtos/${p.slug}` },
+        ])}
+      />
       <section className="container-edge pt-8 pb-2">
         <button
           onClick={goBack}

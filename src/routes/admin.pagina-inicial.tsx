@@ -1,135 +1,238 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { useServerFn } from "@tanstack/react-start";
+import { useMemo, useState } from "react";
+import {
+  ArrowDown,
+  ArrowUp,
+  Eye,
+  EyeOff,
+  Home,
+  RotateCcw,
+  Save,
+  Star,
+} from "lucide-react";
 import { toast } from "sonner";
-import { listConteudo, upsertConteudo } from "@/lib/admin.functions";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { ArrowUp, ArrowDown, Save } from "lucide-react";
+import { PageHeader } from "@/components/admin/PageHeader";
+import {
+  getConfig,
+  reorderSecoes,
+  reset as resetHome,
+  setProdutosDestaque,
+  toggleSecao,
+  type SecaoHome,
+} from "@/lib/admin-home-repo";
+import { getAll as getAllProdutos } from "@/lib/admin-produtos-repo";
 
 export const Route = createFileRoute("/admin/pagina-inicial")({
-  component: AdminHome,
+  component: AdminPaginaInicialPage,
 });
 
-type Bloco = { id: string; label: string; visivel: boolean };
+function AdminPaginaInicialPage() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const config = useMemo(() => getConfig(), [refreshKey]);
+  const refresh = () => setRefreshKey((k) => k + 1);
 
-const DEFAULT_BLOCOS: Bloco[] = [
-  { id: "hero", label: "Hero principal", visivel: true },
-  { id: "marcas", label: "Faixa de marcas / clientes", visivel: true },
-  { id: "categorias", label: "Categorias de produtos", visivel: true },
-  { id: "destaques", label: "Produtos em destaque", visivel: true },
-  { id: "diferenciais", label: "Diferenciais da Conecta", visivel: true },
-  { id: "depoimentos", label: "Depoimentos", visivel: true },
-  { id: "cta", label: "Bloco de chamada (CTA)", visivel: true },
-  { id: "contato", label: "Formulário de contato", visivel: true },
-];
+  const produtos = useMemo(() => getAllProdutos(), [refreshKey]);
+  const [destaques, setDestaques] = useState<string[]>(config.produtos_destaque_slugs);
+  const destaquesDirty =
+    JSON.stringify(destaques) !== JSON.stringify(config.produtos_destaque_slugs);
 
-const CHAVE = "home.blocos";
+  const ordered = config.secoes.slice().sort((a, b) => a.ordem - b.ordem);
 
-function AdminHome() {
-  const listFn = useServerFn(listConteudo);
-  const upsertFn = useServerFn(upsertConteudo);
-  const qc = useQueryClient();
-  const { data, isLoading } = useQuery({ queryKey: ["admin", "conteudo"], queryFn: () => listFn() });
+  const moveUp = (id: SecaoHome) => {
+    const ids = ordered.map((s) => s.id);
+    const i = ids.indexOf(id);
+    if (i <= 0) return;
+    [ids[i - 1], ids[i]] = [ids[i], ids[i - 1]];
+    reorderSecoes(ids);
+    refresh();
+  };
 
-  const saved = useMemo<Bloco[] | null>(() => {
-    const row = (data as { chave: string; valor: unknown }[] | undefined)?.find(
-      (r) => r.chave === CHAVE,
+  const moveDown = (id: SecaoHome) => {
+    const ids = ordered.map((s) => s.id);
+    const i = ids.indexOf(id);
+    if (i < 0 || i >= ids.length - 1) return;
+    [ids[i + 1], ids[i]] = [ids[i], ids[i + 1]];
+    reorderSecoes(ids);
+    refresh();
+  };
+
+  const handleToggle = (id: SecaoHome) => {
+    toggleSecao(id);
+    refresh();
+  };
+
+  const toggleDestaque = (slug: string) => {
+    setDestaques((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
     );
-    if (!row) return null;
-    const v = row.valor as { blocos?: unknown };
-    if (!v || !Array.isArray(v.blocos)) return null;
-    return v.blocos as Bloco[];
-  }, [data]);
+  };
 
-  const [blocos, setBlocos] = useState<Bloco[]>(DEFAULT_BLOCOS);
+  const handleSaveDestaques = () => {
+    setProdutosDestaque(destaques);
+    toast.success(`${destaques.length} ${destaques.length === 1 ? "produto" : "produtos"} em destaque.`);
+    refresh();
+  };
 
-  useEffect(() => {
-    if (!saved) return;
-    // merge: keep saved order/visibility; append any new defaults at the end
-    const byId = new Map(saved.map((b) => [b.id, b]));
-    const merged: Bloco[] = [];
-    for (const b of saved) {
-      const def = DEFAULT_BLOCOS.find((d) => d.id === b.id);
-      if (def) merged.push({ id: b.id, label: def.label, visivel: b.visivel });
-    }
-    for (const d of DEFAULT_BLOCOS) {
-      if (!byId.has(d.id)) merged.push(d);
-    }
-    setBlocos(merged);
-  }, [saved]);
+  const handleReset = () => {
+    if (!confirm("Restaurar configuração da página inicial ao padrão?")) return;
+    resetHome();
+    refresh();
+    setDestaques(getConfig().produtos_destaque_slugs);
+    toast.success("Página inicial restaurada.");
+  };
 
-  const save = useMutation({
-    mutationFn: (b: Bloco[]) => upsertFn({ data: { chave: CHAVE, valor: { blocos: b } } }),
-    onSuccess: () => {
-      toast.success("Página inicial atualizada.");
-      qc.invalidateQueries({ queryKey: ["admin", "conteudo"] });
-    },
-    onError: (e) => toast.error(e instanceof Error ? e.message : "Erro ao salvar."),
-  });
-
-  function move(i: number, dir: -1 | 1) {
-    const j = i + dir;
-    if (j < 0 || j >= blocos.length) return;
-    const next = blocos.slice();
-    [next[i], next[j]] = [next[j], next[i]];
-    setBlocos(next);
-  }
-
-  function toggle(i: number, v: boolean) {
-    const next = blocos.slice();
-    next[i] = { ...next[i], visivel: v };
-    setBlocos(next);
-  }
+  const ativasCount = ordered.filter((s) => s.ativa).length;
 
   return (
-    <div className="p-8 space-y-6">
-      <header className="flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <div className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Home</div>
-          <h1 className="text-3xl font-serif font-normal mt-1">Página inicial</h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            Ative, desative e reordene as seções exibidas na home. Salve para aplicar.
+    <div>
+      <PageHeader
+        eyebrow="Conteúdo"
+        title="Página inicial"
+        description="Controle quais seções aparecem na home, em que ordem, e quais produtos ficam em destaque."
+        icon={Home}
+        tone="amber"
+        badge={{
+          label: `${ativasCount} de ${ordered.length} seções ativas`,
+          tone: "blue",
+        }}
+        actions={
+          <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5">
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Restaurar</span>
+          </Button>
+        }
+      />
+
+      <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-5xl space-y-8">
+        {/* Seções da home */}
+        <section>
+          <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-soft mb-3">
+            Seções da página
+          </h2>
+          <p className="text-sm text-ink-soft mb-4">
+            Use as setas para reordenar e o botão de olho para ativar/desativar
+            cada bloco.
           </p>
-        </div>
-        <Button onClick={() => save.mutate(blocos)} disabled={save.isPending}>
-          <Save className="h-4 w-4 mr-1" /> Salvar ordem
-        </Button>
-      </header>
+          <div className="space-y-2">
+            {ordered.map((s, i) => (
+              <div
+                key={s.id}
+                className={`bg-paper border rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 transition-colors ${
+                  s.ativa ? "border-line hover:border-amber-300" : "border-line opacity-60"
+                }`}
+              >
+                <div className="flex flex-col gap-0.5 shrink-0">
+                  <button
+                    onClick={() => moveUp(s.id)}
+                    disabled={i === 0}
+                    aria-label="Mover para cima"
+                    className="h-6 w-6 rounded flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={() => moveDown(s.id)}
+                    disabled={i === ordered.length - 1}
+                    aria-label="Mover para baixo"
+                    className="h-6 w-6 rounded flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  </button>
+                </div>
 
-      {isLoading ? (
-        <Card className="p-6 text-sm text-muted-foreground">Carregando...</Card>
-      ) : (
-        <Card className="p-2">
-          <ul className="divide-y">
-            {blocos.map((b, i) => (
-              <li key={b.id} className="flex items-center gap-3 px-4 py-3">
-                <div className="text-xs w-6 text-muted-foreground tabular-nums">{i + 1}</div>
+                <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 text-amber-700 flex items-center justify-center font-mono text-xs font-medium shrink-0">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+
                 <div className="flex-1 min-w-0">
-                  <div className="font-medium">{b.label}</div>
-                  <div className="text-xs text-muted-foreground">{b.id}</div>
+                  <h3 className="font-serif font-normal text-base sm:text-lg text-ink">
+                    {s.label}
+                  </h3>
+                  <p className="text-xs text-ink-soft line-clamp-1 mt-0.5">{s.descricao}</p>
                 </div>
-                <Switch checked={b.visivel} onCheckedChange={(v) => toggle(i, v)} />
-                <div className="flex gap-1">
-                  <Button size="icon" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0}>
-                    <ArrowUp className="h-4 w-4" />
-                  </Button>
-                  <Button size="icon" variant="ghost" onClick={() => move(i, 1)} disabled={i === blocos.length - 1}>
-                    <ArrowDown className="h-4 w-4" />
-                  </Button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      )}
 
-      <p className="text-xs text-muted-foreground">
-        A ordem e visibilidade são lidas pela home a partir da chave <code>home.blocos</code> em
-        Conteúdo do site.
-      </p>
+                <button
+                  onClick={() => handleToggle(s.id)}
+                  aria-label={s.ativa ? "Desativar seção" : "Ativar seção"}
+                  className={`h-9 w-9 rounded-md flex items-center justify-center transition-colors ${
+                    s.ativa
+                      ? "text-emerald-700 bg-emerald-50 hover:bg-emerald-100"
+                      : "text-slate-500 bg-slate-100 hover:bg-slate-200"
+                  }`}
+                >
+                  {s.ativa ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Produtos em destaque */}
+        <section>
+          <div className="flex items-start justify-between flex-wrap gap-2 mb-3">
+            <div>
+              <h2 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink-soft">
+                Produtos em destaque
+              </h2>
+              <p className="text-sm text-ink-soft mt-1">
+                {destaques.length} {destaques.length === 1 ? "produto selecionado" : "produtos selecionados"}.
+                Aparecem na seção "Produtos em destaque" da home.
+              </p>
+            </div>
+            {destaquesDirty && (
+              <Button
+                onClick={handleSaveDestaques}
+                size="sm"
+                className="bg-conecta-blue hover:bg-conecta-blue-deep text-white gap-2"
+              >
+                <Save className="h-4 w-4" />
+                Salvar destaques
+              </Button>
+            )}
+          </div>
+
+          <div className="bg-paper border border-line rounded-2xl p-4 max-h-[460px] overflow-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {produtos.map((p) => {
+                const isSelected = destaques.includes(p.slug);
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => toggleDestaque(p.slug)}
+                    className={`text-left flex items-center gap-3 p-2 rounded-lg border transition-colors ${
+                      isSelected
+                        ? "border-conecta-orange bg-conecta-orange/5"
+                        : "border-line hover:border-line-strong"
+                    }`}
+                  >
+                    <img
+                      src={p.imagem_principal ?? ""}
+                      alt=""
+                      className="h-10 w-10 rounded-md object-cover bg-bone shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-mono text-[10px] uppercase tracking-wider text-conecta-orange font-medium">
+                        {p.modelo}
+                      </p>
+                      <p className="text-xs text-ink line-clamp-1">{p.nome}</p>
+                    </div>
+                    {isSelected && (
+                      <Star className="h-4 w-4 text-conecta-orange fill-conecta-orange shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {destaquesDirty && (
+            <p className="text-xs text-conecta-orange font-medium mt-2">
+              Alterações de destaque pendentes — clique em "Salvar destaques" acima para aplicar.
+            </p>
+          )}
+        </section>
+      </div>
     </div>
   );
 }

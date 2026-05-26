@@ -3,6 +3,8 @@ import { useState, useEffect } from "react";
 import { ArrowLeft, Calendar, MapPin, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
+import { SchemaOrg } from "@/components/shared/SchemaOrg";
+import { eventSchema } from "@/lib/schema-org";
 import { formatEventDate, getEventoBySlug } from "@/lib/eventos-data";
 
 export const Route = createFileRoute("/eventos/$slug")({
@@ -53,6 +55,16 @@ function EventoPage() {
 
   return (
     <SiteShell>
+      <SchemaOrg
+        schema={eventSchema({
+          nome: evento.nome,
+          data_evento: evento.data_evento,
+          local: evento.local,
+          descricao: evento.descricao_curta,
+          capa: evento.capa_url,
+          slug: evento.slug,
+        })}
+      />
       <article>
         <header className="container-edge pt-10 md:pt-14">
           <Link

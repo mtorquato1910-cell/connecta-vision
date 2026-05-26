@@ -92,7 +92,7 @@ function ProdutosPage() {
               type="submit"
               className="bg-conecta-blue text-white text-sm font-medium px-6 py-2.5 rounded-full hover:bg-conecta-blue-deep transition-colors shrink-0"
             >
-              Buscar
+              {t("products.search_button")}
             </button>
           </form>
         </div>
@@ -101,10 +101,10 @@ function ProdutosPage() {
       <section className="container-edge pb-24">
         <div className="grid lg:grid-cols-[260px_1fr] gap-10">
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft mb-4">Linhas clínicas</div>
+            <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft mb-4">{t("products.lines")}</div>
             <div className="flex lg:flex-col flex-wrap gap-2">
               <CatPill active={!cat} to="/produtos" search={{}}>
-                Todas <span className="opacity-50">({PRODUTOS.length})</span>
+                {t("products.all_categories")} <span className="opacity-50">({PRODUTOS.length})</span>
               </CatPill>
               {CATEGORIAS.map((c) => (
                 <CatPill key={c.slug} active={cat === c.slug} to="/produtos" search={{ cat: c.slug }}>

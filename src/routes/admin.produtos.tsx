@@ -295,10 +295,20 @@ function ProdutoDialog({
               </Select>
             </div>
           </div>
-          <FieldText label="Imagem principal (URL)" value={form.imagem_url} onChange={(v) => setForm({ ...form, imagem_url: v })} />
+          <ImageUpload
+            value={form.imagem_url}
+            onChange={(v) => setForm({ ...form, imagem_url: v })}
+            folder="produtos/capa"
+            label="Imagem de capa do produto"
+          />
           <FieldArea label="Resumo" value={form.resumo} onChange={(v) => setForm({ ...form, resumo: v })} rows={2} />
           <FieldArea label="Descrição" value={form.descricao} onChange={(v) => setForm({ ...form, descricao: v })} rows={4} />
-          <FieldArea label="Galeria (uma URL por linha)" value={form.galeria} onChange={(v) => setForm({ ...form, galeria: v })} rows={3} />
+          <GalleryUpload
+            value={form.galeria}
+            onChange={(v) => setForm({ ...form, galeria: v })}
+            folder="produtos/galeria"
+            label="Galeria (imagens adicionais)"
+          />
           <FieldArea label="Diferenciais (um por linha)" value={form.diferenciais} onChange={(v) => setForm({ ...form, diferenciais: v })} rows={3} />
           <FieldArea label="Aplicações (uma por linha)" value={form.aplicacoes} onChange={(v) => setForm({ ...form, aplicacoes: v })} rows={3} />
           <FieldArea

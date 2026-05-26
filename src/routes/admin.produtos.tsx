@@ -38,6 +38,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { ImageUpload, GalleryUpload } from "@/components/admin/ImageUpload";
 
 export const Route = createFileRoute("/admin/produtos")({
   component: AdminProdutos,

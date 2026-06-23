@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-seo
+.tools
+.DS_Store
+*.local
+.env
+.env.*

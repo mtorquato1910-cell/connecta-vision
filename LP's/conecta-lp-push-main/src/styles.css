@@ -1,0 +1,122 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-brand-navy: var(--brand-navy);
+  --color-brand-navy-deep: var(--brand-navy-deep);
+  --color-brand-orange: var(--brand-orange);
+  --color-brand-orange-soft: var(--brand-orange-soft);
+  --color-brand-sky: var(--brand-sky);
+  --color-brand-cream: var(--brand-cream);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-gray: var(--brand-gray);
+  --color-whatsapp: var(--whatsapp);
+}
+
+:root {
+  --radius: 0.75rem;
+
+  /* Brand palette extracted from Conecta logo */
+  --brand-navy: oklch(0.32 0.18 270);          /* #1A1F8F royal blue */
+  --brand-navy-deep: oklch(0.18 0.10 270);     /* #0A0E2A deep ink */
+  --brand-orange: oklch(0.72 0.18 50);         /* #F47B20 vibrant orange */
+  --brand-orange-soft: oklch(0.85 0.10 55);
+  --brand-sky: oklch(0.78 0.10 230);           /* #5FB3E8 erlenmeyer blue */
+  --brand-cream: oklch(0.985 0.005 90);        /* #FAFAF7 off-white */
+  --brand-ink: oklch(0.18 0.05 270);
+  --brand-gray: oklch(0.48 0.03 270);
+  --whatsapp: oklch(0.68 0.17 145);
+
+  --background: var(--brand-cream);
+  --foreground: var(--brand-ink);
+  --card: oklch(1 0 0);
+  --card-foreground: var(--brand-ink);
+  --popover: oklch(1 0 0);
+  --popover-foreground: var(--brand-ink);
+  --primary: var(--brand-navy);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.96 0.01 270);
+  --secondary-foreground: var(--brand-navy);
+  --muted: oklch(0.95 0.008 270);
+  --muted-foreground: var(--brand-gray);
+  --accent: var(--brand-orange);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.6 0.22 25);
+  --destructive-foreground: oklch(1 0 0);
+  --border: oklch(0.9 0.01 270);
+  --input: oklch(0.92 0.01 270);
+  --ring: var(--brand-orange);
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  html { scroll-behavior: smooth; background-color: var(--color-background); }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "ss01", "cv01";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+}
+
+@utility font-display { font-family: var(--font-display); }
+@utility font-mono-tech { font-family: var(--font-mono); }
+
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--brand-orange);
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--brand-orange);
+  }
+}

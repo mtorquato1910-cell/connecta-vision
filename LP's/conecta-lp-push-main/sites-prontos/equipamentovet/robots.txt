@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://equipamentovet.com.br/sitemap.xml

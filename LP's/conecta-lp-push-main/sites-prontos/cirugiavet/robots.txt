@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cirugiavet.com.br/sitemap.xml

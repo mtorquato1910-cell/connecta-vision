@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://analiseveterinaria.com.br/sitemap.xml

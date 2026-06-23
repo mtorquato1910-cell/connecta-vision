@@ -12,7 +12,7 @@
  */
 
 const SUPABASE_URL = "https://xrotxaapnkyokgebpodv.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_lo2KuYeay6qbyNTaXuzpJQ_P6hk4-b7";
+const SUPABASE_ANON_KEY = "sb_publishable_p4En-OtD95GUGZlqvRiPkQ_I5b4IWQr";
 
 export type LeadInput = {
   nome: string;

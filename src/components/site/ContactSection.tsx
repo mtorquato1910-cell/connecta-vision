@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { Reveal } from "./Reveal";
-import { addNew as addFormulario } from "@/lib/admin-formularios-repo";
+import { submitFormulario } from "@/lib/admin.functions";
 import { toast } from "sonner";
 
 const PROMISES = [
@@ -25,15 +25,16 @@ export function ContactSection() {
     const mensagem = String(fd.get("mensagem") ?? "").trim();
     setSubmitting(true);
     try {
-      await new Promise((r) => setTimeout(r, 300));
-      addFormulario({
-        tipo: "contato",
-        nome,
-        email,
-        whatsapp: telefone,
-        tipo_estabelecimento: tipo_estabelecimento || null,
-        mensagem,
-        origem_pagina: typeof window !== "undefined" ? window.location.pathname : "/",
+      await submitFormulario({
+        data: {
+          tipo: "contato",
+          nome,
+          email,
+          telefone: telefone || null,
+          mensagem,
+          origem: typeof window !== "undefined" ? window.location.pathname : "/",
+          payload: { tipo_estabelecimento: tipo_estabelecimento || null },
+        },
       });
       setSent(true);
       toast.success("Mensagem enviada! Retornamos em até 1 dia útil.");

@@ -1,12 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ArrowDown,
   ArrowUp,
   ExternalLink,
   FolderTree,
   Pencil,
-  RotateCcw,
   Star,
   X,
 } from "lucide-react";
@@ -14,41 +13,92 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import {
-  getAll as getAllCategorias,
-  reorder as reorderCategorias,
-  reset as resetCategorias,
-  update as updateCategoria,
-  type Categoria,
-} from "@/lib/admin-categorias-repo";
-import { getAll as getAllProdutos } from "@/lib/admin-produtos-repo";
+  listAllCategorias,
+  upsertCategoria,
+  reorderCategorias,
+  listAllProdutos,
+} from "@/lib/admin.functions";
+
+type Categoria = {
+  id: string;
+  slug: string;
+  nome: string;
+  numero: string;
+  ordem: number;
+  destaque: boolean;
+  descricao_curta: string;
+  imagem_url: string | null;
+};
+
+function toUpsert(c: Categoria) {
+  return {
+    id: c.id,
+    slug: c.slug,
+    nome: c.nome,
+    numero: c.numero,
+    descricao: c.descricao_curta || null,
+    imagem_url: c.imagem_url,
+    ordem: c.ordem,
+    destaque: c.destaque,
+  };
+}
 
 export const Route = createFileRoute("/admin/categorias")({
   component: AdminCategoriasPage,
 });
 
 function AdminCategoriasPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [countByCat, setCountByCat] = useState<Record<string, number>>({});
   const [editing, setEditing] = useState<Categoria | null>(null);
-  const refresh = () => setRefreshKey((k) => k + 1);
 
-  const categorias = useMemo(() => getAllCategorias(), [refreshKey]);
-  const produtos = useMemo(() => getAllProdutos(), [refreshKey]);
+  const refresh = useCallback(() => {
+    Promise.all([listAllCategorias(), listAllProdutos()])
+      .then(([cats, prods]) => {
+        setCategorias(
+          (cats as Record<string, any>[]).map((c) => ({
+            id: c.id,
+            slug: c.slug,
+            nome: c.nome,
+            numero: c.numero,
+            ordem: c.ordem,
+            destaque: !!c.destaque,
+            descricao_curta: c.descricao ?? "",
+            imagem_url: c.imagem_url ?? null,
+          })),
+        );
+        const map: Record<string, number> = {};
+        for (const p of prods as { categoria_id: string }[]) {
+          map[p.categoria_id] = (map[p.categoria_id] ?? 0) + 1;
+        }
+        setCountByCat(map);
+      })
+      .catch((e) =>
+        toast.error(e instanceof Error ? e.message : "Erro ao carregar categorias."),
+      );
+  }, []);
 
-  const countByCat = useMemo(() => {
-    const map: Record<string, number> = {};
-    for (const p of produtos) {
-      map[p.categoria_slug] = (map[p.categoria_slug] ?? 0) + 1;
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
+
+  const reordenar = async (ids: string[]) => {
+    try {
+      await reorderCategorias({
+        data: { ordem: ids.map((id, i) => ({ id, ordem: i + 1 })) },
+      });
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao reordenar.");
     }
-    return map;
-  }, [produtos]);
+  };
 
   const moveUp = (id: string) => {
     const ids = categorias.map((c) => c.id);
     const i = ids.indexOf(id);
     if (i <= 0) return;
     [ids[i - 1], ids[i]] = [ids[i], ids[i - 1]];
-    reorderCategorias(ids);
-    refresh();
+    reordenar(ids);
   };
 
   const moveDown = (id: string) => {
@@ -56,20 +106,16 @@ function AdminCategoriasPage() {
     const i = ids.indexOf(id);
     if (i < 0 || i >= ids.length - 1) return;
     [ids[i + 1], ids[i]] = [ids[i], ids[i + 1]];
-    reorderCategorias(ids);
-    refresh();
+    reordenar(ids);
   };
 
-  const toggleDestaque = (cat: Categoria) => {
-    updateCategoria(cat.id, { destaque: !cat.destaque });
-    refresh();
-  };
-
-  const handleReset = () => {
-    if (!confirm("Restaurar categorias ao estado original?")) return;
-    resetCategorias();
-    toast.success("Categorias restauradas.");
-    refresh();
+  const toggleDestaque = async (cat: Categoria) => {
+    try {
+      await upsertCategoria({ data: toUpsert({ ...cat, destaque: !cat.destaque }) });
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao atualizar.");
+    }
   };
 
   return (
@@ -80,17 +126,6 @@ function AdminCategoriasPage() {
         description="8 linhas clínicas. Reordene, edite descrição e marque destaques que aparecem na home."
         icon={FolderTree}
         tone="violet"
-        actions={
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleReset}
-            className="gap-1.5"
-          >
-            <RotateCcw className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Restaurar</span>
-          </Button>
-        }
       />
 
       <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-5xl">
@@ -138,7 +173,7 @@ function AdminCategoriasPage() {
                   {c.descricao_curta}
                 </p>
                 <p className="text-[11px] font-mono text-ink-mute mt-1">
-                  {countByCat[c.slug] ?? 0} produtos · /{c.slug}
+                  {countByCat[c.id] ?? 0} produtos · /{c.slug}
                 </p>
               </div>
 
@@ -186,11 +221,15 @@ function AdminCategoriasPage() {
         <CategoriaForm
           categoria={editing}
           onClose={() => setEditing(null)}
-          onSave={(input) => {
-            updateCategoria(editing.id, input);
-            toast.success("Categoria atualizada.");
-            setEditing(null);
-            refresh();
+          onSave={async (input) => {
+            try {
+              await upsertCategoria({ data: toUpsert({ ...editing, ...input }) });
+              toast.success("Categoria atualizada.");
+              setEditing(null);
+              refresh();
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Erro ao salvar.");
+            }
           }}
         />
       )}

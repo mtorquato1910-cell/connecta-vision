@@ -1,10 +1,17 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
-import { PRODUTOS_DESTAQUE } from "@/lib/site-data";
+import { useQuery } from "@tanstack/react-query";
+import { homeCatalogo } from "@/lib/catalog.functions";
+import { dtoToProdutoList } from "@/lib/catalog-adapter";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { Reveal } from "./Reveal";
 
 export function FeaturedProducts() {
+  const { data } = useQuery({
+    queryKey: ["home-catalogo"],
+    queryFn: () => homeCatalogo(),
+  });
+  const destaques = (data?.destaques ?? []).map(dtoToProdutoList);
   return (
     <section className="bg-paper">
       <div className="container-edge py-20 md:py-28">
@@ -30,7 +37,7 @@ export function FeaturedProducts() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {PRODUTOS_DESTAQUE.map((p, i) => (
+          {destaques.map((p, i) => (
             <Reveal key={p.slug} delay={i * 0.04}>
               <Link
                 to="/produtos/$slug"

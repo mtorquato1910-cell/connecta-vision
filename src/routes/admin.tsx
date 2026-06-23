@@ -25,7 +25,7 @@ import {
   UserCog,
   X,
 } from "lucide-react";
-import { getSession, logout } from "@/lib/auth-mock";
+import { getCurrentUser, signOut, onAuthChange, type AdminUser } from "@/lib/admin-auth";
 import logoConecta from "@/assets/conecta-logo.png";
 
 export const Route = createFileRoute("/admin")({
@@ -37,7 +37,7 @@ function AdminLayout() {
   const isLoginPage = pathname === "/admin/login";
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "ok" | "unauthed">("loading");
-  const [session, setSession] = useState<ReturnType<typeof getSession>>(null);
+  const [session, setSession] = useState<AdminUser | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
@@ -45,9 +45,23 @@ function AdminLayout() {
       setStatus("ok");
       return;
     }
-    const s = getSession();
-    setSession(s);
-    setStatus(s ? "ok" : "unauthed");
+    let mounted = true;
+    getCurrentUser().then((u) => {
+      if (!mounted) return;
+      setSession(u);
+      setStatus(u ? "ok" : "unauthed");
+    });
+    const sub = onAuthChange((authenticated) => {
+      if (!mounted) return;
+      if (!authenticated) {
+        setSession(null);
+        setStatus("unauthed");
+      }
+    });
+    return () => {
+      mounted = false;
+      sub.unsubscribe();
+    };
   }, [isLoginPage, pathname]);
 
   useEffect(() => {
@@ -207,8 +221,8 @@ function AdminLayout() {
               <p className="text-[11px] text-white/60 truncate">{session?.email}</p>
             </div>
             <button
-              onClick={() => {
-                logout();
+              onClick={async () => {
+                await signOut();
                 router.navigate({ to: "/admin/login" });
               }}
               aria-label="Sair"

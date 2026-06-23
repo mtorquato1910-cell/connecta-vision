@@ -90,6 +90,7 @@ const categoriaSchema = z.object({
   descricao: z.string().max(500).optional().nullable(),
   imagem_url: z.string().url().max(500).optional().nullable(),
   ordem: z.number().int().min(0).max(999).default(0),
+  destaque: z.boolean().optional().default(false),
 });
 
 export const listAllCategorias = createServerFn({ method: "GET" })
@@ -97,7 +98,7 @@ export const listAllCategorias = createServerFn({ method: "GET" })
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("categorias")
-      .select("id, slug, nome, numero, descricao, imagem_url, ordem")
+      .select("id, slug, nome, numero, descricao, imagem_url, ordem, destaque")
       .order("ordem");
     if (error) throw new Error(error.message);
     return data ?? [];
@@ -107,7 +108,7 @@ export const upsertCategoria = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((i: unknown) => categoriaSchema.parse(i))
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin.from("categorias").upsert(data);
+    const { error } = await supabaseAdmin.from("categorias").upsert(data as never);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -118,6 +119,28 @@ export const deleteCategoria = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin.from("categorias").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const reorderCategorias = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        ordem: z
+          .array(z.object({ id: z.string().uuid(), ordem: z.number().int().min(0).max(999) }))
+          .max(100),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    for (const it of data.ordem) {
+      const { error } = await supabaseAdmin
+        .from("categorias")
+        .update({ ordem: it.ordem })
+        .eq("id", it.id);
+      if (error) throw new Error(error.message);
+    }
     return { ok: true };
   });
 
@@ -136,6 +159,10 @@ const produtoSchema = z.object({
   diferenciais: z.array(z.string().min(1).max(240)).max(20).default([]),
   aplicacoes: z.array(z.string().min(1).max(240)).max(30).default([]),
   especificacoes: z.array(especSchema).max(40).default([]),
+  marca: z.string().max(160).optional().nullable(),
+  subcategoria: z.string().max(160).optional().nullable(),
+  configuracoes: z.string().max(4000).optional().nullable(),
+  url_fabricante: z.string().max(500).optional().nullable(),
   destaque: z.boolean().default(false),
   publicado: z.boolean().default(true),
   ordem: z.number().int().min(0).max(999).default(0),
@@ -147,7 +174,7 @@ export const listAllProdutos = createServerFn({ method: "GET" })
     const { data, error } = await supabaseAdmin
       .from("produtos")
       .select(
-        "id, slug, modelo, nome, imagem_url, destaque, publicado, ordem, categoria_id, categorias!inner(nome, slug)",
+        "id, slug, modelo, nome, imagem_url, subcategoria, destaque, publicado, ordem, categoria_id, categorias!inner(nome, slug)",
       )
       .order("ordem");
     if (error) throw new Error(error.message);
@@ -157,12 +184,32 @@ export const listAllProdutos = createServerFn({ method: "GET" })
       modelo: r.modelo as string,
       nome: r.nome as string,
       imagem_url: (r.imagem_url as string | null) ?? null,
+      subcategoria: (r.subcategoria as string | null) ?? null,
       destaque: !!r.destaque,
       publicado: !!r.publicado,
       ordem: r.ordem as number,
       categoria_id: r.categoria_id as string,
       categoria_nome: (r.categorias?.nome as string) ?? "",
+      categoria_slug: (r.categorias?.slug as string) ?? "",
     }));
+  });
+
+export const updateProdutoStatus = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        id: z.string().uuid(),
+        publicado: z.boolean().optional(),
+        destaque: z.boolean().optional(),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { id, ...rest } = data;
+    const { error } = await supabaseAdmin.from("produtos").update(rest).eq("id", id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
   });
 
 export const getProdutoAdmin = createServerFn({ method: "GET" })
@@ -182,7 +229,7 @@ export const upsertProduto = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((i: unknown) => produtoSchema.parse(i))
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin.from("produtos").upsert(data);
+    const { error } = await supabaseAdmin.from("produtos").upsert(data as never);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -278,12 +325,30 @@ export const updateFormulario = createServerFn({ method: "POST" })
         id: z.string().uuid(),
         status: z.string().min(1).max(40).optional(),
         lido: z.boolean().optional(),
+        notas: z.string().max(4000).optional(),
       })
       .parse(i),
   )
   .handler(async ({ data }) => {
-    const { id, ...rest } = data;
-    const { error } = await supabaseAdmin.from("formularios").update(rest).eq("id", id);
+    const { id, notas, ...rest } = data;
+    const update: Record<string, unknown> = { ...rest };
+
+    // Notas internas vivem no payload (jsonb). Mescla preservando o restante.
+    if (notas !== undefined) {
+      const { data: row, error: readErr } = await supabaseAdmin
+        .from("formularios")
+        .select("payload")
+        .eq("id", id)
+        .maybeSingle();
+      if (readErr) throw new Error(readErr.message);
+      const payload = (row?.payload as Record<string, unknown> | null) ?? {};
+      update.payload = { ...payload, notas_internas: notas };
+    }
+
+    const { error } = await supabaseAdmin
+      .from("formularios")
+      .update(update as never)
+      .eq("id", id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -374,6 +439,236 @@ export const deleteConfigEmpresa = createServerFn({ method: "POST" })
       .from("configuracoes_empresa")
       .delete()
       .eq("chave", data.chave);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// ---------- Blog ----------
+function slugifyBlog(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 140) || "post"
+  );
+}
+
+// Cliente sem tipos para tabelas ainda não presentes no types.ts gerado
+// (blog_posts, eventos). Em runtime o PostgREST resolve normalmente.
+const sbUntyped = supabaseAdmin as unknown as { from: (table: string) => any };
+
+export const listPublishedPosts = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await sbUntyped
+    .from("blog_posts")
+    .select("*")
+    .eq("status", "publicado")
+    .order("publicado_em", { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const getPostPublic = createServerFn({ method: "GET" })
+  .inputValidator((i: unknown) => z.object({ slug: z.string().min(1) }).parse(i))
+  .handler(async ({ data }) => {
+    const { data: row, error } = await sbUntyped
+      .from("blog_posts")
+      .select("*")
+      .eq("slug", data.slug)
+      .eq("status", "publicado")
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const submitBlogPost = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        titulo: z.string().min(3).max(240),
+        resumo: z.string().max(600).optional().default(""),
+        conteudo: z.string().max(40000).optional().default(""),
+        capa_url: z.string().max(1000).optional().nullable(),
+        video_url: z.string().max(1000).optional().nullable(),
+        autor_nome: z.string().min(1).max(160),
+        autor_email: z.string().email().max(200),
+        tags: z.array(z.string().max(60)).max(20).optional().default([]),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const slug = `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo + data.autor_email)).toString(36).slice(0, 5)}`;
+    const { error } = await sbUntyped
+      .from("blog_posts")
+      .insert({ ...data, slug, status: "pendente", origem: "publico" } as never);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (Math.imul(31, h) + s.charCodeAt(i)) | 0;
+  return h;
+}
+
+export const listAllPosts = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await sbUntyped
+      .from("blog_posts")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const approvePost = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped
+      .from("blog_posts")
+      .update({ status: "publicado", publicado_em: nowIso() } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const rejectPost = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), motivo: z.string().max(600).optional().default("") }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped
+      .from("blog_posts")
+      .update({ status: "rejeitado", motivo_rejeicao: data.motivo } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const adminUpsertPost = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        id: z.string().uuid().optional(),
+        slug: z.string().max(160).optional(),
+        titulo: z.string().min(1).max(240),
+        resumo: z.string().max(600).optional().default(""),
+        conteudo: z.string().max(40000).optional().default(""),
+        capa_url: z.string().max(1000).optional().nullable(),
+        video_url: z.string().max(1000).optional().nullable(),
+        tags: z.array(z.string().max(60)).max(20).optional().default([]),
+        status: z.enum(["pendente", "publicado", "rascunho", "rejeitado"]).optional().default("publicado"),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const slug = data.slug || `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo)).toString(36).slice(0, 5)}`;
+    const row = {
+      ...data,
+      slug,
+      origem: "admin",
+      autor_nome: "Equipe Conecta",
+      autor_email: "editorial@conectavet.com.br",
+      publicado_em: data.status === "publicado" ? nowIso() : null,
+    };
+    const { error } = await sbUntyped.from("blog_posts").upsert(row as never, { onConflict: "slug" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deletePost = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped.from("blog_posts").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+function nowIso(): string {
+  // Em server-fn não usamos new Date() no topo do módulo; aqui em runtime é ok.
+  return new Date().toISOString();
+}
+
+// ---------- Eventos ----------
+const eventoSchema = z.object({
+  id: z.string().uuid().optional(),
+  slug: z.string().min(1).max(160).regex(/^[a-z0-9-]+$/),
+  nome: z.string().min(1).max(200),
+  data_evento: z.string().max(40).optional().nullable(),
+  local: z.string().max(200).optional().nullable(),
+  descricao_curta: z.string().max(600).optional().nullable(),
+  descricao_longa: z.string().max(8000).optional().nullable(),
+  capa_url: z.string().max(1000).optional().nullable(),
+  galeria: z
+    .array(
+      z.object({
+        url: z.string().max(1000),
+        ordem: z.number().int().min(0).max(999).default(0),
+        alt: z.string().max(300).optional().default(""),
+        caption: z.string().max(300).optional().nullable(),
+      }),
+    )
+    .max(60)
+    .optional()
+    .default([]),
+  publicado: z.boolean().optional().default(true),
+  ordem: z.number().int().min(0).max(999).optional().default(0),
+});
+
+export const listEventosPublic = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await sbUntyped
+    .from("eventos")
+    .select("*")
+    .eq("publicado", true)
+    .order("data_evento", { ascending: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const getEventoPublic = createServerFn({ method: "GET" })
+  .inputValidator((i: unknown) => z.object({ slug: z.string().min(1) }).parse(i))
+  .handler(async ({ data }) => {
+    const { data: row, error } = await sbUntyped
+      .from("eventos")
+      .select("*")
+      .eq("slug", data.slug)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    return row;
+  });
+
+export const listAllEventos = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const { data, error } = await sbUntyped
+      .from("eventos")
+      .select("*")
+      .order("data_evento", { ascending: false });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const upsertEvento = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => eventoSchema.parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped.from("eventos").upsert(data as never, { onConflict: "slug" });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const deleteEvento = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped.from("eventos").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
   });

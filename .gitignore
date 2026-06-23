@@ -30,3 +30,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+.vercel
+
+# Claude local settings (pode conter segredos em allowlist)
+.claude/settings.local.json

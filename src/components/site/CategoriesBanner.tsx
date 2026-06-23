@@ -1,9 +1,16 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
-import { CATEGORIAS } from "@/lib/site-data";
+import { useQuery } from "@tanstack/react-query";
+import { homeCatalogo } from "@/lib/catalog.functions";
+import { dtoToCategoria } from "@/lib/catalog-adapter";
 import { Reveal } from "./Reveal";
 
 export function CategoriesBanner() {
+  const { data } = useQuery({
+    queryKey: ["home-catalogo"],
+    queryFn: () => homeCatalogo(),
+  });
+  const categorias = (data?.categorias ?? []).map((c) => dtoToCategoria(c, c.qtd));
   return (
     <section className="bg-bone border-y border-line">
       <div className="container-edge py-20 md:py-28">
@@ -25,7 +32,7 @@ export function CategoriesBanner() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {CATEGORIAS.map((c, i) => (
+          {categorias.map((c, i) => (
             <Reveal key={c.slug} delay={i * 0.04}>
               <Link
                 to="/produtos/categoria/$slug"

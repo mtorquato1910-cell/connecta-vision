@@ -12,7 +12,11 @@ export type FormularioStatus =
   | "convertido"
   | "perdido";
 
-export type FormularioTipo = "contato" | "orcamento_geral" | "orcamento_produto";
+export type FormularioTipo =
+  | "contato"
+  | "orcamento_geral"
+  | "orcamento_produto"
+  | "orcamento_lp";
 
 export type Formulario = {
   id: string;
@@ -143,6 +147,7 @@ export const TIPO_LABELS: Record<FormularioTipo, string> = {
   contato: "Contato",
   orcamento_geral: "Orçamento geral",
   orcamento_produto: "Orçamento de produto",
+  orcamento_lp: "Orçamento (Landing Page)",
 };
 
 export const STATUS_COLORS: Record<FormularioStatus, string> = {

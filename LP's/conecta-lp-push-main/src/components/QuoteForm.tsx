@@ -1,31 +1,66 @@
 import { useState } from "react";
 import { Check, Shield, Package, Truck } from "lucide-react";
 import { site, waLink } from "@/lib/site";
+import { submitLead } from "@/lib/leads";
 
 export function QuoteForm() {
   const [equipamentos, setEquipamentos] = useState<string[]>([]);
+  const [enviando, setEnviando] = useState(false);
   const toggle = (id: string) =>
     setEquipamentos((prev) =>
       prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
     );
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (enviando) return;
+    setEnviando(true);
     const fd = new FormData(e.currentTarget);
+
+    const nome = String(fd.get("nome") ?? "");
+    const whatsapp = String(fd.get("whatsapp") ?? "");
+    const email = String(fd.get("email") ?? "");
+    const funcao = String(fd.get("funcao") ?? "");
+    const estabelecimento = String(fd.get("estabelecimento") ?? "");
+    const tipo = String(fd.get("tipo") ?? "");
+    const cidade = String(fd.get("cidade") ?? "");
+    const volume = String(fd.get("volume") ?? "");
+    const prazo = String(fd.get("prazo") ?? "");
+    const obs = String(fd.get("obs") ?? "");
+
+    // 1) Salva o lead no Supabase (cai no painel admin). Não bloqueia o WhatsApp.
+    await submitLead({
+      nome,
+      email,
+      whatsapp,
+      funcao,
+      tipoEstabelecimento: tipo,
+      nomeEstabelecimento: estabelecimento,
+      cidade,
+      volume,
+      itens: equipamentos,
+      prazo,
+      observacoes: obs,
+      origem: site.domain || site.id,
+      lineName: site.lineName,
+    });
+
+    // 2) Abre o WhatsApp com a mensagem preenchida (comportamento original).
     const lines = [
       `Olá! Quero um orçamento da ${site.lineName.toLowerCase()} Conecta:`,
-      `Nome: ${fd.get("nome")}`,
-      `WhatsApp: ${fd.get("whatsapp")}`,
-      `E-mail: ${fd.get("email")}`,
-      `Função: ${fd.get("funcao")}`,
-      `Estabelecimento: ${fd.get("estabelecimento")} (${fd.get("tipo")})`,
-      `Cidade/UF: ${fd.get("cidade")}`,
-      `Volume: ${fd.get("volume")}`,
+      `Nome: ${nome}`,
+      `WhatsApp: ${whatsapp}`,
+      `E-mail: ${email}`,
+      `Função: ${funcao}`,
+      `Estabelecimento: ${estabelecimento} (${tipo})`,
+      `Cidade/UF: ${cidade}`,
+      `Volume: ${volume}`,
       `Itens: ${equipamentos.join(", ") || "—"}`,
-      `Prazo: ${fd.get("prazo")}`,
-      `Obs: ${fd.get("obs")}`,
+      `Prazo: ${prazo}`,
+      `Obs: ${obs}`,
     ].join("\n");
     window.open(waLink(lines), "_blank");
+    setEnviando(false);
   };
 
   const checkboxes = [
@@ -147,8 +182,8 @@ export function QuoteForm() {
             </div>
           </Step>
 
-          <button type="submit" className="mt-8 w-full px-6 py-4 rounded-lg bg-accent text-accent-foreground font-semibold hover:brightness-110 transition shadow-lg shadow-accent/30">
-            Solicitar orçamento personalizado →
+          <button type="submit" disabled={enviando} className="mt-8 w-full px-6 py-4 rounded-lg bg-accent text-accent-foreground font-semibold hover:brightness-110 transition shadow-lg shadow-accent/30 disabled:opacity-60 disabled:cursor-not-allowed">
+            {enviando ? "Enviando…" : "Solicitar orçamento personalizado →"}
           </button>
           <p className="text-[11px] text-muted-foreground text-center mt-4">
             Ao enviar você concorda com nossa política de privacidade. Não compartilhamos seus dados com terceiros.

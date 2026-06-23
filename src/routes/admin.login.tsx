@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { DEMO_CREDENTIALS, login } from "@/lib/auth-mock";
+import { signIn } from "@/lib/admin-auth";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLoginPage,
@@ -18,25 +18,17 @@ function AdminLoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  function handleSignIn(e: React.FormEvent) {
+  async function handleSignIn(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    // pequeno delay para parecer "rede"
-    setTimeout(() => {
-      const result = login(email, password);
-      setLoading(false);
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-      toast.success("Bem-vindo ao painel.");
-      router.navigate({ to: "/admin" });
-    }, 250);
-  }
-
-  function preencherDemo() {
-    setEmail(DEMO_CREDENTIALS.email);
-    setPassword(DEMO_CREDENTIALS.password);
+    const result = await signIn(email, password);
+    setLoading(false);
+    if (!result.success) {
+      toast.error(result.error);
+      return;
+    }
+    toast.success("Bem-vindo ao painel.");
+    router.navigate({ to: "/admin" });
   }
 
   return (
@@ -61,7 +53,7 @@ function AdminLoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@conecta.dev"
+                placeholder="seu@email.com"
                 autoComplete="email"
               />
             </div>
@@ -81,23 +73,6 @@ function AdminLoginPage() {
               <Lock className="h-4 w-4" />
               {loading ? "Entrando..." : "Entrar"}
             </Button>
-
-            <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs text-amber-900">
-              <p className="font-medium">Modo desenvolvimento</p>
-              <p className="mt-1">
-                Sem banco ainda — use as credenciais de demonstração:
-                <br />
-                <code className="bg-amber-100 px-1 rounded">admin@conecta.dev</code> /{" "}
-                <code className="bg-amber-100 px-1 rounded">admin123</code>
-              </p>
-              <button
-                type="button"
-                onClick={preencherDemo}
-                className="mt-2 text-amber-900 underline hover:no-underline"
-              >
-                Preencher automaticamente →
-              </button>
-            </div>
           </form>
         </CardContent>
       </Card>

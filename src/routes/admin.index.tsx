@@ -27,15 +27,20 @@ import {
   type BlogPost,
 } from "@/lib/blog-data";
 import { getAllEventos } from "@/lib/eventos-data";
-import { getSession } from "@/lib/auth-mock";
+import { useEffect, useState } from "react";
+import { getCurrentUser } from "@/lib/admin-auth";
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
 function AdminDashboard() {
-  const session = getSession();
-  const firstName = (session?.nome ?? "Administrador").split(" ")[0];
+  const [firstName, setFirstName] = useState("Administrador");
+  useEffect(() => {
+    getCurrentUser().then((u) => {
+      if (u?.nome) setFirstName(u.nome.split(" ")[0]);
+    });
+  }, []);
 
   const totalProdutos = PRODUTOS.length;
   const totalDestaques = PRODUTOS_DESTAQUE.length;

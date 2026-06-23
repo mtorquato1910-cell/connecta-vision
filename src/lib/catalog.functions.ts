@@ -102,6 +102,42 @@ export const listCategorias = createServerFn({ method: "GET" }).handler(
   },
 );
 
+export type CategoriaComContagemDTO = CategoriaDTO & { qtd: number };
+
+/** Tudo que a home precisa em 1 chamada: categorias (com contagem) + destaques. */
+export const homeCatalogo = createServerFn({ method: "GET" }).handler(
+  async (): Promise<{ categorias: CategoriaComContagemDTO[]; destaques: ProdutoListDTO[] }> => {
+    const [catsRes, countRes, destRes] = await Promise.all([
+      supabaseAdmin
+        .from("categorias")
+        .select("id, slug, nome, numero, imagem_url, ordem")
+        .order("ordem", { ascending: true }),
+      supabaseAdmin.from("produtos").select("categoria_id").eq("publicado", true),
+      supabaseAdmin
+        .from("produtos")
+        .select(PRODUTO_BASE_SELECT)
+        .eq("publicado", true)
+        .eq("destaque", true)
+        .order("ordem", { ascending: true })
+        .limit(6),
+    ]);
+    if (catsRes.error) throw new Error(catsRes.error.message);
+    if (countRes.error) throw new Error(countRes.error.message);
+    if (destRes.error) throw new Error(destRes.error.message);
+
+    const counts: Record<string, number> = {};
+    for (const row of (countRes.data ?? []) as { categoria_id: string }[]) {
+      counts[row.categoria_id] = (counts[row.categoria_id] ?? 0) + 1;
+    }
+    const categorias = ((catsRes.data ?? []) as (CategoriaDTO & { id: string })[]).map((c) => ({
+      ...c,
+      qtd: counts[c.id] ?? 0,
+    }));
+    const destaques = (destRes.data as ProdutoRow[] | null ?? []).map(rowToList);
+    return { categorias, destaques };
+  },
+);
+
 export const listProdutos = createServerFn({ method: "GET" })
   .inputValidator((i: unknown) =>
     z

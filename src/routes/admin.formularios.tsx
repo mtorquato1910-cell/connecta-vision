@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Calendar,
   ExternalLink,
@@ -16,17 +16,18 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import {
-  getAll as getAllFormularios,
-  remove as removeFormulario,
   STATUS_COLORS,
   STATUS_LABELS,
   TIPO_LABELS,
-  updateNotas,
-  updateStatus,
   type Formulario,
   type FormularioStatus,
   type FormularioTipo,
 } from "@/lib/admin-formularios-repo";
+import {
+  listFormularios,
+  updateFormulario,
+  deleteFormulario,
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/formularios")({
   component: AdminFormulariosPage,
@@ -39,18 +40,83 @@ const STATUS_ORDER: FormularioStatus[] = [
   "convertido",
   "perdido",
 ];
-const TIPOS: FormularioTipo[] = ["contato", "orcamento_geral", "orcamento_produto"];
+const TIPOS: FormularioTipo[] = [
+  "contato",
+  "orcamento_geral",
+  "orcamento_produto",
+  "orcamento_lp",
+];
+
+/** Converte uma linha do Supabase (formularios + payload jsonb) no shape da UI. */
+function mapRow(r: Record<string, any>): Formulario {
+  const p = (r.payload ?? {}) as Record<string, any>;
+  const tipo: FormularioTipo = (
+    ["contato", "orcamento_geral", "orcamento_produto", "orcamento_lp"] as const
+  ).includes(r.tipo)
+    ? r.tipo
+    : "contato";
+  const status: FormularioStatus = (
+    ["novo", "em_contato", "qualificado", "convertido", "perdido"] as const
+  ).includes(r.status)
+    ? r.status
+    : "novo";
+
+  let mensagem = String(r.mensagem ?? "").trim();
+  if (!mensagem) {
+    const parts: string[] = [];
+    if (Array.isArray(p.itens) && p.itens.length) parts.push(`Itens: ${p.itens.join(", ")}`);
+    if (p.volume) parts.push(`Volume: ${p.volume}`);
+    if (p.prazo) parts.push(`Prazo: ${p.prazo}`);
+    if (p.line_name) parts.push(`Linha: ${p.line_name}`);
+    mensagem = parts.join(" · ") || "—";
+  }
+
+  return {
+    id: r.id,
+    tipo,
+    nome: r.nome ?? "",
+    email: r.email ?? "",
+    whatsapp: r.telefone ?? p.whatsapp ?? null,
+    telefone: r.telefone ?? null,
+    tipo_estabelecimento: p.tipo_estabelecimento ?? null,
+    nome_estabelecimento: r.empresa ?? p.nome_estabelecimento ?? null,
+    cidade: r.cidade ?? null,
+    estado: p.estado ?? null,
+    cargo: p.cargo ?? p.funcao ?? null,
+    produto_id: p.produto_id ?? null,
+    produto_modelo: p.produto_modelo ?? null,
+    produto_nome: p.produto_nome ?? null,
+    mensagem,
+    status,
+    notas_internas: p.notas_internas ?? null,
+    origem_pagina: r.origem ?? "/",
+    criado_em: r.created_at ?? new Date().toISOString(),
+  };
+}
 
 function AdminFormulariosPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [all, setAll] = useState<Formulario[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<FormularioStatus | "all">("all");
   const [tipoFilter, setTipoFilter] = useState<FormularioTipo | "all">("all");
   const [selected, setSelected] = useState<Formulario | null>(null);
 
-  const refresh = () => setRefreshKey((k) => k + 1);
+  const refresh = useCallback(() => {
+    setLoading(true);
+    listFormularios()
+      .then((rows) =>
+        setAll((rows as Record<string, any>[]).map(mapRow)),
+      )
+      .catch((e) =>
+        toast.error(e instanceof Error ? e.message : "Erro ao carregar formulários."),
+      )
+      .finally(() => setLoading(false));
+  }, []);
 
-  const all = useMemo(() => getAllFormularios(), [refreshKey]);
+  useEffect(() => {
+    refresh();
+  }, [refresh]);
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: all.length };
@@ -150,7 +216,9 @@ function AdminFormulariosPage() {
 
         {/* Lista */}
         <div className="text-xs text-ink-soft mb-3 px-1">
-          {filtered.length} {filtered.length === 1 ? "mensagem" : "mensagens"}
+          {loading
+            ? "Carregando…"
+            : `${filtered.length} ${filtered.length === 1 ? "mensagem" : "mensagens"}`}
         </div>
 
         {filtered.length === 0 ? (
@@ -294,27 +362,39 @@ function FormularioDrawer({
   const [notas, setNotas] = useState(formulario.notas_internas ?? "");
   const [notasDirty, setNotasDirty] = useState(false);
 
-  const handleStatusChange = (status: FormularioStatus) => {
-    updateStatus(formulario.id, status);
-    toast.success(`Status alterado para "${STATUS_LABELS[status]}".`);
-    onChange();
+  const handleStatusChange = async (status: FormularioStatus) => {
+    try {
+      await updateFormulario({ data: { id: formulario.id, status } });
+      toast.success(`Status alterado para "${STATUS_LABELS[status]}".`);
+      onChange();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao atualizar status.");
+    }
   };
 
-  const handleSaveNotas = () => {
-    updateNotas(formulario.id, notas);
-    toast.success("Notas salvas.");
-    setNotasDirty(false);
-    onChange();
+  const handleSaveNotas = async () => {
+    try {
+      await updateFormulario({ data: { id: formulario.id, notas } });
+      toast.success("Notas salvas.");
+      setNotasDirty(false);
+      onChange();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao salvar notas.");
+    }
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     if (!confirm(`Excluir mensagem de ${formulario.nome}? Esta ação não pode ser desfeita.`)) {
       return;
     }
-    removeFormulario(formulario.id);
-    toast.success("Mensagem excluída.");
-    onChange();
-    onClose();
+    try {
+      await deleteFormulario({ data: { id: formulario.id } });
+      toast.success("Mensagem excluída.");
+      onChange();
+      onClose();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao excluir.");
+    }
   };
 
   const waText = `Olá ${formulario.nome.split(" ")[0]}, sou da Conecta Equipamentos Veterinários. Recebi sua mensagem${formulario.produto_modelo ? ` sobre o ${formulario.produto_modelo}` : ""} e estou retornando.`;

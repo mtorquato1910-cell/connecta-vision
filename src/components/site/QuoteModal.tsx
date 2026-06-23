@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { X, Send, MessageCircle, Check } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { SITE, waLink, type Produto } from "@/lib/site-data";
-import { addNew as addFormulario } from "@/lib/admin-formularios-repo";
+import { submitFormulario } from "@/lib/admin.functions";
 
 type FormData = {
   nome: string;
@@ -45,23 +45,25 @@ export function QuoteModal({
   const onSubmit = async (data: FormData) => {
     setErro(null);
     try {
-      // Pequeno delay para parecer "rede"
-      await new Promise((r) => setTimeout(r, 350));
-
-      addFormulario({
-        tipo: "orcamento_produto",
-        nome: data.nome,
-        email: data.email,
-        whatsapp: data.telefone,
-        cidade: data.cidade.split("/")[0]?.trim() ?? null,
-        estado: data.cidade.split("/")[1]?.trim() ?? null,
-        nome_estabelecimento: data.clinica,
-        tipo_estabelecimento: "Clínica veterinária",
-        produto_id: produto.slug,
-        produto_modelo: produto.modelo,
-        produto_nome: produto.nome,
-        mensagem: data.mensagem || `Solicito orçamento do ${produto.modelo}.`,
-        origem_pagina: `/produtos/${produto.slug}`,
+      await submitFormulario({
+        data: {
+          tipo: "orcamento_produto",
+          nome: data.nome,
+          email: data.email,
+          telefone: data.telefone || null,
+          empresa: data.clinica || null,
+          cidade: data.cidade.split("/")[0]?.trim() ?? null,
+          mensagem: data.mensagem || `Solicito orçamento do ${produto.modelo}.`,
+          origem: `/produtos/${produto.slug}`,
+          payload: {
+            estado: data.cidade.split("/")[1]?.trim() ?? null,
+            nome_estabelecimento: data.clinica,
+            tipo_estabelecimento: "Clínica veterinária",
+            produto_id: produto.slug,
+            produto_modelo: produto.modelo,
+            produto_nome: produto.nome,
+          },
+        },
       });
 
       setSent(true);

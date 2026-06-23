@@ -1,5 +1,6 @@
-import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, MessageCircle, Send } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -8,41 +9,52 @@ import { Reveal } from "@/components/site/Reveal";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { productSchema, breadcrumbSchema } from "@/lib/schema-org";
-import { findProduto, produtosRelacionados, waLink, type Produto, type Especificacao } from "@/lib/site-data";
+import { waLink, type Produto, type Especificacao } from "@/lib/site-data";
+import { getProduto, getRelacionados } from "@/lib/catalog.functions";
+import { dtoToProduto, dtoToProdutoList } from "@/lib/catalog-adapter";
 
 export const Route = createFileRoute("/produtos/$slug")({
-  loader: ({ params }) => {
-    const p = findProduto(params.slug);
-    if (!p) throw notFound();
-    return { p, relacionados: produtosRelacionados(p) };
-  },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [
-          { title: `${loaderData.p.modelo} — ${loaderData.p.nome} | Conecta` },
-          { name: "description", content: loaderData.p.resumo ?? loaderData.p.nome },
-          { property: "og:title", content: `${loaderData.p.modelo} — Conecta` },
-          { property: "og:description", content: loaderData.p.resumo ?? loaderData.p.nome },
-          { property: "og:image", content: loaderData.p.img },
-        ]
-      : [],
+  head: () => ({
+    meta: [{ title: "Produto — Conecta Equipamentos Veterinários" }],
   }),
-  notFoundComponent: () => (
-    <SiteShell>
-      <div className="container-edge py-32 text-center">
-        <h1 className="font-serif text-4xl">Produto não encontrado</h1>
-        <Link to="/produtos" className="btn-primary mt-6 inline-flex">Ver catálogo</Link>
-      </div>
-    </SiteShell>
-  ),
-  errorComponent: ({ error }) => (
-    <SiteShell><div className="container-edge py-32"><p>Erro: {error.message}</p></div></SiteShell>
-  ),
   component: ProdutoPage,
 });
 
 function ProdutoPage() {
-  const { p, relacionados } = Route.useLoaderData();
+  const { slug } = Route.useParams();
+  const { data, isLoading } = useQuery({
+    queryKey: ["produto", slug],
+    queryFn: async () => {
+      const dto = await getProduto({ data: { slug } });
+      if (!dto) return { p: null as Produto | null, relacionados: [] as Produto[] };
+      const rel = await getRelacionados({
+        data: { categoriaSlug: dto.categoria_slug, excluirSlug: dto.slug, limit: 3 },
+      });
+      return { p: dtoToProduto(dto), relacionados: rel.map(dtoToProdutoList) };
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <SiteShell>
+        <div className="container-edge py-32 text-center text-ink-soft">Carregando…</div>
+      </SiteShell>
+    );
+  }
+  if (!data?.p) {
+    return (
+      <SiteShell>
+        <div className="container-edge py-32 text-center">
+          <h1 className="font-serif text-4xl">Produto não encontrado</h1>
+          <Link to="/produtos" className="btn-primary mt-6 inline-flex">Ver catálogo</Link>
+        </div>
+      </SiteShell>
+    );
+  }
+  return <ProdutoView p={data.p} relacionados={data.relacionados} />;
+}
+
+function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] }) {
   const router = useRouter();
   const [activeImg, setActiveImg] = useState(p.galeria?.[0] ?? p.img);
   const [tab, setTab] = useState<"desc" | "specs" | "uso">("desc");

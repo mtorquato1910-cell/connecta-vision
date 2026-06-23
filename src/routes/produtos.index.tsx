@@ -1,10 +1,12 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { CATEGORIAS, PRODUTOS } from "@/lib/site-data";
+import { listCategorias, listProdutos } from "@/lib/catalog.functions";
+import { dtoToCategoria, dtoToProdutoList } from "@/lib/catalog-adapter";
 import { useLocale } from "@/hooks/useLocale";
 
 type Search = { q?: string; cat?: string };
@@ -25,13 +27,28 @@ export const Route = createFileRoute("/produtos/")({
 
 function ProdutosPage() {
   const { q, cat } = Route.useSearch();
+  const { data, isLoading } = useQuery({
+    queryKey: ["catalogo"],
+    queryFn: async () => {
+      const [cats, prods] = await Promise.all([
+        listCategorias(),
+        listProdutos({ data: {} }),
+      ]);
+      return {
+        categorias: cats.map((c) => dtoToCategoria(c)),
+        produtos: prods.map(dtoToProdutoList),
+      };
+    },
+  });
+  const categorias = data?.categorias ?? [];
+  const produtos = data?.produtos ?? [];
   const navigate = useNavigate({ from: "/produtos" });
   const [query, setQuery] = useState(q ?? "");
   const { t } = useLocale();
 
   const filtered = useMemo(() => {
     const term = (q ?? "").trim().toLowerCase();
-    return PRODUTOS.filter((p) => {
+    return produtos.filter((p) => {
       if (cat && p.categoriaSlug !== cat) return false;
       if (!term) return true;
       return (
@@ -40,9 +57,9 @@ function ProdutosPage() {
         p.categoriaNome.toLowerCase().includes(term)
       );
     });
-  }, [q, cat]);
+  }, [q, cat, produtos]);
 
-  const activeCat = cat ? CATEGORIAS.find((c) => c.slug === cat) : null;
+  const activeCat = cat ? categorias.find((c) => c.slug === cat) : null;
 
   return (
     <SiteShell>
@@ -104,9 +121,9 @@ function ProdutosPage() {
             <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft mb-4">{t("products.lines")}</div>
             <div className="flex lg:flex-col flex-wrap gap-2">
               <CatPill active={!cat} to="/produtos" search={{}}>
-                {t("products.all_categories")} <span className="opacity-50">({PRODUTOS.length})</span>
+                {t("products.all_categories")} <span className="opacity-50">({produtos.length})</span>
               </CatPill>
-              {CATEGORIAS.map((c) => (
+              {categorias.map((c) => (
                 <CatPill key={c.slug} active={cat === c.slug} to="/produtos" search={{ cat: c.slug }}>
                   {c.nome}
                 </CatPill>
@@ -115,7 +132,11 @@ function ProdutosPage() {
           </aside>
 
           <div>
-            {filtered.length === 0 ? (
+            {isLoading ? (
+              <div className="bg-paper border border-line rounded-3xl p-16 text-center text-ink-soft">
+                Carregando catálogo…
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="bg-paper border border-line rounded-3xl p-16 text-center">
                 <h3 className="font-serif text-2xl text-ink">{t("products.empty")}</h3>
                 <p className="mt-2 text-ink-soft">{t("products.empty_hint")}</p>

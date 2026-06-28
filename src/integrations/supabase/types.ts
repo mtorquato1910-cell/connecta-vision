@@ -226,6 +226,7 @@ export type Database = {
       produtos: {
         Row: {
           aplicacoes: Json
+          capa_ajuste: Json
           categoria_id: string
           created_at: string
           descricao: string | null
@@ -245,6 +246,7 @@ export type Database = {
         }
         Insert: {
           aplicacoes?: Json
+          capa_ajuste?: Json
           categoria_id: string
           created_at?: string
           descricao?: string | null
@@ -264,6 +266,7 @@ export type Database = {
         }
         Update: {
           aplicacoes?: Json
+          capa_ajuste?: Json
           categoria_id?: string
           created_at?: string
           descricao?: string | null

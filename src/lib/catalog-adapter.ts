@@ -27,6 +27,7 @@ export function dtoToProdutoList(d: ProdutoListDTO): Produto {
     img: d.imagem_url ?? FALLBACK_IMG,
     galeria: d.galeria,
     destaque: d.destaque,
+    capaAjuste: (d.capa_ajuste as any) ?? undefined,
   };
 }
 

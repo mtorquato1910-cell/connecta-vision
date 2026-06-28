@@ -33,6 +33,8 @@ const PAGE_SIZE = 20;
 
 type Espec = { label: string; valor: string };
 
+type CapaAjuste = { fit?: "contain" | "cover"; zoom?: number; posX?: number; posY?: number };
+
 type ProdutoLista = {
   id: string;
   slug: string;
@@ -61,6 +63,7 @@ type ProdutoFull = {
   diferenciais: string[];
   aplicacoes: string[];
   especificacoes: Espec[];
+  capa_ajuste: CapaAjuste | null;
   marca: string | null;
   subcategoria: string | null;
   configuracoes: string | null;
@@ -470,6 +473,13 @@ function ProductForm({
   })();
   const [imagemCapa, setImagemCapa] = useState<string>(initialUrls[0] ?? "");
   const [imagemRest, setImagemRest] = useState<string[]>(initialUrls.slice(1));
+
+  // Ajuste da capa (encaixe, zoom e posição). Aplica defaults quando vazio.
+  const ca = (produto?.capa_ajuste ?? {}) as CapaAjuste;
+  const [fit, setFit] = useState<"contain" | "cover">(ca.fit ?? "contain");
+  const [zoom, setZoom] = useState<number>(ca.zoom ?? 1);
+  const [posX, setPosX] = useState<number>(ca.posX ?? 50);
+  const [posY, setPosY] = useState<number>(ca.posY ?? 50);
   const [especsText, setEspecsText] = useState(produto ? especsToText(produto.especificacoes) : "");
   const [urlFabricante, setUrlFabricante] = useState(produto?.url_fabricante ?? "");
   const [destaque, setDestaque] = useState(produto?.destaque ?? false);
@@ -501,6 +511,7 @@ function ProductForm({
       diferenciais: produto?.diferenciais ?? [],
       aplicacoes: produto?.aplicacoes ?? (subcategoria.trim() ? [subcategoria.trim()] : []),
       especificacoes: textToEspecs(especsText),
+      capa_ajuste: { fit, zoom, posX, posY },
       marca: marca.trim() || "SHINOVA",
       subcategoria: subcategoria.trim() || null,
       configuracoes: produto?.configuracoes ?? null,
@@ -575,6 +586,130 @@ function ProductForm({
                 setImagemRest(galeria);
               }}
             />
+
+            {/* Ajuste de como a capa aparece nos cards do site */}
+            <div className="mt-5 pt-5 border-t border-line">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-sm font-medium text-ink">Ajuste da capa</p>
+                  <p className="text-xs text-ink-soft mt-0.5">
+                    Controla como a miniatura aparece no card do site.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-[160px_1fr] gap-5 items-start">
+                {/* Preview em tempo real (mesma lógica do card) */}
+                <div>
+                  <div className="aspect-square w-40 max-w-full overflow-hidden rounded-xl border border-line bg-white relative">
+                    {imagemCapa ? (
+                      <img
+                        src={imagemCapa}
+                        alt="Pré-visualização da capa"
+                        className={`h-full w-full ${
+                          fit === "cover" ? "object-cover" : "object-contain p-2"
+                        }`}
+                        style={{
+                          objectPosition: `${posX}% ${posY}%`,
+                          transform: zoom > 1 ? `scale(${zoom})` : undefined,
+                        }}
+                      />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center text-xs text-ink-soft px-2 text-center">
+                        Defina uma capa para ver o preview
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-ink-soft mt-1.5 text-center">Pré-visualização</p>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Encaixe */}
+                  <div className="space-y-1.5">
+                    <label className="block text-sm font-medium text-ink">Encaixe</label>
+                    <div className="inline-flex rounded-lg border border-line overflow-hidden">
+                      <button
+                        type="button"
+                        onClick={() => setFit("contain")}
+                        className={`px-4 py-2 text-sm transition-colors ${
+                          fit === "contain"
+                            ? "bg-conecta-blue text-white"
+                            : "bg-paper text-ink hover:bg-bone"
+                        }`}
+                      >
+                        Inteiro
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFit("cover")}
+                        className={`px-4 py-2 text-sm transition-colors border-l border-line ${
+                          fit === "cover"
+                            ? "bg-conecta-blue text-white"
+                            : "bg-paper text-ink hover:bg-bone"
+                        }`}
+                      >
+                        Preencher
+                      </button>
+                    </div>
+                    <p className="text-xs text-ink-soft">
+                      Inteiro mostra a imagem completa. Preencher cobre todo o quadro (pode cortar bordas).
+                    </p>
+                  </div>
+
+                  {/* Zoom */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center justify-between text-sm font-medium text-ink">
+                      <span>Zoom</span>
+                      <span className="font-mono text-xs text-ink-soft">{zoom.toFixed(2)}x</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={1}
+                      max={2}
+                      step={0.05}
+                      value={zoom}
+                      onChange={(e) => setZoom(Number(e.target.value))}
+                      className="w-full accent-conecta-blue"
+                    />
+                    <p className="text-xs text-ink-soft">Útil principalmente no modo Preencher.</p>
+                  </div>
+
+                  {/* Posição horizontal */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center justify-between text-sm font-medium text-ink">
+                      <span>Posição horizontal</span>
+                      <span className="font-mono text-xs text-ink-soft">{posX}%</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={posX}
+                      onChange={(e) => setPosX(Number(e.target.value))}
+                      className="w-full accent-conecta-blue"
+                    />
+                  </div>
+
+                  {/* Posição vertical */}
+                  <div className="space-y-1.5">
+                    <label className="flex items-center justify-between text-sm font-medium text-ink">
+                      <span>Posição vertical</span>
+                      <span className="font-mono text-xs text-ink-soft">{posY}%</span>
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      step={1}
+                      value={posY}
+                      onChange={(e) => setPosY(Number(e.target.value))}
+                      className="w-full accent-conecta-blue"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </Section>
 
           <Section title="Especificações técnicas">

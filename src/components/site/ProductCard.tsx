@@ -29,6 +29,12 @@ export function ProductCard({ p }: { p: Produto }) {
   };
   useEffect(() => stop, []);
 
+  // Ajuste da capa definido no admin (encaixe, zoom e posição).
+  const fit = p.capaAjuste?.fit ?? "contain";
+  const zoom = p.capaAjuste?.zoom ?? 1;
+  const posX = p.capaAjuste?.posX ?? 50;
+  const posY = p.capaAjuste?.posY ?? 50;
+
   return (
     <Link
       to="/produtos/$slug"
@@ -40,12 +46,18 @@ export function ProductCard({ p }: { p: Produto }) {
       onBlur={reset}
       className="group block bg-paper rounded-3xl overflow-hidden border border-line hover:border-conecta-blue/30 transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(28,30,120,0.35)]"
     >
-      <div className="aspect-[4/3] overflow-hidden bg-white relative">
+      <div className="aspect-square overflow-hidden bg-white relative">
         <img
           src={imgs[idx] ?? p.img}
           alt={p.nome}
           loading="lazy"
-          className="h-full w-full object-contain p-3 transition-opacity duration-300"
+          className={`h-full w-full transition-opacity duration-300 ${
+            fit === "cover" ? "object-cover" : "object-contain p-2"
+          }`}
+          style={{
+            objectPosition: `${posX}% ${posY}%`,
+            transform: zoom > 1 ? `scale(${zoom})` : undefined,
+          }}
         />
         <CategoryBadge variant="overlay" className="absolute top-4 left-4 z-10">
           {p.categoriaNome}

@@ -159,6 +159,15 @@ const produtoSchema = z.object({
   diferenciais: z.array(z.string().min(1).max(240)).max(20).default([]),
   aplicacoes: z.array(z.string().min(1).max(240)).max(30).default([]),
   especificacoes: z.array(especSchema).max(40).default([]),
+  capa_ajuste: z
+    .object({
+      fit: z.enum(["contain", "cover"]).optional(),
+      zoom: z.number().min(1).max(2).optional(),
+      posX: z.number().min(0).max(100).optional(),
+      posY: z.number().min(0).max(100).optional(),
+    })
+    .optional()
+    .default({}),
   marca: z.string().max(160).optional().nullable(),
   subcategoria: z.string().max(160).optional().nullable(),
   configuracoes: z.string().max(4000).optional().nullable(),

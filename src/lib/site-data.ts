@@ -63,6 +63,7 @@ export type Produto = {
   especificacoes?: Especificacao[];
   subcategoria?: string | null;
   urlFabricante?: string | null;
+  capaAjuste?: { fit?: "contain" | "cover"; zoom?: number; posX?: number; posY?: number };
 };
 
 // ─── Tipos brutos do JSON ────────────────────────────────────────────────────

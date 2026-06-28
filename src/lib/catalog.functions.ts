@@ -14,6 +14,13 @@ export type CategoriaDTO = {
   ordem: number;
 };
 
+export type CapaAjusteDTO = {
+  fit?: "contain" | "cover";
+  zoom?: number;
+  posX?: number;
+  posY?: number;
+};
+
 export type ProdutoListDTO = {
   slug: string;
   modelo: string;
@@ -23,6 +30,7 @@ export type ProdutoListDTO = {
   categoria_slug: string;
   categoria_nome: string;
   galeria: string[];
+  capa_ajuste: CapaAjusteDTO | null;
 };
 
 export type ProdutoDTO = ProdutoListDTO & {
@@ -35,7 +43,7 @@ export type ProdutoDTO = ProdutoListDTO & {
 };
 
 const PRODUTO_BASE_SELECT =
-  "slug, modelo, nome, imagem_url, destaque, ordem, resumo, descricao, galeria, diferenciais, aplicacoes, especificacoes, categoria:categorias!inner(slug, nome)";
+  "slug, modelo, nome, imagem_url, destaque, ordem, resumo, descricao, galeria, diferenciais, aplicacoes, especificacoes, capa_ajuste, categoria:categorias!inner(slug, nome)";
 
 type ProdutoRow = {
   slug: string;
@@ -50,6 +58,7 @@ type ProdutoRow = {
   diferenciais: unknown;
   aplicacoes: unknown;
   especificacoes: unknown;
+  capa_ajuste: unknown;
   categoria: { slug: string; nome: string } | { slug: string; nome: string }[];
 };
 
@@ -79,6 +88,7 @@ function rowToList(r: ProdutoRow): ProdutoListDTO {
     categoria_nome: cat?.nome ?? "",
     // Até 6 imagens para o carrossel no hover do card (mantém o payload enxuto).
     galeria: asStringArray(r.galeria).slice(0, 6),
+    capa_ajuste: (r.capa_ajuste as any) ?? null,
   };
 }
 

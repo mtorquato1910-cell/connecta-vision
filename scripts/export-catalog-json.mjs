@@ -173,6 +173,23 @@ async function main() {
     };
   });
 
+  // Pré-computa contagem e imagem de capa por categoria e injeta no
+  // categorias.json. Assim o site-data deriva CATEGORIAS sem precisar importar
+  // o produtos.json (1MB) no bundle leve do site.
+  const countBySlug = {};
+  const firstImgBySlug = {};
+  for (const p of produtosJson) {
+    if (p.publicado === false) continue;
+    countBySlug[p.categoria_slug] = (countBySlug[p.categoria_slug] ?? 0) + 1;
+    if (p.imagem_principal && !firstImgBySlug[p.categoria_slug]) {
+      firstImgBySlug[p.categoria_slug] = p.imagem_principal;
+    }
+  }
+  for (const c of categoriasJson) {
+    c.qtd = countBySlug[c.slug] ?? 0;
+    c.img = firstImgBySlug[c.slug] ?? null;
+  }
+
   const catPath = resolve(ROOT, "src/data/categorias.json");
   const prodPath = resolve(ROOT, "src/data/produtos.json");
   writeFileSync(catPath, JSON.stringify(categoriasJson, null, 2) + "\n", "utf8");

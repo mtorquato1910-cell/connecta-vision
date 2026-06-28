@@ -8,7 +8,9 @@
     "ordem": 1,
     "destaque": false,
     "icone": "activity",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 66,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/moni-3l/0834c51e5412.jpg"
   },
   {
     "id": "imagem-diagnostico",
@@ -19,7 +21,9 @@
     "ordem": 2,
     "destaque": false,
     "icone": "scan",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 29,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/dr-800l/797612274dc7.jpg"
   },
   {
     "id": "laboratorio-clinico",
@@ -30,7 +34,9 @@
     "ordem": 3,
     "destaque": false,
     "icone": "test-tube",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 28,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/pv-45x/feb2c2b566db.jpg"
   },
   {
     "id": "tratamento-recuperacao",
@@ -41,7 +47,9 @@
     "ordem": 4,
     "destaque": false,
     "icone": "heart-pulse",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 20,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/w003/5c553529c3ad.jpg"
   },
   {
     "id": "odontologia-veterinaria",
@@ -52,7 +60,9 @@
     "ordem": 5,
     "destaque": false,
     "icone": "stethoscope",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 13,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/lc-c240c/d6ccf262c9c4.jpg"
   },
   {
     "id": "oftalmologia-veterinaria",
@@ -63,7 +73,9 @@
     "ordem": 6,
     "destaque": false,
     "icone": "eye",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 5,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/ls-350a/af9b04d720e5.jpg"
   },
   {
     "id": "exame-diagnostico",
@@ -74,7 +86,9 @@
     "ordem": 7,
     "destaque": false,
     "icone": "microscope",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 45,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/sr-f1b/90ecdddfa879.jpg"
   },
   {
     "id": "pet-grooming-estetica",
@@ -85,6 +99,8 @@
     "ordem": 8,
     "destaque": false,
     "icone": "scissors",
-    "fonte_aba": ""
+    "fonte_aba": "",
+    "qtd": 24,
+    "img": "https://xrotxaapnkyokgebpodv.supabase.co/storage/v1/object/public/produtos/mcg-302c/f54050fb763b.jpg"
   }
 ]

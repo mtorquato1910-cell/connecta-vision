@@ -8,13 +8,8 @@ import { Reveal } from "@/components/site/Reveal";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { productSchema, breadcrumbSchema } from "@/lib/schema-org";
-import {
-  waLink,
-  findProduto,
-  produtosRelacionados,
-  type Produto,
-  type Especificacao,
-} from "@/lib/site-data";
+import { waLink, type Produto, type Especificacao } from "@/lib/site-data";
+import { findProduto, produtosRelacionados } from "@/lib/produtos-data";
 
 export const Route = createFileRoute("/produtos/$slug")({
   // Dados estáticos do bundle, resolvidos no servidor (SSR-safe). A ficha do

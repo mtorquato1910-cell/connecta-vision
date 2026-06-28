@@ -15,4 +15,19 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  // Isola o catálogo pesado (produtos.json, ~1MB) num chunk dedicado. Sem isso,
+  // o Rollup iça o JSON (compartilhado pelas 3 rotas /produtos*) para o entry,
+  // fazendo TODA página baixar as specs dos 230 produtos. Com o manualChunk, o
+  // catálogo só carrega ao entrar nas rotas de produto.
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id: string) {
+            if (id.includes("data/produtos.json")) return "catalogo-produtos";
+          },
+        },
+      },
+    },
+  },
 });

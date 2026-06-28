@@ -4,7 +4,8 @@ import { Search, X } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { CATEGORIAS, PRODUTOS } from "@/lib/site-data";
+import { CATEGORIAS } from "@/lib/site-data";
+import { PRODUTOS } from "@/lib/produtos-data";
 import { useLocale } from "@/hooks/useLocale";
 
 type Search = { q?: string; cat?: string };

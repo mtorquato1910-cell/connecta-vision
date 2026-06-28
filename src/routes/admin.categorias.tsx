@@ -6,6 +6,7 @@ import {
   ExternalLink,
   FolderTree,
   Pencil,
+  Plus,
   Star,
   X,
 } from "lucide-react";
@@ -37,8 +38,7 @@ type Categoria = {
 };
 
 function toUpsert(c: Categoria) {
-  return {
-    id: c.id,
+  const base = {
     slug: c.slug,
     nome: c.nome,
     numero: c.numero,
@@ -48,7 +48,18 @@ function toUpsert(c: Categoria) {
     ordem: c.ordem,
     destaque: c.destaque,
   };
+  // Sem id ⇒ criação (Supabase gera o uuid). Com id ⇒ atualização.
+  return c.id ? { id: c.id, ...base } : base;
 }
+
+const slugify = (s: string) =>
+  s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
 
 export const Route = createFileRoute("/admin/categorias")({
   component: AdminCategoriasPage,
@@ -58,6 +69,24 @@ function AdminCategoriasPage() {
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [countByCat, setCountByCat] = useState<Record<string, number>>({});
   const [editing, setEditing] = useState<Categoria | null>(null);
+  const [creating, setCreating] = useState(false);
+
+  // Categoria em branco para o formulário de criação (numero/ordem automáticos).
+  const novaCategoria = (): Categoria => {
+    const maxOrdem = categorias.reduce((m, c) => Math.max(m, c.ordem ?? 0), 0);
+    const proximo = categorias.length + 1;
+    return {
+      id: "",
+      slug: "",
+      nome: "",
+      numero: String(proximo).padStart(2, "0"),
+      ordem: maxOrdem + 1,
+      destaque: false,
+      descricao_curta: "",
+      imagem_url: null,
+      icone: null,
+    };
+  };
 
   const refresh = useCallback(() => {
     Promise.all([listAllCategorias(), listAllProdutos()])
@@ -137,6 +166,18 @@ function AdminCategoriasPage() {
       />
 
       <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-5xl">
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <p className="text-sm text-ink-soft">
+            {categorias.length} categorias · reordene, edite ou crie novas linhas.
+          </p>
+          <Button
+            onClick={() => setCreating(true)}
+            className="bg-conecta-blue hover:bg-conecta-blue-deep text-white shrink-0"
+          >
+            <Plus className="h-4 w-4" /> Nova categoria
+          </Button>
+        </div>
+
         <div className="space-y-2">
           {categorias.map((c, i) => (
             <div
@@ -225,15 +266,17 @@ function AdminCategoriasPage() {
         </div>
 
         <div className="mt-6 rounded-xl border border-line bg-bone/40 p-4 text-xs text-ink-soft">
-          <strong>📌 Estrutura fixa:</strong> as 8 categorias vêm da planilha
-          Shinova e não podem ser adicionadas/removidas pelo painel, apenas
-          editadas e reordenadas. Para mudanças estruturais, fale com o suporte.
+          <strong>📌 Dica:</strong> as 8 linhas originais vêm da planilha Shinova.
+          Você pode criar novas categorias pelo botão "Nova categoria", escolher o
+          ícone do menu e reordenar. Categorias novas aparecem automaticamente no
+          seletor ao cadastrar um produto.
         </div>
       </div>
 
       {editing && (
         <CategoriaForm
           categoria={editing}
+          mode="edit"
           onClose={() => setEditing(null)}
           onSave={async (input) => {
             try {
@@ -247,30 +290,82 @@ function AdminCategoriasPage() {
           }}
         />
       )}
+
+      {creating && (
+        <CategoriaForm
+          categoria={novaCategoria()}
+          mode="create"
+          existingSlugs={categorias.map((c) => c.slug)}
+          onClose={() => setCreating(false)}
+          onSave={async (input) => {
+            const base = novaCategoria();
+            try {
+              await upsertCategoria({ data: toUpsert({ ...base, ...input }) });
+              toast.success("Categoria criada.");
+              setCreating(false);
+              refresh();
+            } catch (e) {
+              toast.error(e instanceof Error ? e.message : "Erro ao criar.");
+            }
+          }}
+        />
+      )}
     </div>
   );
 }
 
 function CategoriaForm({
   categoria,
+  mode = "edit",
+  existingSlugs = [],
   onClose,
   onSave,
 }: {
   categoria: Categoria;
+  mode?: "edit" | "create";
+  existingSlugs?: string[];
   onClose: () => void;
   onSave: (data: Partial<Categoria>) => void;
 }) {
+  const isCreate = mode === "create";
   const [nome, setNome] = useState(categoria.nome);
   const [descricao, setDescricao] = useState(categoria.descricao_curta);
   const [destaque, setDestaque] = useState(categoria.destaque);
   const [icone, setIcone] = useState<string>(
-    categoria.icone || defaultIconKeyForSlug(categoria.slug),
+    categoria.icone || (isCreate ? "activity" : defaultIconKeyForSlug(categoria.slug)),
   );
+  // No modo criação o slug acompanha o nome até o usuário editar manualmente.
+  const [slug, setSlug] = useState(categoria.slug);
+  const [slugTocado, setSlugTocado] = useState(false);
+
+  const onNomeChange = (v: string) => {
+    setNome(v);
+    if (isCreate && !slugTocado) setSlug(slugify(v));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!nome.trim()) {
       toast.error("Nome obrigatório.");
+      return;
+    }
+    if (isCreate) {
+      const s = slugify(slug || nome);
+      if (!s) {
+        toast.error("Slug inválido. Use letras, números e hífens.");
+        return;
+      }
+      if (existingSlugs.includes(s)) {
+        toast.error("Já existe uma categoria com esse slug.");
+        return;
+      }
+      onSave({
+        nome: nome.trim(),
+        slug: s,
+        descricao_curta: descricao.trim(),
+        destaque,
+        icone,
+      });
       return;
     }
     onSave({
@@ -293,9 +388,11 @@ function CategoriaForm({
         <header className="border-b border-line px-5 sm:px-6 py-4 flex items-center justify-between">
           <div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-ink-soft font-mono">
-              Editar categoria · {categoria.numero}
+              {isCreate ? "Nova categoria" : "Editar categoria"} · {categoria.numero}
             </div>
-            <h2 className="font-serif text-xl text-ink mt-0.5">{categoria.nome}</h2>
+            <h2 className="font-serif text-xl text-ink mt-0.5">
+              {isCreate ? nome || "Sem nome" : categoria.nome}
+            </h2>
           </div>
           <button
             onClick={onClose}
@@ -312,7 +409,8 @@ function CategoriaForm({
             <input
               required
               value={nome}
-              onChange={(e) => setNome(e.target.value)}
+              onChange={(e) => onNomeChange(e.target.value)}
+              placeholder={isCreate ? "Ex.: Reabilitação & Fisioterapia" : undefined}
               className="input"
             />
           </div>
@@ -336,12 +434,21 @@ function CategoriaForm({
           <div className="space-y-1.5">
             <label className="block text-sm font-medium text-ink">Slug (URL)</label>
             <input
-              value={categoria.slug}
-              disabled
-              className="input bg-bone cursor-not-allowed font-mono text-xs"
+              value={isCreate ? slug : categoria.slug}
+              disabled={!isCreate}
+              onChange={(e) => {
+                setSlugTocado(true);
+                setSlug(slugify(e.target.value));
+              }}
+              placeholder="ex.: reabilitacao-fisioterapia"
+              className={`input font-mono text-xs ${
+                isCreate ? "" : "bg-bone cursor-not-allowed"
+              }`}
             />
             <p className="text-xs text-ink-soft">
-              O slug não pode ser alterado para preservar links existentes.
+              {isCreate
+                ? "Gerado a partir do nome. Compõe a URL /produtos/categoria/slug e não pode ser alterado depois."
+                : "O slug não pode ser alterado para preservar links existentes."}
             </p>
           </div>
 
@@ -397,7 +504,7 @@ function CategoriaForm({
             onClick={handleSubmit}
             className="bg-conecta-blue hover:bg-conecta-blue-deep text-white"
           >
-            Salvar
+            {isCreate ? "Criar categoria" : "Salvar"}
           </Button>
         </footer>
       </div>

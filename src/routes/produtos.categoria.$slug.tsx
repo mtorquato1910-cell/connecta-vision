@@ -2,12 +2,8 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import {
-  CATEGORIAS,
-  findCategoria,
-  produtosPorCategoria,
-  type Produto,
-} from "@/lib/site-data";
+import { CATEGORIAS, findCategoria, type Produto } from "@/lib/site-data";
+import { produtosPorCategoria } from "@/lib/produtos-data";
 
 export const Route = createFileRoute("/produtos/categoria/$slug")({
   // Dados estáticos do bundle, resolvidos no servidor (SSR-safe). A categoria

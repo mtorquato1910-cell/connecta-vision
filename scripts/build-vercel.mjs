@@ -42,7 +42,7 @@ await build({
   bundle: true,
   format: "esm",
   platform: "node",
-  target: "node20",
+  target: "node22",
   outfile: join(funcDir, "index.mjs"),
   legalComments: "none",
   logLevel: "warning",
@@ -64,7 +64,7 @@ console.log("✓ SSR bundle gerado (runtime Node)");
 writeFileSync(
   join(funcDir, ".vc-config.json"),
   JSON.stringify(
-    { runtime: "nodejs20.x", handler: "index.mjs", launcherType: "Nodejs", shouldAddHelpers: false },
+    { runtime: "nodejs22.x", handler: "index.mjs", launcherType: "Nodejs", shouldAddHelpers: false },
     null,
     2,
   ),

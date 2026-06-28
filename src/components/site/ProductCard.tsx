@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import type { Produto } from "@/lib/site-data";
-import { CategoryBadge } from "@/components/shared/CategoryBadge";
 
 export function ProductCard({ p }: { p: Produto }) {
   // Foto principal + galeria (dedup). Usadas no carrossel ao passar o mouse.
@@ -59,9 +58,6 @@ export function ProductCard({ p }: { p: Produto }) {
             transform: zoom > 1 ? `scale(${zoom})` : undefined,
           }}
         />
-        <CategoryBadge variant="overlay" className="absolute top-4 left-4 z-10">
-          {p.categoriaNome}
-        </CategoryBadge>
         {imgs.length > 1 && (
           <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
             {imgs.map((_, i) => (
@@ -76,7 +72,8 @@ export function ProductCard({ p }: { p: Produto }) {
         )}
       </div>
       <div className="p-5">
-        <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-conecta-orange font-medium">{p.modelo}</div>
+        <div className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-soft">{p.categoriaNome}</div>
+        <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.2em] text-conecta-orange font-medium">{p.modelo}</div>
         <h3 className="mt-2 font-sans text-base font-normal text-ink-soft leading-snug line-clamp-2">{p.nome}</h3>
         <div className="mt-4 flex items-center justify-between text-sm">
           <span className="text-ink font-medium">Ver detalhes</span>

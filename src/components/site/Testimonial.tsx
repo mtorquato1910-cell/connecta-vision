@@ -7,9 +7,9 @@ export function Testimonial() {
       <div className="container-edge py-24 md:py-32 relative">
         <Reveal>
           <p className="font-serif italic text-2xl md:text-4xl leading-[1.25] text-center max-w-4xl mx-auto">
-            Trocamos três distribuidores diferentes pelo atendimento da Conecta. Importação direta, suporte que
-            responde no mesmo dia, equipamentos certificados. Resolveu o que três fornecedores não tinham
-            resolvido em seis meses.
+            Montei boa parte do hospital com a Conecta. O equipamento chegou instalado, calibrado e com a equipe
+            treinada, e o suporte responde no mesmo dia. Comprar de um fornecedor só, com representação oficial,
+            economizou meses e simplificou tudo na estruturação.
           </p>
         </Reveal>
         <Reveal delay={0.1}>

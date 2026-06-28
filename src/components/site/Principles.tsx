@@ -3,18 +3,18 @@ import { Reveal } from "./Reveal";
 const ITEMS = [
   {
     n: "i.",
-    title: "Curadoria de catálogo",
-    body: "Trabalhamos apenas com fabricantes auditados. Cada equipamento passa por validação técnica antes de entrar no portfólio. Nada de marca de gaveta empurrada pra preencher catálogo.",
+    title: "Clínica inteira, fornecedor único",
+    body: "Do centro cirúrgico ao laboratório, da imagem à odontologia, você equipa toda a operação em uma só origem. Simplifica compra, instalação, treinamento e manutenção, sem montar a clínica com dezenas de fornecedores diferentes.",
   },
   {
     n: "ii.",
-    title: "Suporte que entende clínica",
-    body: "Equipe técnica formada por profissionais com background veterinário. Você conversa com quem sabe usar o equipamento na rotina real, não com SAC genérico de importadora.",
+    title: "Equipamento de origem, não estoque genérico",
+    body: "Tecnologia importada de alta performance, produzida sob demanda para a sua operação. O prazo de 60 a 90 dias reflete a fabricação sob medida e a representação oficial, sem intermediário inflando preço no caminho.",
   },
   {
     n: "iii.",
-    title: "Logística sob demanda",
-    body: "Importação direta e fornecimento sob pedido. Você compra exatamente o que vai usar, sem intermediário inflando custo, sem estoque parado encarecendo o produto.",
+    title: "Instalado, calibrado e com equipe treinada",
+    body: "Todo equipamento chega instalado, comissionado, calibrado e com treinamento operacional incluído. Suporte técnico nacional que responde de verdade, com gente que conhece a rotina clínica, não SAC genérico de importadora.",
   },
 ];
 
@@ -23,10 +23,10 @@ export function Principles() {
     <section className="bg-bone border-y border-line">
       <div className="container-edge py-20 md:py-28">
         <div className="max-w-3xl mb-14">
-          <Reveal><span className="eyebrow">Por que Conecta</span></Reveal>
+          <Reveal><span className="eyebrow">Por que comprar Conecta</span></Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-[1.05] text-ink">
-              Três princípios <em className="italic text-conecta-orange">guiam</em> tudo que distribuímos.
+              Três razões pelas quais clínicas premium <em className="italic text-conecta-orange">escolhem nossa distribuição.</em>
             </h2>
           </Reveal>
         </div>

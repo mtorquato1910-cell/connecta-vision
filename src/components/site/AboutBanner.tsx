@@ -13,14 +13,14 @@ export function AboutBanner() {
           <Reveal><span className="eyebrow">Quem somos</span></Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-[1.05] text-ink">
-              Uma operação <em className="italic text-conecta-orange">brasileira</em> com olhar global para medicina veterinária.
+              Uma distribuidora <em className="italic text-conecta-orange">brasileira</em> com tecnologia importada e suporte que responde.
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <div className="mt-6 space-y-4 text-ink-soft leading-relaxed">
-              <p>A Conecta nasceu da insatisfação com o status quo de distribuição de equipamentos veterinários no Brasil, catálogos inflados de marca de gaveta, suporte genérico, importação atravessada por múltiplos intermediários que inflam preço sem agregar serviço.</p>
-              <p>Hoje somos representante oficial da linha completa Shinova no país, com sede em Vespasiano/MG e cobertura nacional. Nosso compromisso é simples: equipamento certo, no prazo certo, com suporte técnico que entende a rotina clínica.</p>
-              <p>Mais de 40 clínicas, hospitais, universidades e centros de pesquisa já operam com Conecta, e essa rede cresce porque entregamos exatamente o que promete o catálogo.</p>
+              <p>A Conecta nasceu para acabar com o que cansava o veterinário no Brasil, catálogos cheios de marca de gaveta, suporte genérico e importação atravessada por intermediários que só inflam o preço sem agregar serviço algum.</p>
+              <p>Hoje somos distribuidor oficial da linha completa Shinova no país, com sede em Vespasiano/MG e entrega para todo o Brasil. Nosso compromisso é direto: equipamento certo, no prazo combinado, instalado, calibrado e com a sua equipe treinada para operar desde o primeiro dia.</p>
+              <p>Mais de 300 clientes ativos, entre clínicas, hospitais, universidades e centros de pesquisa, já operam com a Conecta, e essa rede cresce porque entregamos exatamente o que o catálogo promete.</p>
             </div>
           </Reveal>
           <Reveal delay={0.15}>

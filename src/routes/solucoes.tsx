@@ -6,20 +6,20 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/solucoes")({
   head: () => ({
     meta: [
-      { title: "Soluções por perfil, Conecta Equipamentos Veterinários" },
-      { name: "description", content: "Soluções completas para clínicas, hospitais, pet shops e centros de especialidade." },
-      { property: "og:title", content: "Soluções Conecta" },
-      { property: "og:description", content: "Pacotes técnicos sob medida por perfil de operação veterinária." },
+      { title: "Soluções por perfil | Conecta Equipamentos Veterinários" },
+      { name: "description", content: "Estruture clínica, hospital, centro de especialidade ou pet shop com a Conecta. Pacotes de equipamentos Shinova sob medida, instalados, calibrados e com treinamento incluso." },
+      { property: "og:title", content: "Soluções Conecta por perfil de clínica" },
+      { property: "og:description", content: "Pacotes técnicos sob medida por perfil de operação veterinária, com instalação, calibração e treinamento inclusos." },
     ],
   }),
   component: SolucoesPage,
 });
 
 const ITENS = [
-  { icon: Stethoscope, t: "Clínicas Veterinárias", d: "Setup completo para clínica geral: consultório, atendimento, pequenos procedimentos e laboratório básico.", linhas: ["Monitorização", "Bioquímica", "Hematologia", "Imagem ambulatorial"] },
-  { icon: Hospital, t: "Hospitais Veterinários", d: "Estruturação de centro cirúrgico, UTI e diagnóstico avançado com integração técnica.", linhas: ["Centro cirúrgico", "UTI", "Anestesia", "Imagem completa"] },
-  { icon: Building2, t: "Centros de Especialidade", d: "Equipamentos dedicados para oftalmologia, cardiologia, oncologia e reprodução.", linhas: ["Oftalmologia", "Cardiologia", "Reprodução", "Diagnóstico avançado"] },
-  { icon: Scissors, t: "Pet Shops & Estética", d: "Estética veterinária com mesas hidráulicas, secadores e estruturas de banho e tosa.", linhas: ["Mesas hidráulicas", "Banheiras inox", "Secadores", "Suporte"] },
+  { icon: Stethoscope, t: "Clínicas Veterinárias", d: "Equipe a clínica geral em um só fornecedor: consultório, atendimento, pequenos procedimentos e laboratório de rotina, tudo instalado e com a equipe treinada.", linhas: ["Monitoração", "Bioquímica", "Hematologia", "Imagem ambulatorial"] },
+  { icon: Hospital, t: "Hospitais Veterinários", d: "Estruture centro cirúrgico, UTI e diagnóstico avançado com equipamentos integrados, comissionados e calibrados para operação de alto giro.", linhas: ["Centro cirúrgico", "UTI", "Anestesia", "Imagem completa"] },
+  { icon: Building2, t: "Centros de Especialidade", d: "Equipamentos dedicados para oftalmologia, cardiologia, oncologia e reprodução, com a precisão que a especialidade exige.", linhas: ["Oftalmologia", "Cardiologia", "Reprodução", "Diagnóstico avançado"] },
+  { icon: Scissors, t: "Pet Shops e Estética", d: "Estética veterinária completa com mesas hidráulicas, secadores e estruturas de banho e tosa robustas para o uso diário.", linhas: ["Mesas hidráulicas", "Banheiras inox", "Secadores", "Suporte"] },
 ];
 
 function SolucoesPage() {
@@ -32,7 +32,7 @@ function SolucoesPage() {
             Pacotes técnicos sob medida para cada operação veterinária.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-ink-soft">
-            Da clínica de bairro ao hospital de referência, montamos o conjunto de equipamentos certo para o tamanho, o foco clínico e o orçamento do seu projeto.
+            Da clínica de bairro ao hospital de referência, montamos o conjunto de equipamentos certo para o tamanho, o foco clínico e o orçamento do seu projeto, com instalação, calibração e treinamento da equipe inclusos. Você equipa em etapas, sem precisar decidir tudo de uma vez.
           </p>
         </Reveal>
       </section>

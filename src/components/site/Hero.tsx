@@ -11,18 +11,18 @@ export function Hero() {
       <div className="container-edge pt-10 sm:pt-16 md:pt-24 pb-16 md:pb-28 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="eyebrow">Equipamentos veterinários premium</span>
+            <span className="eyebrow">Distribuidor oficial Shinova no Brasil</span>
           </Reveal>
           <Reveal delay={0.05}>
             <h1 className="mt-5 sm:mt-6 font-serif text-[32px] sm:text-[40px] md:text-[52px] lg:text-[64px] leading-[1.02] tracking-tight text-ink">
-              Equipamentos veterinários <em className="italic text-conecta-blue">de origem</em>, para quem não aceita aproximação clínica.
+              Equipe sua clínica com tecnologia veterinária <em className="italic text-conecta-blue">de verdade</em>, instalada e calibrada por quem entende.
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-5 sm:mt-6 text-base sm:text-lg text-ink-soft max-w-xl leading-relaxed">
-              Distribuímos a linha completa <strong className="text-ink">Shinova</strong> no Brasil, anestesia, monitoramento, imagem, laboratório,
-              odontologia, cirurgia, oftalmologia e estética veterinária. Mais de 230 equipamentos em catálogo,
-              importação direta, suporte técnico nacional.
+              Somos o distribuidor oficial <strong className="text-ink">Shinova</strong> no Brasil, com a linha completa em um só fornecedor:
+              anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária.
+              Mais de 230 equipamentos importados de alta tecnologia, instalados, calibrados e com treinamento da sua equipe incluído.
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -47,7 +47,7 @@ export function Hero() {
                 ))}
               </div>
               <p className="text-sm text-ink-soft max-w-xs">
-                <strong className="text-ink">Mais de 40 clínicas e hospitais</strong> já operam com equipamentos Conecta.
+                <strong className="text-ink">Mais de 300 clientes ativos</strong> já operam com equipamentos distribuídos pela Conecta em todo o Brasil.
               </p>
             </div>
           </Reveal>
@@ -69,8 +69,8 @@ export function Hero() {
               <div className="grid grid-cols-3 gap-1 mt-3">
                 {[
                   ["230+", "Equipamentos"],
-                  ["8", "Categorias"],
-                  ["26 UF", "Cobertura nacional"],
+                  ["300", "Clientes ativos"],
+                  ["Brasil", "Entrega nacional"],
                 ].map(([n, l]) => (
                   <div key={l} className="rounded-xl bg-paper p-3 text-center">
                     <div className="font-serif text-xl text-conecta-blue">{n}</div>

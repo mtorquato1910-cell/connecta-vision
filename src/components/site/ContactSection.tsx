@@ -6,9 +6,9 @@ import { toast } from "sonner";
 
 const PROMISES = [
   "Resposta em até 4 horas em dias úteis",
-  "Atendimento direto com especialista técnico",
-  "Cotação completa: equipamento, frete, instalação",
-  "Suporte pós-venda incluído",
+  "Atendimento direto com especialista técnico, sem script",
+  "Proposta sob medida: equipamento, frete, instalação e treinamento",
+  "Instalação, calibração e suporte pós-venda inclusos",
 ];
 
 export function ContactSection() {
@@ -69,7 +69,7 @@ export function ContactSection() {
           <Reveal delay={0.1}>
             <p className="mt-5 text-white/75 text-lg max-w-xl">
               Fale com um especialista da Conecta. Atendimento humano, técnico, sem script. Você descreve o cenário
-              clínico, a gente sugere o equipamento certo.
+              clínico e a gente devolve uma proposta sob medida, com o equipamento certo, instalação e treinamento da equipe.
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -91,8 +91,8 @@ export function ContactSection() {
                 <div className="text-xs uppercase tracking-wide text-white/55 mt-1">Tempo médio de resposta</div>
               </div>
               <div>
-                <div className="font-serif text-3xl">40+</div>
-                <div className="text-xs uppercase tracking-wide text-white/55 mt-1">Clínicas atendidas</div>
+                <div className="font-serif text-3xl">300</div>
+                <div className="text-xs uppercase tracking-wide text-white/55 mt-1">Clientes ativos no Brasil</div>
               </div>
             </div>
           </Reveal>

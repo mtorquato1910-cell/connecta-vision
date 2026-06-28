@@ -14,8 +14,8 @@ type Search = { q?: string; cat?: string };
 export const Route = createFileRoute("/produtos/")({
   head: () => ({
     meta: [
-      { title: "Catálogo de Equipamentos Veterinários, Conecta" },
-      { name: "description", content: "Catálogo completo de equipamentos veterinários: anestesia, imagem, laboratório, odontologia, oftalmologia e mais." },
+      { title: "Catálogo de Equipamentos Veterinários | Conecta, Shinova" },
+      { name: "description", content: "230+ equipamentos veterinários Shinova: anestesia, imagem, laboratório, odontologia, oftalmologia e mais. Importados, instalados, calibrados e com treinamento incluso, para todo o Brasil." },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): Search => ({

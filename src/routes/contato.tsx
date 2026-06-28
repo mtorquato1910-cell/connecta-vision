@@ -9,10 +9,10 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 export const Route = createFileRoute("/contato")({
   head: () => ({
     meta: [
-      { title: "Contato, Conecta Equipamentos Veterinários" },
-      { name: "description", content: "Fale com nosso time comercial e técnico. Atendimento por WhatsApp, telefone e e-mail em todo o Brasil." },
+      { title: "Contato | Conecta Equipamentos Veterinários, Distribuidor Shinova" },
+      { name: "description", content: "Fale com a equipe técnica e comercial da Conecta por WhatsApp, telefone ou e-mail. Atendemos clínicas e hospitais em todo o Brasil, com resposta em até 4 horas úteis." },
       { property: "og:title", content: "Fale com a Conecta" },
-      { property: "og:description", content: "Atendimento técnico-comercial em todo o Brasil." },
+      { property: "og:description", content: "Atendimento técnico e comercial em todo o Brasil, com resposta em até 4 horas úteis." },
     ],
   }),
   component: ContatoPage,
@@ -37,7 +37,7 @@ function ContatoPage() {
             Fale com gente que entende de equipamento veterinário.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-ink-soft">
-            Atendemos clínicas em todo o Brasil. Escolha o canal mais confortável, respondemos rápido.
+            Atendemos clínicas e hospitais em todo o Brasil. Escolha o canal mais confortável e fale direto com nossa equipe técnica, resposta em até 4 horas úteis.
           </p>
         </Reveal>
 

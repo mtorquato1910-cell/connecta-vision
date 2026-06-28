@@ -233,10 +233,10 @@ function ContatoForm({
             value={data.telefone_principal}
             onChange={(e) => set("telefone_principal", e.target.value)}
             className="input"
-            placeholder="(31) 9000-0000"
+            placeholder="(11) 94343-6177"
           />
         </Field>
-        <Field label="Telefone principal (raw para wa.me)" hint="Sem símbolos. Ex.: 5531900000000">
+        <Field label="Telefone principal (raw para wa.me)" hint="Sem símbolos. Ex.: 5511943436177">
           <input
             value={data.telefone_principal_raw}
             onChange={(e) => set("telefone_principal_raw", e.target.value)}

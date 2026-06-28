@@ -15,13 +15,14 @@ export const SITE = {
   shortName: "Conecta",
   cnpj: "54.269.525/0001-56",
   city: "Vespasiano/MG",
-  phone: "(31) 9000-0000",
-  phoneRaw: "5531900000000",
+  address: "Av. Prefeito Sebastião Fernandes, 240, Centro, Shopping Premiere, Vespasiano/MG",
+  phone: "(11) 94343-6177",
+  phoneRaw: "5511943436177",
   whatsappMsg:
     "Olá! Vim pelo site da Conecta e gostaria de saber mais sobre os equipamentos veterinários.",
   email: "comercial@conectavet.com.br",
   topBar:
-    "Distribuição oficial Shinova no Brasil · Importação direta · Suporte técnico nacional · WhatsApp: (31) 9000-0000",
+    "Distribuidor oficial Shinova no Brasil · Entrega para todo o Brasil · Instalação, calibração e treinamento inclusos",
 };
 
 export const NAV = [

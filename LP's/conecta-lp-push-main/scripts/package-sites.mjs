@@ -44,7 +44,20 @@ async function optimizeTo(inF, outF) {
   writeFileSync(outF, buf);
 }
 
-rmSync(outBase, { recursive: true, force: true });
+// Limpa a saída. No Windows/OneDrive a pasta-raiz pode estar com lock de sync,
+// então removemos por subpasta (com retry) e nunca falhamos se a raiz não puder
+// ser apagada: o conteúdo de cada site é sobrescrito de qualquer forma.
+function rmRetry(p) {
+  try {
+    rmSync(p, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
+  } catch {
+    // ignora lock transitório de OneDrive/AV na pasta; o conteúdo será reescrito
+  }
+}
+if (existsSync(outBase)) {
+  for (const name of readdirSync(outBase)) rmRetry(join(outBase, name));
+}
+rmRetry(outBase);
 mkdirSync(outBase, { recursive: true });
 
 let totalBefore = 0, totalAfter = 0;

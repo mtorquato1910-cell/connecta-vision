@@ -8,7 +8,7 @@ export function Footer() {
   const { config, texto } = useSiteConfig();
   const descricao = texto(
     "footer.descricao",
-    "Distribuidora brasileira oficial da linha Shinova de equipamentos veterinários. Importação direta, suporte técnico nacional, curadoria de catálogo.",
+    "Distribuidor oficial Shinova de equipamentos veterinários premium. Mais de 230 produtos importados, instalados, calibrados e com treinamento incluso, entregues para todo o Brasil.",
   );
   const copyright = texto(
     "footer.copyright",

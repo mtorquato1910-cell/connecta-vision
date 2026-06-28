@@ -19,17 +19,20 @@ export function organizationSchema() {
     url: SITE_URL,
     logo: `${SITE_URL}/icon-512.png`,
     description:
-      "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários: anestesia, imagem, laboratório, odontologia e mais.",
+      "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil.",
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Av. Prefeito Sebastião Fernandes, 240, Loja 108, Centro",
+      streetAddress: "Av. Prefeito Sebastião Fernandes, 240, Centro, Shopping Premiere",
       addressLocality: "Vespasiano",
       addressRegion: "MG",
       postalCode: "33200-318",
       addressCountry: "BR",
     },
+    telephone: "+5511943436177",
+    areaServed: "BR",
     contactPoint: {
       "@type": "ContactPoint",
+      telephone: "+5511943436177",
       contactType: "Atendimento comercial",
       areaServed: "BR",
       availableLanguage: ["Portuguese"],

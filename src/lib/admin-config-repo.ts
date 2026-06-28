@@ -55,21 +55,21 @@ export const DEFAULT_CONFIG: ConfigAll = {
     nome: "Conecta Equipamentos Veterinários",
     nome_curto: "Conecta",
     cnpj: "54.269.525/0001-56",
-    endereco: "Av. Prefeito Sebastião Fernandes, 240, Loja 108, Centro",
+    endereco: "Av. Prefeito Sebastião Fernandes, 240, Centro, Shopping Premiere",
     cidade: "Vespasiano",
     estado: "MG",
     cep: "33200-318",
     missao:
-      "Levar tecnologia veterinária de ponta a cada clínica do Brasil, com suporte técnico real.",
-    visao: "Ser a referência nacional em distribuição de equipamentos veterinários Shinova até 2030.",
+      "Equipar cada clínica e hospital veterinário do Brasil com tecnologia importada de alta performance, instalada, calibrada e com a equipe treinada, sem intermediário inflando preço.",
+    visao: "Ser a distribuidora veterinária de referência no Brasil, reconhecida por entregar equipamento certo, no prazo combinado, com suporte técnico que responde de verdade.",
   },
   contato: {
     email_comercial: "comercial@conectavet.com.br",
     email_suporte: "suporte@conectavet.com.br",
-    telefone_principal: "(31) 9000-0000",
-    telefone_principal_raw: "5531900000000",
-    whatsapp: "(31) 9000-0000",
-    whatsapp_raw: "5531900000000",
+    telefone_principal: "(11) 94343-6177",
+    telefone_principal_raw: "5511943436177",
+    whatsapp: "(11) 94343-6177",
+    whatsapp_raw: "5511943436177",
     whatsapp_msg_padrao:
       "Olá! Vim pelo site da Conecta e gostaria de saber mais sobre os equipamentos veterinários.",
     horario_atendimento: "Segunda a sexta · 8h às 18h",
@@ -81,11 +81,11 @@ export const DEFAULT_CONFIG: ConfigAll = {
     youtube: "",
   },
   seo: {
-    meta_titulo_global: "Conecta, Equipamentos Veterinários | Distribuidora Shinova Brasil",
+    meta_titulo_global: "Conecta, Equipamentos Veterinários Premium | Distribuidor Shinova",
     meta_descricao_global:
-      "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários: anestesia, imagem, laboratório, odontologia e mais.",
+      "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil.",
     palavras_chave:
-      "equipamentos veterinários, shinova brasil, monitor multiparâmetros, ultrassom veterinário, hematológico vet",
+      "equipamentos veterinários, distribuidor shinova brasil, ultrassom veterinário, monitor multiparâmetros, anestesia veterinária, equipamento odontológico vet, hematológico veterinário",
     og_imagem_url: "/icon-512.png",
     google_analytics_id: "",
     google_search_console_token: "",

@@ -24,7 +24,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
   {
     chave: "home.eyebrow",
     label: "Eyebrow do hero",
-    valor: "Equipamentos veterinários premium",
+    valor: "Distribuidor oficial Shinova no Brasil",
     tipo: "texto",
     pagina: "home",
     descricao: "Linha pequena acima do título principal.",
@@ -33,7 +33,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "home.hero.titulo",
     label: "Título principal (Hero)",
     valor:
-      "Equipamentos veterinários de origem, para quem não aceita aproximação clínica.",
+      "Equipe sua clínica com tecnologia veterinária de verdade, instalada e calibrada por quem entende.",
     tipo: "texto",
     pagina: "home",
     multiline: true,
@@ -43,7 +43,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "home.hero.subtitulo",
     label: "Subtítulo do hero",
     valor:
-      "Distribuímos a linha completa Shinova no Brasil, anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária.",
+      "Somos o distribuidor oficial Shinova no Brasil, com a linha completa em um só fornecedor: anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária. Mais de 230 equipamentos importados, instalados, calibrados e com treinamento da sua equipe incluído.",
     tipo: "texto",
     pagina: "home",
     multiline: true,
@@ -66,7 +66,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "home.depoimento.texto",
     label: "Depoimento, texto",
     valor:
-      "A Conecta vai muito além de fornecer equipamentos. O suporte técnico e o treinamento da equipe fizeram toda a diferença na rotina da clínica.",
+      "A Conecta vai muito além de fornecer equipamentos. Chegou tudo instalado e calibrado, com a equipe treinada, e o suporte técnico responde de verdade. Fez toda a diferença na rotina da clínica.",
     tipo: "texto",
     pagina: "home",
     multiline: true,
@@ -97,7 +97,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
   {
     chave: "sobre.titulo",
     label: "Título",
-    valor: "Tecnologia veterinária com origem técnica e suporte nacional.",
+    valor: "Tecnologia veterinária importada, entregue pronta para operar.",
     tipo: "texto",
     pagina: "sobre",
     multiline: true,
@@ -106,7 +106,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "sobre.historia",
     label: "História",
     valor:
-      "A Conecta Equipamentos Veterinários é a distribuidora oficial Shinova no Brasil. Fundada em Vespasiano/MG, atendemos clínicas, hospitais e universidades com importação direta, treinamento e suporte técnico nacional.",
+      "A Conecta Equipamentos Veterinários é a distribuidora oficial Shinova no Brasil, com 300 clientes ativos em todo o país. Sediada em Vespasiano/MG, atende clínicas, hospitais e universidades com importação direta, equipamentos instalados e calibrados, treinamento da equipe e suporte técnico próprio.",
     tipo: "texto",
     pagina: "sobre",
     multiline: true,
@@ -115,7 +115,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "sobre.missao",
     label: "Missão",
     valor:
-      "Levar tecnologia veterinária de ponta a cada clínica do Brasil, com suporte técnico real e treinamento contínuo.",
+      "Equipar cada clínica e hospital veterinário do Brasil com tecnologia importada de alta performance, instalada, calibrada e com a equipe treinada, sem intermediário inflando preço.",
     tipo: "texto",
     pagina: "sobre",
     multiline: true,
@@ -124,7 +124,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "sobre.visao",
     label: "Visão",
     valor:
-      "Ser a referência nacional em distribuição de equipamentos veterinários Shinova até 2030.",
+      "Ser a distribuidora veterinária de referência no Brasil, reconhecida por entregar equipamento certo, no prazo combinado, com suporte técnico que responde de verdade.",
     tipo: "texto",
     pagina: "sobre",
     multiline: true,
@@ -141,7 +141,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
   {
     chave: "contato.titulo",
     label: "Título",
-    valor: "Estamos prontos para atender sua clínica.",
+    valor: "Fale com gente que entende de equipamento veterinário.",
     tipo: "texto",
     pagina: "contato",
     multiline: true,
@@ -150,7 +150,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "contato.subtitulo",
     label: "Subtítulo",
     valor:
-      "Responda o formulário ou fale direto pelo WhatsApp. Nossa equipe técnica retorna em até 1 dia útil.",
+      "Responda o formulário ou fale direto pelo WhatsApp. Nossa equipe técnica retorna em até 4 horas úteis, com uma proposta sob medida para a sua operação.",
     tipo: "texto",
     pagina: "contato",
     multiline: true,
@@ -168,7 +168,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "global.topbar",
     label: "Texto da barra superior (TopBar)",
     valor:
-      "Distribuição oficial Shinova no Brasil · Importação direta · Suporte técnico nacional",
+      "Distribuidor oficial Shinova no Brasil · Entrega para todo o Brasil · Instalação, calibração e treinamento inclusos",
     tipo: "texto",
     pagina: "global",
     multiline: true,
@@ -189,7 +189,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "footer.descricao",
     label: "Descrição do rodapé",
     valor:
-      "Distribuidora oficial Shinova de equipamentos veterinários. Mais de 230 produtos com importação direta e suporte técnico nacional.",
+      "Distribuidor oficial Shinova de equipamentos veterinários premium. Mais de 230 produtos importados, instalados, calibrados e com treinamento incluso, entregues para todo o Brasil.",
     tipo: "texto",
     pagina: "footer",
     multiline: true,

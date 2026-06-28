@@ -82,8 +82,14 @@
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; background-color: var(--color-background); }
+  * { border-color: var(--color-border); min-width: 0; }
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--color-background);
+    /* Zero scroll horizontal de 320px a 1920px em toda LP. */
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
@@ -92,12 +98,36 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
     font-weight: 400;
     letter-spacing: -0.015em;
+    /* Headings longos quebram em vez de estourar o container no mobile. */
+    overflow-wrap: break-word;
   }
+  /* Mídia nunca extrapola a largura do pai (anti scroll horizontal). */
+  img, svg, video, canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  /* Anti-zoom no iOS: inputs com font-size >= 16px no mobile.
+     Acima de sm o Tailwind text-sm reassume via utilitários nos componentes. */
+  input, select, textarea {
+    font-size: 16px;
+  }
+}
+
+/* Movimento: respeita prefers-reduced-motion (desliga animacoes/transicoes). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  html { scroll-behavior: auto; }
 }
 
 @utility font-display { font-family: var(--font-display); }
@@ -118,5 +148,55 @@
     width: 28px;
     height: 1px;
     background: var(--brand-orange);
+    flex: none;
   }
+}
+
+/* ---- Primitivos de responsividade compartilhados (RSP-1) ---- */
+
+/* Container fluido: padding lateral menor no celular (320px) e mais respiro
+   acima. Substitui o px-6 fixo onde aplicado e mata o estouro a 320px. */
+@utility container-x {
+  padding-inline: clamp(1rem, 4vw, 1.5rem);
+}
+
+/* Tipografia fluida com clamp() para os grandes headings das LPs.
+   Interpola entre o tamanho mobile e o desktop sem saltos por breakpoint. */
+@utility fluid-hero {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.04;
+}
+@utility fluid-h2 {
+  font-size: clamp(2rem, 5.5vw, 3.75rem);
+  line-height: 1.06;
+}
+@utility fluid-h2-sm {
+  font-size: clamp(1.75rem, 4.5vw, 3rem);
+  line-height: 1.1;
+}
+
+/* Grid de produtos fluido: colunas se ajustam sozinhas (auto-fill/minmax).
+   Mantido como fallback/uso direto; a galeria usa flex-wrap responsivo. */
+@utility product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+  gap: 1.25rem;
+}
+
+/* Safe-area para elementos fixos (notch / home indicator no iOS). */
+@utility safe-bottom {
+  bottom: max(1.5rem, env(safe-area-inset-bottom));
+}
+@utility safe-right {
+  right: max(1.5rem, env(safe-area-inset-right));
+}
+
+/* Botao flutuante do WhatsApp: pulso sutil; desligado por prefers-reduced-motion
+   (a regra @media reduce acima zera animation-duration). */
+.wa-float {
+  animation: wa-pulse 3s ease-in-out infinite;
+}
+@keyframes wa-pulse {
+  0%, 90%, 100% { transform: translateY(0); }
+  95% { transform: translateY(-6px); }
 }

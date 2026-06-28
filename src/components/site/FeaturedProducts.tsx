@@ -18,7 +18,7 @@ export function FeaturedProducts() {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
           <div className="max-w-2xl">
             <Reveal>
-              <span className="eyebrow">Equipamentos em destaque</span>
+              <span className="eyebrow-bracket">Equipamentos em destaque</span>
             </Reveal>
             <Reveal delay={0.05}>
               <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-[1.05] text-ink">
@@ -36,7 +36,10 @@ export function FeaturedProducts() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+          className="grid gap-6"
+          style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
+        >
           {destaques.map((p, i) => (
             <Reveal key={p.slug} delay={i * 0.04}>
               <ProductCard p={p} />

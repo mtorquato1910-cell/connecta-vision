@@ -7,11 +7,11 @@ const faqs = site.faq;
 export function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <section className="py-24 md:py-32 bg-background">
-      <div className="max-w-3xl mx-auto px-6">
-        <div className="text-center mb-14">
-          <p className="eyebrow mb-3">Perguntas frequentes</p>
-          <h2 className="font-display text-4xl md:text-5xl text-primary">
+    <section className="py-20 sm:py-24 md:py-32 bg-background">
+      <div className="max-w-3xl mx-auto container-x">
+        <div className="text-center mb-12 sm:mb-14">
+          <p className="eyebrow mb-3 justify-center">Perguntas frequentes</p>
+          <h2 className="font-display fluid-h2-sm text-primary">
             Antes de você <em className="text-accent">perguntar...</em>
           </h2>
         </div>

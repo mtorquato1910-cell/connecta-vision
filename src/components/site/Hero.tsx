@@ -2,19 +2,25 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { waLink } from "@/lib/site-data";
 import { Reveal } from "./Reveal";
+import { Counter } from "./Counter";
 import { useLocale } from "@/hooks/useLocale";
 
 export function Hero() {
   const { t } = useLocale();
   return (
     <section className="relative overflow-hidden">
+      {/* Glow/gradiente: ESTA é a única seção-herói com brilho (constraint). */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-conecta-blue/[0.05] via-transparent to-transparent"
+      />
       <div className="container-edge pt-10 sm:pt-16 md:pt-24 pb-16 md:pb-28 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         <div className="lg:col-span-7">
           <Reveal>
             <span className="eyebrow">Distribuidor oficial Shinova no Brasil</span>
           </Reveal>
           <Reveal delay={0.05}>
-            <h1 className="mt-5 sm:mt-6 font-serif text-[32px] sm:text-[40px] md:text-[52px] lg:text-[64px] leading-[1.02] tracking-tight text-ink">
+            <h1 className="mt-5 sm:mt-6 font-serif h1-hero text-ink">
               Equipe sua clínica com tecnologia veterinária <em className="italic text-conecta-blue">de verdade</em>, instalada e calibrada por quem entende.
             </h1>
           </Reveal>
@@ -27,23 +33,29 @@ export function Hero() {
           </Reveal>
           <Reveal delay={0.15}>
             <div className="mt-7 sm:mt-8 flex flex-wrap gap-3">
-              <Link to="/produtos" className="btn-primary">
+              <Link to="/produtos" className="btn-primary min-h-[44px]">
                 {t("home.cta_primary")} <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href={waLink()} target="_blank" rel="noreferrer" className="btn-ghost">
+              <a href={waLink()} target="_blank" rel="noreferrer" className="btn-ghost min-h-[44px]">
                 {t("home.cta_secondary")} <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </Reveal>
           <Reveal delay={0.22}>
             <div className="mt-10 flex items-center gap-4">
-              <div className="flex -space-x-3">
+              {/* Iniciais em círculos, sem fotos de stock/falsas. */}
+              <div className="flex -space-x-3" aria-hidden>
                 {[
-                  "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&q=80",
-                  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=120&q=80",
-                  "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=120&q=80",
-                ].map((src) => (
-                  <img key={src} src={src} alt="" className="h-10 w-10 rounded-full border-2 border-paper object-cover" />
+                  ["CL", "bg-conecta-blue"],
+                  ["VT", "bg-conecta-teal"],
+                  ["HV", "bg-conecta-orange"],
+                ].map(([ini, bg]) => (
+                  <span
+                    key={ini}
+                    className={`h-10 w-10 rounded-full border-2 border-paper ${bg} text-white text-xs font-semibold flex items-center justify-center`}
+                  >
+                    {ini}
+                  </span>
                 ))}
               </div>
               <p className="text-sm text-ink-soft max-w-xs">
@@ -55,26 +67,65 @@ export function Hero() {
 
         <div className="lg:col-span-5">
           <Reveal delay={0.1}>
-            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-conecta-blue/8 to-conecta-orange/10 p-3 shadow-xl">
-              <div className="relative aspect-[4/5] rounded-2xl overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=900&q=85"
-                  alt="Veterinário em consulta com cão de grande porte"
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
+            {/* Tratamento gráfico sem foto de stock: grafismos finos de
+                precisão/calibração (linhas, pontos de ancoragem). */}
+            <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-conecta-blue/[0.06] via-conecta-teal/[0.05] to-conecta-orange/[0.06] p-3 shadow-xl">
+              <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-paper">
+                <svg
+                  viewBox="0 0 400 500"
+                  className="absolute inset-0 h-full w-full"
+                  aria-hidden
+                  preserveAspectRatio="xMidYMid slice"
+                >
+                  <defs>
+                    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                      <path
+                        d="M32 0H0V32"
+                        fill="none"
+                        stroke="var(--conecta-blue)"
+                        strokeOpacity="0.07"
+                        strokeWidth="1"
+                      />
+                    </pattern>
+                  </defs>
+                  <rect width="400" height="500" fill="url(#grid)" />
+                  {/* eixos de calibração */}
+                  <circle cx="200" cy="250" r="120" fill="none" stroke="var(--conecta-teal)" strokeOpacity="0.35" strokeWidth="1.5" />
+                  <circle cx="200" cy="250" r="78" fill="none" stroke="var(--conecta-blue)" strokeOpacity="0.25" strokeWidth="1.5" />
+                  <line x1="200" y1="70" x2="200" y2="430" stroke="var(--conecta-blue)" strokeOpacity="0.18" strokeWidth="1" />
+                  <line x1="60" y1="250" x2="340" y2="250" stroke="var(--conecta-blue)" strokeOpacity="0.18" strokeWidth="1" />
+                  {/* pontos de ancoragem */}
+                  {[
+                    [200, 130],
+                    [278, 250],
+                    [200, 370],
+                    [122, 250],
+                  ].map(([x, y]) => (
+                    <g key={`${x}-${y}`}>
+                      <circle cx={x} cy={y} r="5" fill="var(--conecta-orange)" />
+                      <circle cx={x} cy={y} r="11" fill="none" stroke="var(--conecta-orange)" strokeOpacity="0.4" strokeWidth="1" />
+                    </g>
+                  ))}
+                  <circle cx="200" cy="250" r="3.5" fill="var(--conecta-blue)" />
+                </svg>
                 <span className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-paper/90 backdrop-blur px-3 py-1 text-xs font-medium">
                   <span className="h-2 w-2 rounded-full bg-conecta-orange" /> Catálogo 2026
+                </span>
+                <span className="absolute bottom-4 left-4 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-soft">
+                  Precisão · Calibração · Engenharia biomédica
                 </span>
               </div>
               <div className="grid grid-cols-3 gap-1 mt-3">
                 {[
-                  ["230+", "Equipamentos"],
-                  ["300", "Clientes ativos"],
-                  ["Brasil", "Entrega nacional"],
-                ].map(([n, l]) => (
-                  <div key={l} className="rounded-xl bg-paper p-3 text-center">
-                    <div className="font-serif text-xl text-conecta-blue">{n}</div>
-                    <div className="text-[10px] tracking-wide uppercase text-ink-soft mt-0.5">{l}</div>
+                  { num: 230, suffix: "+", l: "Equipamentos" },
+                  { num: 300, suffix: "", l: "Clientes ativos" },
+                  { num: 0, suffix: "", l: "Entrega nacional", text: "Brasil" },
+                ].map((s) => (
+                  <div key={s.l} className="rounded-xl bg-paper p-3 text-center border border-line">
+                    <div className="font-serif text-xl text-conecta-blue">
+                      {s.text ? s.text : <Counter value={s.num} suffix={s.suffix} />}
+                    </div>
+                    <div className="text-[10px] tracking-wide uppercase text-ink-soft mt-0.5">{s.l}</div>
                   </div>
                 ))}
               </div>
@@ -83,8 +134,8 @@ export function Hero() {
         </div>
       </div>
 
-      {/* faint flask watermark */}
-      <div aria-hidden className="pointer-events-none absolute -right-20 -bottom-20 h-[420px] w-[420px] rounded-full bg-conecta-orange/5 blur-3xl" />
+      {/* glow sutil herói (único) */}
+      <div aria-hidden className="pointer-events-none absolute -right-20 -bottom-20 h-[420px] w-[420px] rounded-full bg-conecta-orange/5 blur-3xl hidden md:block" />
     </section>
   );
 }

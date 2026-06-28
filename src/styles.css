@@ -46,6 +46,8 @@
   --color-conecta-orange: var(--conecta-orange);
   --color-conecta-orange-light: var(--conecta-orange-light);
   --color-flask-blue: var(--flask-blue);
+  --color-conecta-teal: var(--conecta-teal);
+  --color-conecta-teal-soft: var(--conecta-teal-soft);
 
   --font-serif: "Instrument Serif", "Times New Roman", Georgia, serif;
   --font-sans: "Inter", "Inter Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -62,6 +64,9 @@
   --conecta-orange: oklch(0.70 0.20 50);         /* laranja vibrante dos pontos */
   --conecta-orange-light: oklch(0.78 0.17 55);
   --flask-blue: oklch(0.78 0.13 230);            /* ciano do frasco */
+  /* Acento clínico dessaturado (teal/ciano sóbrio, nunca néon) */
+  --conecta-teal: oklch(0.62 0.08 205);          /* teal sóbrio p/ detalhes clínicos */
+  --conecta-teal-soft: oklch(0.72 0.06 205);
 
   /* Neutrals */
   --bone: oklch(0.985 0.004 250);
@@ -162,6 +167,48 @@
     background: var(--conecta-orange);
   }
 
+  /* Eyebrow estilo badge-label com colchetes: [ LINHA COMPLETA ]
+     Acento clínico teal. Usado acima dos títulos de seção. */
+  .eyebrow-bracket {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--conecta-teal);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5ch;
+    font-weight: 500;
+  }
+  .eyebrow-bracket::before { content: "["; opacity: 0.6; }
+  .eyebrow-bracket::after { content: "]"; opacity: 0.6; }
+
+  /* Micro-interação de card premium: sobe ~5px + sombra + leve realce.
+     Toda a transição é desligada via prefers-reduced-motion (abaixo). */
+  .card-lift {
+    transition:
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 180ms ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 60px -30px color-mix(in oklch, var(--conecta-blue) 35%, transparent);
+  }
+
+  /* Tipografia H1 imponente e fluida (320px → 1920px) */
+  .h1-hero {
+    font-size: clamp(2rem, 1.2rem + 4.2vw, 4.5rem);
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+  }
+
+  /* Safe-area para elementos fixos (notch / home indicator) */
+  .safe-bottom {
+    bottom: max(1.5rem, env(safe-area-inset-bottom));
+    right: max(1.5rem, env(safe-area-inset-right));
+  }
+
   .container-edge { @apply mx-auto w-full max-w-[1280px] px-5 md:px-8; }
 
   .btn-primary {
@@ -253,5 +300,19 @@
      Quem quiser tracking ainda maior usa tracking-* do Tailwind. */
   .uppercase {
     letter-spacing: 0.05em;
+  }
+}
+
+/* ─── Acessibilidade: desliga TODA animação/transição quando o
+   usuário pede menos movimento. Cobre CSS, framer-motion (via
+   transition) e auto-animações como o ping do FAB. ─────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

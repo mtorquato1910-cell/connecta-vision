@@ -23,7 +23,7 @@ export function Principles() {
     <section className="bg-bone border-y border-line">
       <div className="container-edge py-20 md:py-28">
         <div className="max-w-3xl mb-14">
-          <Reveal><span className="eyebrow">Por que comprar Conecta</span></Reveal>
+          <Reveal><span className="eyebrow-bracket">Por que comprar Conecta</span></Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-[1.05] text-ink">
               Três razões pelas quais clínicas premium <em className="italic text-conecta-orange">escolhem nossa distribuição.</em>

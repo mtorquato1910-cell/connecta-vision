@@ -54,8 +54,8 @@ function ProdutosPage() {
     <SiteShell>
       <section className="container-edge pt-16 md:pt-24 pb-10">
         <Reveal>
-          <span className="eyebrow">Catálogo completo</span>
-          <h1 className="mt-4 font-serif text-5xl md:text-6xl lg:text-7xl text-ink leading-[1.02] max-w-4xl">
+          <span className="eyebrow-bracket">Catálogo completo</span>
+          <h1 className="mt-4 font-serif h1-hero text-ink max-w-4xl">
             {activeCat ? activeCat.nome : t("products.title")}
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-ink-soft">
@@ -79,7 +79,7 @@ function ProdutosPage() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t("products.search_placeholder")}
               aria-label={t("products.search_placeholder")}
-              className="flex-1 bg-transparent outline-none text-sm py-2 placeholder:text-ink-mute"
+              className="flex-1 bg-transparent outline-none text-base py-2 placeholder:text-ink-mute"
             />
             {query && (
               <button
@@ -127,7 +127,10 @@ function ProdutosPage() {
                 <p className="mt-2 text-ink-soft">{t("products.empty_hint")}</p>
               </div>
             ) : (
-              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+              <div
+                className="grid gap-6"
+                style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}
+              >
                 {filtered.map((p) => (
                   <Reveal key={p.slug}>
                     <ProductCard p={p} />

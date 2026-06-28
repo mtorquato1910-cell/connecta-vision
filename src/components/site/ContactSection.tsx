@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, Loader2 } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { Counter } from "./Counter";
 import { submitFormulario } from "@/lib/admin.functions";
 import { toast } from "sonner";
 
@@ -91,7 +92,9 @@ export function ContactSection() {
                 <div className="text-xs uppercase tracking-wide text-white/55 mt-1">Tempo médio de resposta</div>
               </div>
               <div>
-                <div className="font-serif text-3xl">300</div>
+                <div className="font-serif text-3xl">
+                  <Counter value={300} suffix="+" />
+                </div>
                 <div className="text-xs uppercase tracking-wide text-white/55 mt-1">Clientes ativos no Brasil</div>
               </div>
             </div>
@@ -126,11 +129,11 @@ export function ContactSection() {
                 />
                 <div className="mt-5 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
-                    <input name="nome" required placeholder="Nome" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
-                    <input name="telefone" required placeholder="WhatsApp" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
+                    <input name="nome" required placeholder="Nome" autoComplete="name" className="min-h-[44px] rounded-lg border border-line-strong px-3 py-2.5 text-base focus:outline-none focus:border-conecta-blue" />
+                    <input name="telefone" required placeholder="WhatsApp" type="tel" inputMode="tel" autoComplete="tel" className="min-h-[44px] rounded-lg border border-line-strong px-3 py-2.5 text-base focus:outline-none focus:border-conecta-blue" />
                   </div>
-                  <input name="email" type="email" required placeholder="E-mail" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />
-                  <select name="tipo_estabelecimento" required defaultValue="" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue bg-paper">
+                  <input name="email" type="email" required placeholder="E-mail" inputMode="email" autoComplete="email" className="min-h-[44px] w-full rounded-lg border border-line-strong px-3 py-2.5 text-base focus:outline-none focus:border-conecta-blue" />
+                  <select name="tipo_estabelecimento" required defaultValue="" className="min-h-[44px] w-full rounded-lg border border-line-strong px-3 py-2.5 text-base focus:outline-none focus:border-conecta-blue bg-paper">
                     <option value="" disabled>Tipo de estabelecimento</option>
                     <option>Clínica veterinária</option>
                     <option>Hospital veterinário</option>
@@ -139,8 +142,8 @@ export function ContactSection() {
                     <option>Pet shop / Grooming</option>
                     <option>Outro</option>
                   </select>
-                  <textarea name="mensagem" required rows={3} placeholder="Como podemos ajudar?" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue resize-none" />
-                  <button type="submit" disabled={submitting} className="btn-primary w-full justify-center disabled:opacity-60">
+                  <textarea name="mensagem" required rows={3} placeholder="Como podemos ajudar?" className="w-full rounded-lg border border-line-strong px-3 py-2.5 text-base focus:outline-none focus:border-conecta-blue resize-none" />
+                  <button type="submit" disabled={submitting} className="btn-primary w-full justify-center min-h-[44px] disabled:opacity-60">
                     {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar solicitação"}
                   </button>
                   <p className="text-[11px] text-ink-soft leading-relaxed">

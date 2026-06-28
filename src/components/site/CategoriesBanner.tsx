@@ -16,7 +16,7 @@ export function CategoriesBanner() {
       <div className="container-edge py-20 md:py-28">
         <div className="max-w-3xl mx-auto text-center mb-14">
           <Reveal>
-            <span className="eyebrow">Catálogo completo</span>
+            <span className="eyebrow-bracket">Catálogo completo</span>
           </Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-[1.05] text-ink">
@@ -37,7 +37,7 @@ export function CategoriesBanner() {
               <Link
                 to="/produtos/categoria/$slug"
                 params={{ slug: c.slug }}
-                className="group block relative rounded-2xl overflow-hidden bg-paper border border-line hover:border-conecta-orange/40 transition-all hover:-translate-y-1 hover:shadow-xl"
+                className="group card-lift block relative rounded-2xl overflow-hidden bg-paper border border-line hover:border-conecta-orange/40"
               >
                 <div className="relative aspect-square overflow-hidden bg-white">
                   <img src={c.img} alt={c.nome} loading="lazy" className="h-full w-full object-contain p-4 transition-transform duration-700 group-hover:scale-105" />

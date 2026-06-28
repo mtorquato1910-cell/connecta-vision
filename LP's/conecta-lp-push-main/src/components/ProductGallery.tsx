@@ -105,16 +105,16 @@ export function ProductGallery() {
   }, []);
 
   return (
-    <section id="galeria" className="py-24 md:py-32 bg-background">
-      <div className="max-w-[1600px] mx-auto px-6">
+    <section id="galeria" className="py-20 sm:py-24 md:py-32 bg-background scroll-mt-20">
+      <div className="max-w-[1600px] mx-auto container-x">
         {!selected && (
-          <div className="max-w-3xl mb-16">
+          <div className="max-w-3xl mb-12 sm:mb-16">
             <p className="eyebrow mb-4">{site.gallery.eyebrow}</p>
             <h2
-              className="font-display text-4xl md:text-5xl lg:text-6xl text-primary leading-[1.05]"
+              className="font-display fluid-h2 text-primary"
               dangerouslySetInnerHTML={{ __html: site.gallery.titleHtml }}
             />
-            <p className="mt-6 text-lg text-muted-foreground max-w-2xl">{site.gallery.subtitle}</p>
+            <p className="mt-6 text-base sm:text-lg text-muted-foreground max-w-2xl">{site.gallery.subtitle}</p>
           </div>
         )}
 
@@ -201,12 +201,12 @@ function ProductDetail({
     >
       <button
         onClick={onBack}
-        className="inline-flex items-center gap-2 text-sm font-medium text-primary hover:text-accent mb-8 transition-colors"
+        className="inline-flex items-center gap-2 min-h-[44px] text-sm font-medium text-primary hover:text-accent mb-6 sm:mb-8 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" /> Voltar para todos os equipamentos
       </button>
 
-      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-12 mb-16">
+      <div className="grid lg:grid-cols-[1.4fr_1fr] gap-8 lg:gap-12 mb-12 sm:mb-16">
         {/* Image gallery */}
         <div>
           <div className="relative rounded-2xl overflow-hidden group bg-white min-h-[320px] md:min-h-[500px] aspect-[4/3]">
@@ -279,8 +279,8 @@ function ProductDetail({
           <span className="inline-block px-3 py-1 rounded-full bg-accent/10 text-accent text-[10px] font-semibold tracking-widest">
             {product.category}
           </span>
-          <h3 className="font-display text-5xl text-primary mt-4">{product.model}</h3>
-          <p className="text-lg text-foreground/80 mt-2">{product.name}</p>
+          <h3 className="font-display text-4xl sm:text-5xl text-primary mt-4">{product.model}</h3>
+          <p className="text-base sm:text-lg text-foreground/80 mt-2">{product.name}</p>
 
           <div className="mt-6 space-y-4 text-[15px] leading-relaxed text-foreground/80">
             {product.description.map((d, i) => (
@@ -301,7 +301,7 @@ function ProductDetail({
 
       {/* Specs */}
       <div className="rounded-2xl border border-border bg-card overflow-hidden mb-16">
-        <div className="px-8 py-5 border-b border-border bg-muted/40">
+        <div className="px-5 sm:px-8 py-5 border-b border-border bg-muted/40">
           <h4 className="font-display text-2xl text-primary">Ficha técnica</h4>
           <p className="text-xs text-muted-foreground mt-1 font-mono-tech tracking-wider">
             ESPECIFICAÇÕES FABRICANTE · SHINOVA
@@ -309,7 +309,7 @@ function ProductDetail({
         </div>
         <dl className="divide-y divide-border">
           {product.specs.map((s) => (
-            <div key={s.label} className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-2 px-8 py-4 hover:bg-muted/30 transition">
+            <div key={s.label} className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-2 px-5 sm:px-8 py-4 hover:bg-muted/30 transition">
               <dt className="text-sm font-medium text-muted-foreground">{s.label}</dt>
               <dd className="text-sm text-foreground font-mono-tech">{s.value}</dd>
             </div>

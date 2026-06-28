@@ -43,9 +43,9 @@ export function ProductCard({ p }: { p: Produto }) {
       onMouseLeave={reset}
       onFocus={start}
       onBlur={reset}
-      className="group block bg-paper rounded-3xl overflow-hidden border border-line hover:border-conecta-blue/30 transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(28,30,120,0.35)]"
+      className="group card-lift block bg-paper rounded-3xl overflow-hidden border border-line hover:border-conecta-blue/30"
     >
-      <div className="aspect-square overflow-hidden bg-white relative">
+      <div className="aspect-square overflow-hidden bg-white relative [&>img]:group-hover:scale-[1.04] [&>img]:transition-transform [&>img]:duration-300">
         <img
           src={imgs[idx] ?? p.img}
           alt={p.nome}

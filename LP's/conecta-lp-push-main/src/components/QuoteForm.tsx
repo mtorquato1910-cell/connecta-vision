@@ -86,19 +86,19 @@ export function QuoteForm() {
   const itemsLabel = f.itemsLabel ?? "Quais itens te interessam?";
 
   return (
-    <section id="orcamento" className="relative py-24 md:py-32 bg-primary overflow-hidden">
-      <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-accent/20 blur-3xl pointer-events-none" />
-      <div className="relative max-w-[1600px] mx-auto px-6 grid lg:grid-cols-[1.2fr_1fr] gap-12 lg:gap-16 items-start">
+    <section id="orcamento" className="relative py-20 sm:py-24 md:py-32 bg-primary overflow-hidden scroll-mt-20">
+      <div className="hidden sm:block absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-accent/20 blur-3xl pointer-events-none" />
+      <div className="relative max-w-[1600px] mx-auto container-x grid lg:grid-cols-[1.2fr_1fr] gap-10 lg:gap-16 items-start">
         {/* Left */}
         <div className="text-primary-foreground">
           <p className="text-xs font-semibold tracking-[0.16em] uppercase text-accent mb-4">
             Solicite seu orçamento
           </p>
           <h2
-            className="font-display text-4xl md:text-5xl lg:text-6xl leading-[1.05]"
+            className="font-display fluid-h2"
             dangerouslySetInnerHTML={{ __html: site.quote.titleHtml }}
           />
-          <p className="mt-6 text-lg text-primary-foreground/80 max-w-xl">{site.quote.subtitle}</p>
+          <p className="mt-6 text-base sm:text-lg text-primary-foreground/80 max-w-xl">{site.quote.subtitle}</p>
 
           <ul className="mt-10 space-y-4">
             {site.quote.bulletsHtml.map((t) => (
@@ -156,9 +156,9 @@ export function QuoteForm() {
           </div>
 
           <Step n={1} title="Sobre você">
-            <Field label="Nome completo" name="nome" required />
-            <Field label="WhatsApp" name="whatsapp" required />
-            <Field label="E-mail profissional" name="email" type="email" required />
+            <Field label="Nome completo" name="nome" required autoComplete="name" />
+            <Field label="WhatsApp" name="whatsapp" type="tel" inputMode="tel" autoComplete="tel" required />
+            <Field label="E-mail profissional" name="email" type="email" inputMode="email" autoComplete="email" required />
             <Select label="Função" name="funcao" options={funcaoOptions} />
           </Step>
 
@@ -167,7 +167,7 @@ export function QuoteForm() {
               <label className="text-xs font-medium text-muted-foreground">Tipo</label>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 {tipoOptions.map((t) => (
-                  <label key={t} className="flex items-center gap-2 px-3 py-2.5 border border-border rounded-lg cursor-pointer hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5 transition">
+                  <label key={t} className="flex items-center gap-2 px-3 min-h-[44px] py-2.5 border border-border rounded-lg cursor-pointer hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5 transition">
                     <input type="radio" name="tipo" value={t} className="accent-accent" />
                     <span className="text-sm">{t}</span>
                   </label>
@@ -184,7 +184,7 @@ export function QuoteForm() {
               <label className="text-xs font-medium text-muted-foreground">{itemsLabel}</label>
               <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                 {checkboxes.map((c) => (
-                  <label key={c.id} className="flex items-center gap-2 px-3 py-2.5 bg-gray-50 border border-border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition text-[13px]">
+                  <label key={c.id} className="flex items-center gap-2 px-3 min-h-[44px] py-2.5 bg-gray-50 border border-border rounded-md cursor-pointer hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5 transition text-[13px]">
                     <input
                       type="checkbox"
                       checked={equipamentos.includes(c.id)}
@@ -199,7 +199,7 @@ export function QuoteForm() {
             <Select label="Prazo de aquisição" name="prazo" options={["Urgente (30 dias)", "Curto (60 dias)", "Médio (3-6 meses)", "Apenas avaliando"]} />
             <div>
               <label className="text-xs font-medium text-muted-foreground">Observações</label>
-              <textarea name="obs" rows={3} className="mt-2 w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+              <textarea name="obs" rows={3} className="mt-2 w-full px-3 py-2.5 border border-border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
             </div>
           </Step>
 
@@ -229,11 +229,11 @@ function Step({ n, title, children }: { n: number; title: string; children: Reac
   );
 }
 
-function Field({ label, name, type = "text", required }: { label: string; name: string; type?: string; required?: boolean }) {
+function Field({ label, name, type = "text", required, inputMode, autoComplete }: { label: string; name: string; type?: string; required?: boolean; inputMode?: React.HTMLAttributes<HTMLInputElement>["inputMode"]; autoComplete?: string }) {
   return (
     <div>
       <label className="text-xs font-medium text-muted-foreground">{label}{required && " *"}</label>
-      <input type={type} name={name} required={required} className="mt-2 w-full px-3 py-2.5 border border-border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
+      <input type={type} name={name} required={required} inputMode={inputMode} autoComplete={autoComplete} className="mt-2 w-full px-3 min-h-[44px] py-2.5 border border-border rounded-lg text-base sm:text-sm focus:outline-none focus:ring-2 focus:ring-accent" />
     </div>
   );
 }
@@ -242,7 +242,7 @@ function Select({ label, name, options }: { label: string; name: string; options
   return (
     <div>
       <label className="text-xs font-medium text-muted-foreground">{label}</label>
-      <select name={name} className="mt-2 w-full px-3 py-2.5 border border-border rounded-lg text-sm bg-card focus:outline-none focus:ring-2 focus:ring-accent">
+      <select name={name} className="mt-2 w-full px-3 min-h-[44px] py-2.5 border border-border rounded-lg text-base sm:text-sm bg-card focus:outline-none focus:ring-2 focus:ring-accent">
         {options.map((o) => <option key={o}>{o}</option>)}
       </select>
     </div>

@@ -14,7 +14,10 @@ export function Testimonial() {
         </Reveal>
         <Reveal delay={0.1}>
           <div className="mt-10 flex items-center justify-center gap-4">
-            <img src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=120&q=80" alt="" className="h-12 w-12 rounded-full object-cover" />
+            {/* Iniciais em círculo, sem foto de banco/falsa. */}
+            <span aria-hidden className="h-12 w-12 rounded-full bg-conecta-orange/90 text-white font-semibold flex items-center justify-center shrink-0">
+              HV
+            </span>
             <div className="text-sm">
               <div className="font-serif italic text-lg">Dr. Henrique Vasconcellos</div>
               <div className="text-white/60 text-xs tracking-wide uppercase mt-0.5">

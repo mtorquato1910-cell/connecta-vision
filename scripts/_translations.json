@@ -1,0 +1,258 @@
+[
+  {
+    "id": "17668def-a339-453b-9ed4-6f0eb7bc7b7e",
+    "nome": "Esteira para Pets",
+    "especificacoes": [
+      { "label": "Área de caminhada (C×L)", "valor": "460×1770mm" },
+      { "label": "Espessura da superfície de corrida", "valor": "1,6mm" },
+      { "label": "Espessura da plataforma de corrida", "valor": "15mm" },
+      { "label": "Peso permitido", "valor": "110kg" },
+      { "label": "Faixa de velocidade", "valor": "0,8-12km/h" },
+      { "label": "Motor", "valor": "2HP" },
+      { "label": "Exibição no visor", "valor": "LED (velocidade, tempo, distância, calorias, programa)" },
+      { "label": "Peso bruto/líquido", "valor": "67/55kg" },
+      { "label": "Dimensões expandidas", "valor": "2000×620×1140mm" },
+      { "label": "Dimensões C×L×A", "valor": "2060×680×210mm" },
+      { "label": "Carga por contêiner (qtd.)", "valor": "80pçs/20\" 160pçs/40\" 192pçs/40\" HQ" }
+    ]
+  },
+  {
+    "id": "195c2753-2185-4a1d-8708-009ba5b8e01c",
+    "nome": "Lâmpada Ultravioleta",
+    "resumo": "O carrinho desinfetante é portátil e dobrável",
+    "descricao": "O carrinho desinfetante é portátil e dobrável\nA estrutura da lâmpada pode ser ajustada em vários ângulos durante o uso\nA lâmpada pode ser recolhida para fácil armazenamento\nHospitais veterinários, pet shops de estética e outros locais a utilizam como equipamento ideal para desinfecção do ar",
+    "especificacoes": [
+      { "label": "Material", "valor": "Aço carbono" },
+      { "label": "Número de lâmpadas", "valor": "tubo duplo" },
+      { "label": "Potência da lâmpada", "valor": "30W*2" },
+      { "label": "Área de aplicação estática", "valor": "≥30M2" },
+      { "label": "Temporizador", "valor": "0-120 minutos" },
+      { "label": "Intensidade de irradiação", "valor": "≥214uw/cm2" },
+      { "label": "Comprimento de onda ultravioleta", "valor": "253,7nm" },
+      { "label": "Ajuste multiângulo", "valor": "30°, 60°, 90°, 135°, 180°" },
+      { "label": "Potência", "valor": "180VA" },
+      { "label": "Tensão", "valor": "220V/50Hz" },
+      { "label": "Dimensões da embalagem", "valor": "1160*410*370mm" },
+      { "label": "Peso da embalagem", "valor": "18kg" }
+    ]
+  },
+  {
+    "id": "1c0894a7-bf3d-4854-863c-4e33bbcb1cf6",
+    "nome": "Concentrador de Oxigênio Veterinário",
+    "resumo": "Aplicação",
+    "descricao": "Aplicação\n1. Uso industrial, como solda e corte de vidro.\n2. Piscicultura e aquicultura\n3. Fornecimento de oxigênio para gerador de ozônio\n4. Sistema de enchimento de cilindros de oxigênio",
+    "especificacoes": [
+      { "label": "Especificações", "valor": "Modelo\nSOC-15\nSOC-20\nSOC-30\nSOC-40\nSOC-60\nVazão\n0-15 LPM\n0-20 LPM\n0-30 LPM\n0-40 LPM\n0-60 LPM\nPureza\n93%(+3%)\nPressão de saída\n0,04-0,07MPA (6-10PSI)\nNível de ruído\n≤ 60 dB\nConsumo de energia\n≤ 850W\n≤ 1100W\n1650W\n2200W\n3300W\nDisplay LCD\nNúmero de acionamentos, pressão de operação, tempo de trabalho atual, tempo de trabalho acumulado\nPeso líquido\n90kg\n95kg\n140kg\n160kg\n245kg\nAlarme\nAlarme de baixa pureza, alarme de pressão alta e baixa, alarme de falta de energia\nDimensões (mm)\n680x500x1580\n680x500x1580\n860x630x1580\n860x630x1580\n860x630x2120" }
+    ]
+  },
+  {
+    "id": "1c244243-b9ca-4342-bdce-7763301df384",
+    "nome": "Monitor Veterinário de Pressão Arterial por Doppler",
+    "resumo": "1) Esfigmomanômetro aneroide, sem contaminação",
+    "descricao": "1) Esfigmomanômetro aneroide, sem contaminação\n2) Esfigmomanômetro integrado, fácil de operar\n3) Sonda de fluxo sanguíneo especializada, de alta sensibilidade\n4) Menu Doppler vascular completo\n5) Manguito de vários tamanhos, adequado a diferentes animais\n6) Exibe o volume do som vascular e os parâmetros\n7) Desliga automaticamente quando não utilizado por 3 minutos\n8) Alimentação por bateria e por rede elétrica\nAplicações:\nMedir a pressão arterial do animal em hospitais veterinários ou em casa.\nObservação:\nDopMeter 200D: Tela em preto e branco.\nDopMeter 200C: Tela touchscreen colorida.",
+    "especificacoes": [
+      { "label": "Faixa de pressão arterial", "valor": "0-300mmHg" },
+      { "label": "Precisão de pressão", "valor": "±3,75mmHg" },
+      { "label": "Frequência da sonda vascular", "valor": "8MHz" },
+      { "label": "Alimentação", "valor": "Bateria recarregável interna, AC 220-110V, 50/60Hz" }
+    ]
+  },
+  {
+    "id": "1c284a18-ca66-4fd7-8aa9-804339edf673",
+    "nome": "Analisador Quantitativo por Imunofluorescência",
+    "resumo": "O FQ-100, fabricado pela Shinova, é um analisador quantitativo de imunofluorescência seca",
+    "descricao": "O FQ-100, fabricado pela Shinova, é um analisador quantitativo de imunofluorescência seca baseado em microprocessador. É acompanhado de reagentes de teste rápido quantitativo por imunofluorescência. Pode detectar quantitativamente o teor dos componentes nas amostras in vitro, e os resultados podem ser usados como auxílio ao diagnóstico clínico.\nCaracterísticas:\nOperação por touchscreen de 7 polegadas\nLeve, apenas 1,65kg\nBateria interna de grande capacidade, suporta 2 horas de trabalho\nArmazenamento de 10000 imagens\nImpressão de relatório em A4\nTransmissão de dados sem fio por WiFi",
+    "especificacoes": [
+      { "label": "Display", "valor": "LCD touchscreen de alta resolução de 7 polegadas" },
+      { "label": "Método de teste", "valor": "Cromatografia lateral (imunofluorescência)" },
+      { "label": "Canal de detecção", "valor": "Único" },
+      { "label": "Idiomas", "valor": "Inglês, espanhol, russo, francês, chinês," },
+      { "label": "Impressora", "valor": "Impressora térmica interna" },
+      { "label": "Bateria de lítio", "valor": "2400mAh, 11,1V" },
+      { "label": "Alimentação", "valor": "100V~240V, 50~60Hz, 40VA" },
+      { "label": "Peso líquido", "valor": "1,65kg (sem o adaptador de energia)" },
+      { "label": "Ambiente de operação", "valor": "+5~40C, ≤80%UR, 86~106KPa" }
+    ]
+  },
+  {
+    "id": "20377d17-3bbe-4b59-9d90-95ea4db79075",
+    "nome": "Broncoscópio Equino Portátil de Alta Definição",
+    "resumo": "A) Sistema de imagem em alta definição",
+    "descricao": "A) Sistema de imagem em alta definição\n- Imagem HD 720P com sensor CMOS\n- Exibição pixel a pixel 1:1 para reprodução nítida da imagem\n- Fonte de luz LED para iluminação estável\n- Amplo campo de visão (120°) para observação abrangente das vias aéreas\nB) Design portátil tudo-em-um\n- Processador de imagem integrado com tela touchscreen IPS de 4 polegadas\n- Compacto e leve para uso em campo e clínica\n- Display com inclinação e giro para ângulos de visão flexíveis\n- Bateria recarregável interna para operação móvel\nC) Desempenho do endoscópio flexível\n- Comprimento útil: 1500 mm para acesso às vias aéreas equinas\n- Diâmetro do tubo de inserção: 8,3 mm\n- Canal de trabalho de 2,8 mm para acesso de instrumentos\n- Angulação em 4 direções:\n- Para cima 210° / Para baixo 90°\n- Esquerda 100° / Direita 100°\n- Manobrabilidade suave para exame preciso\nD) Sistema de controle multifunção\n- Touchscreen com botões de atalho\n- Funções incluem:\n- Captura de imagem\n- Gravação e reprodução de vídeo\n- Função de congelamento\n- Balanço de branco com um toque\n- Ajuste de brilho e cor\n- Zoom de imagem\nE) Armazenamento e conectividade de dados\n- Suporta cartão TF de até 32GB\n- Interface USB 2.0 para transferência de dados\n- Saída HDMI para conexão de display externo\n- Exibição simultânea no LCD e no monitor externo\nF) Aplicações clínicas\nIndicado para:\n- Exame respiratório equino\n- Procedimentos de broncoscopia\n- Inspeção e diagnóstico das vias aéreas\n- Clínicas veterinárias e atendimento em campo\nCasos de uso comuns:\n- Inspeção traqueal e brônquica\n- Diagnóstico de afecções respiratórias\n- Detecção de corpo estranho\n- Orientação de tratamento e coleta de amostras",
+    "especificacoes": [
+      { "label": "Aplicação", "valor": "Clínica equina / Veterinária" },
+      { "label": "Tipo de produto", "valor": "Broncoscópio veterinário" },
+      { "label": "Modelo", "valor": "VE-8015P" },
+      { "label": "Display", "valor": "Tela touchscreen IPS de 4\"" },
+      { "label": "Resolução", "valor": "HD 720P" },
+      { "label": "Comprimento útil", "valor": "1500 mm" },
+      { "label": "Diâmetro do tubo de inserção", "valor": "8,3 mm" },
+      { "label": "Diâmetro do canal", "valor": "2,8 mm" },
+      { "label": "Angulação", "valor": "4 direções" },
+      { "label": "Campo de visão", "valor": "120" },
+      { "label": "Profundidade de campo", "valor": "3" },
+      { "label": "Armazenamento", "valor": "Cartão TF de até 32GB" },
+      { "label": "Saída", "valor": "HDMI + display LCD" },
+      { "label": "Bateria", "valor": "2600mAh recarregável" },
+      { "label": "Garantia", "valor": "1 ano" }
+    ]
+  },
+  {
+    "id": "210f395a-cc2a-4bd4-9c82-bf4d1f0414d3",
+    "nome": "Sistemas de Laser de Diodo",
+    "resumo": "O novo sistema portátil de laser de diodo para cirurgia é o melhor custo-benefício do mercado atual. Com gabinete compacto e 15W de potência, este mini sistema de laser cirúrgico tem duplo comprimento de onda de 810nm e 980nm, 810nm/980nm",
+    "descricao": "O novo sistema portátil de laser de diodo para cirurgia é o melhor custo-benefício do mercado atual. Com gabinete compacto e 15W de potência, este mini sistema de laser cirúrgico tem duplo comprimento de onda de 810nm e 980nm, 810nm/980nm com feixe-piloto de 300mW à escolha; pode ser usado em modo contínuo ou pulsado, com peça de mão de contato ou sem contato.\n1) Design compacto que o torna pequeno e leve, fácil de transportar;\n2) Tela touchscreen colorida grande, operação dupla com botão tipo encoder;\n3) Design altamente integrado e modular;\n4) Novo projeto interno que torna a manutenção fácil e de baixo custo;\n5) Software avançado com protocolos predefinidos, personalizáveis manualmente pelo operador;\n6) Medidor de potência interno que permite ao usuário testar a potência pelo software;\n7) Calibração da potência de saída na ponta da fibra, tornando a manutenção fácil e de baixo custo;\n8) Adota sistema de resfriamento a ar que garante desempenho estável e longa vida útil.\nAplicações:\nOdontologia, lipólise (queima de gordura a laser), EVLT (tratamento de varizes a laser endovenoso), microvarizes, otorrinolaringologia, dermatologia, ortopedia, PLDD (descompressão percutânea de disco a laser), neurocirurgia, ginecologia, cirurgia geral, terapia e veterinária.",
+    "especificacoes": [
+      { "label": "Especificações", "valor": "Modelo\nDL-10B\nDL-15A/B\nDL-15AB\nDL-15AP/BP\nComprimento de onda\n980nm/940nm/1064nm\n810nm/980nm\n810nm+980nm\n810nm/980nm+635nm\nPotência máxima\n10W\n15W\n15W+15W\n15W+300mW\nModo de operação\nContínuo, pulso único ou repetido\nDuração do pulso\n25uS-10S\nTaxa de repetição\n0,05Hz-20KHz\nFeixe-piloto\nLaser de diodo vermelho de 635nm, potência\nModo de controle\nTouchscreen, 8\" cores reais\nDimensões\n315(A)*215(L)*245(C)mm\nVida útil\nMais de 10000 horas\nGarantia\n12 meses de garantia gratuita, 5 anos de suporte técnico\nPeso\n4kg\nEmbalagem\nMaleta de transporte com caixa de papelão" }
+    ]
+  },
+  {
+    "id": "217cdaba-e804-4a34-84ef-708a37ae85e8",
+    "nome": "Tomógrafo Veterinário Móvel (CT)",
+    "resumo": "1. Tubo de raio-X de CT móvel (nova tecnologia)",
+    "descricao": "1. Tubo de raio-X de CT móvel (nova tecnologia)\nNosso exclusivo e patenteado tubo de raio-X de cátodo W, com autoblindagem completa de elétrons secundários para tubos de raio-X de CT móvel. Esses novos tubos de raio-X reduzem na origem a influência dos fótons dispersos sobre a qualidade da imagem e prolongam a vida útil do tubo.\n2. Sistema de detectores modular (melhora a resolução)\nO sistema de detectores modular de alta resolução é construído com estrutura mecânica de precisão e alta estabilidade para melhorar a resolução espacial da imagem. Ele gera excelente qualidade de imagem de CT e melhora a resolução espacial em dois níveis em comparação com produtos similares do mercado.\n3. Proteção de raio-X com autoblindagem (reduz a dose de radiação)\nO escudo de chumbo e a cortina são instalados na fonte de raio-X e na mesa giratória, por dentro e por fora do gabinete, para reduzir a dispersão externa do raio-X. Os resultados dos testes mostram que a dose de radiação central é 56% menor que a de produtos similares do mercado. A dois metros de distância, a dose é significativamente inferior aos padrões nacionais de proteção contra radiação.\n4. Trilho-guia linear de precisão (estável e preciso)\nNosso trilho-guia linear permite varredura axial deslizante muito mais precisa, de forma rápida e suave, com controle e estabilidade de varredura superiores. Ele resolveu o desafio de instalação em superfície plana, comum em outros CTs móveis do mercado.\n5. Amortecedor de vibração/choque (à prova de vibração)\nNosso amortecedor de vibração/choque multi-espiral tridirecional reduz efetivamente o impacto da vibração e os possíveis danos ao CT móvel. Ele não só ameniza o desafio da interferência por vibração durante a varredura, como também permite a varredura por CT móvel em veículo, navio ou helicóptero.\n6. Fixação ao piso do veículo (engate rápido)\nO dispositivo de fixação ao piso, do tipo trava, permite que o CT móvel de 16 cortes seja carregado e montado rapidamente em veículos como ambulâncias, navios-hospital e helicópteros de resgate. Isso amplia o uso do CT móvel em ambientes pré-hospitalares com custo operacional reduzido.",
+    "especificacoes": []
+  },
+  {
+    "id": "24f51296-c509-4b89-a921-4d6d2eafd551",
+    "nome": "Autoclave a Vácuo",
+    "resumo": "Tipo/Classe: B",
+    "descricao": "Tipo/Classe: B\nMétodo de esterilização: Vapor sob pressão\nEscopo de esterilização: Todo tipo de vírus, bactéria e príon.\nTemperatura de esterilização: 121°C, 134°C, definida pelo usuário\nTempo de esterilização: 121°C - 20 minutos, 134°C - 4 minutos, definido pelo usuário\nResultado da esterilização: 100% de esterilização concluída\nUso pretendido: Todos os produtos embalados ou não embalados, sólidos, ocos do tipo A e produtos porosos, conforme representado pelo teste",
+    "especificacoes": [
+      { "label": "BS EN 13060", "valor": "2004 + A2:2010" }
+    ]
+  },
+  {
+    "id": "250238e5-baee-4f94-9005-a2c6c13d2379",
+    "nome": "Gaiola Modular de Aço Inoxidável para Cães com Tomada"
+  },
+  {
+    "id": "2570b5d7-509e-469e-906d-e0f6e9f87b18",
+    "nome": "Sistema Digital de Radiografia Intraoral",
+    "resumo": "Excelente qualidade de imagem baseada em tecnologia CMOS avançada",
+    "descricao": "Excelente qualidade de imagem baseada em tecnologia CMOS avançada\nFormato de sensor otimizado para a estrutura oral humana\nDesempenho de baixa dose\n9 idiomas opcionais\nInterface USB 2.0 fácil de usar\nO suporte ao sensor é fornecido por software compatível, como o EasyDent; para outras aplicações personalizadas, há um guia para programadores disponível.",
+    "especificacoes": []
+  },
+  {
+    "id": "25979d43-0e2c-4179-afa4-de3529dd7213",
+    "nome": "Glicosímetro"
+  },
+  {
+    "id": "263bcb25-9de0-4fc5-89fd-ad15caf721f3",
+    "nome": "Bomba de Seringa Veterinária",
+    "resumo": "Tela touchscreen colorida TFT de 4,3 polegadas, com ambos",
+    "descricao": "Tela touchscreen colorida TFT de 4,3 polegadas, com excelente texto e gráficos, intuitiva e marcante\nTampa do injetor, evitando a injeção acidental de grandes doses\nDesign 360° à prova de poeira e de água\nIdentificação automática do tamanho do injetor, muito mais inteligente\nConfiguração de bolus, automática ou manual\nSuporta 5.000 registros de histórico\nSuporta alteração da velocidade de operação durante o uso\nSuporta modo noturno e importação do esquema terapêutico com uma tecla",
+    "especificacoes": [
+      { "label": "Seringa de 5ml", "valor": "(0,01-100) ml/h" },
+      { "label": "Seringa de 10ml", "valor": "(0,01-200) ml/h" },
+      { "label": "Seringa de 20ml", "valor": "(0,01-400) ml/h" },
+      { "label": "Seringa de 30ml", "valor": "(0,01-600) ml/h" },
+      { "label": "Seringa de 50ml", "valor": "(0,01-1500) ml/h" },
+      { "label": "Seringa de 5ml", "valor": "(0,1-100) ml/h" },
+      { "label": "Seringa de 10ml", "valor": "(0,1-200) ml/h" },
+      { "label": "Seringa de 20ml", "valor": "(0,1-400) ml/h" },
+      { "label": "Seringa de 30ml", "valor": "(0,1-600) ml/h" },
+      { "label": "Seringa de 50ml", "valor": "(0,1-1500) ml/h" },
+      { "label": "Seringa de 5ml", "valor": "100 ml/h" },
+      { "label": "Seringa de 10ml", "valor": "200 ml/h" },
+      { "label": "Seringa de 20ml", "valor": "400 ml/h" },
+      { "label": "Seringa de 30ml", "valor": "600 ml/h" },
+      { "label": "Seringa de 50ml", "valor": "1500 ml/h" },
+      { "label": "Seringa de 5ml", "valor": "(100-100) ml/h" },
+      { "label": "Seringa de 10ml", "valor": "(100-200) ml/h" },
+      { "label": "Seringa de 20ml", "valor": "(100-400) ml/h" },
+      { "label": "Seringa de 30ml", "valor": "(100-600) ml/h" },
+      { "label": "Seringa de 50ml", "valor": "(100-1500) ml/h" },
+      { "label": "Seringa de 5ml", "valor": "Mínimo 0,1ml, máx. 5ml" },
+      { "label": "Seringa de 10ml", "valor": "Mínimo 0,1ml, máx. 10ml" },
+      { "label": "Seringa de 20ml", "valor": "Mínimo 0,1ml, máx. 20ml" },
+      { "label": "Seringa de 30ml", "valor": "Mínimo 0,1ml, máx. 30ml" },
+      { "label": "Seringa de 50ml", "valor": "Mínimo 0,1ml, máx. 50ml" }
+    ]
+  },
+  {
+    "id": "26c99ee9-3087-45c0-8bbf-75b7c115cb45",
+    "nome": "Ultrassom Totalmente Digital com Doppler Pulsado (PW)",
+    "resumo": "Display LCD de 12 polegadas",
+    "descricao": "Display LCD de 12 polegadas\nSistema operacional Windows 7\nModos de exibição: B/2B/4B/B+M/PW\nCompatível com sondas convexa, linear, transvaginal e microconvexa\nMedição automática de IMT\nFeixe contínuo digital de alta precisão\nTHI (imagem harmônica de tecido)\nTecnologia de imagem por fusão dinâmica de frequência\nSupressão adaptativa precisa de ruído speckle (SRI)\nTecnologia adaptativa de otimização de imagem\nTecnologia de imagem de banda ultralarga\nImagem 3D (opcional)\nPágina de relatório editável\nDuas interfaces de sonda ativas\nCompatível com HDMI, VGA, DICOM, USB, LINE OUT\nIdiomas: chinês, inglês, russo, espanhol, português, francês, alemão",
+    "especificacoes": []
+  },
+  {
+    "id": "26fd5d5c-a4d9-4f48-8010-582848cc7bf3",
+    "nome": "Lâmpada Ultravioleta",
+    "resumo": "O carrinho desinfetante é portátil e dobrável",
+    "descricao": "O carrinho desinfetante é portátil e dobrável\nA estrutura da lâmpada pode ser ajustada em vários ângulos durante o uso\nA lâmpada pode ser recolhida para fácil armazenamento\nHospitais veterinários, pet shops de estética e outros locais a utilizam como equipamento ideal para desinfecção do ar",
+    "especificacoes": [
+      { "label": "Material", "valor": "Aço inoxidável" },
+      { "label": "Número de lâmpadas", "valor": "quatro tubos" },
+      { "label": "Potência da lâmpada", "valor": "30W*4" },
+      { "label": "Área de aplicação estática", "valor": "≥60M2" },
+      { "label": "Temporizador", "valor": "0-120 minutos" },
+      { "label": "Intensidade de irradiação", "valor": "≥428uw/cm2" },
+      { "label": "Comprimento de onda ultravioleta", "valor": "253,7nm" },
+      { "label": "Ajuste multiângulo", "valor": "30°, 60°, 90°, 135°, 180°" },
+      { "label": "Potência", "valor": "180VA" },
+      { "label": "Tensão", "valor": "220V/50Hz" },
+      { "label": "Dimensões da embalagem", "valor": "1160*410*370mm" },
+      { "label": "Peso da embalagem", "valor": "24kg" }
+    ]
+  },
+  {
+    "id": "27b0b2a7-1754-420b-aecb-a772a6a31229",
+    "nome": "Peça de Mão Odontológica Veterinária de Baixa Rotação",
+    "especificacoes": [
+      { "label": "Ruído", "valor": "≤70dB" }
+    ]
+  },
+  {
+    "id": "297e4320-bb04-4630-95b2-76f59fabeecf",
+    "nome": "Ultrassom Veterinário Portátil",
+    "resumo": "1) Monitor LCD WVGA de 5,8 polegadas, amplo ângulo de visão;",
+    "descricao": "1) Monitor LCD WVGA de 5,8 polegadas, amplo ângulo de visão;\n2) Pesa apenas 0,6 kg;\n3) Bateria de íon-lítio com 4,5 a 5,5 horas de operação;\n4) Compatível com USB para transferir imagens e vídeos do ultrassom para o computador, com cine loop de 450 a 550 quadros interno;\n5) Excelente qualidade de imagem e design ergonômico;\n6) Compatível com capa de couro, projetada para resistir a condições extremamente adversas de fazenda;\n7) Software e relatório para o sistema reprodutivo, e medição de distância, área, circunferência, volume, ângulo e frequência cardíaca;\n8) Óculos de vídeo facilitam o trabalho e ajudam a manter o foco (opcional);\n9) Oferece soluções versáteis com a maior facilidade de uso para todas as aplicações veterinárias: bovinos, equinos, suínos, ovinos, lhamas e pequenos ruminantes:\nDetecção rápida e confiável de gestação a partir do 28º dia em vacas, 13º em éguas, 25º em ovelhas e cabras e 18º em porcas (controle de gestação, exames ovarianos, diagnóstico pós-parto...)\nSexagem fetal em vacas, éguas, ovelhas e cabras\nMedição de gordura dorsal em porcos, vacas e ovelhas",
+    "especificacoes": [
+      { "label": "Monitor", "valor": "TFT-LCD de 5,8" },
+      { "label": "Modos de exibição", "valor": "B/B+B/4B/B+M/M" },
+      { "label": "Profundidade de varredura", "valor": "220mm, 8 níveis ajustáveis (fator de ampliação da imagem)" },
+      { "label": "Escala de cinza", "valor": "256" },
+      { "label": "Portas", "valor": "uma porta de mouse / um vídeo (PAL, NTSC) / uma USB 2.0" },
+      { "label": "Peso", "valor": "≤650g" },
+      { "label": "Medições", "valor": "Distância, circunferência, volume, fração de ejeção, frequência cardíaca, tempo" },
+      { "label": "Medição obstétrica", "valor": "GS, BL, HL, SL, USD, HD, BD, CRL, EDD, GA" },
+      { "label": "Interface de operação", "valor": "Inglês/Chinês" },
+      { "label": "Comentários", "valor": "data e hora, hospital, nome, idade, sexo" },
+      { "label": "Relatório", "valor": "disponível" },
+      { "label": "Processamento de imagem (IP)", "valor": "disponível" },
+      { "label": "Cine loop", "valor": "≥400 quadros" },
+      { "label": "Inversão", "valor": "cima/baixo, esquerda/direita" },
+      { "label": "Pseudocor", "valor": "3" },
+      { "label": "Suavização de imagem", "valor": "≥4 níveis" },
+      { "label": "Correção gama", "valor": "disponível" },
+      { "label": "Foco", "valor": "≥2" },
+      { "label": "Posição do foco", "valor": "7 níveis ajustáveis" },
+      { "label": "Correlação de quadros", "valor": "≥8 níveis ajustáveis" },
+      { "label": "Ganho", "valor": "ganho distal/proximal/ajustável" },
+      { "label": "Intensidade", "valor": "ajustável" },
+      { "label": "Contraste", "valor": "ajustável" },
+      { "label": "Capacidade da bateria", "valor": "≥2800mAh" },
+      { "label": "Tempo de operação contínua", "valor": "≥4h" },
+      { "label": "Sonda", "valor": "Sondas multifrequência" }
+    ]
+  },
+  {
+    "id": "2a9e0508-fe3b-4416-ab85-71e796eadc9b",
+    "nome": "Gerador Veterinário de Selagem de Vasos e Unidade Eletrocirúrgica (LigaSure e ESU)",
+    "resumo": "Sistema de dispositivo inteligente",
+    "descricao": "Sistema de dispositivo inteligente\nO design intuitivo e a configuração amigável do Gerador Eletrocirúrgico de Selagem de Vasos (diatermia) da Shinova, para uso na sala cirúrgica moderna, conta com funções monopolar e bipolar para atender a todas as demandas cirúrgicas com segurança, flexibilidade, confiabilidade e praticidade.\nTela touchscreen\nO Gerador Eletrocirúrgico de Selagem de Vasos da Shinova é controlado por uma ampla tela touchscreen TFT LCD (8 polegadas), com imagem limpa e bem definida, que oferece ao usuário fácil acesso a todas as funções de diatermia. As configurações ou os modos de operação são alterados ao tocar nos ícones da tela. Para garantir máxima facilidade de operação, não há botões ou comandos extras.\nREM (Monitoramento do Eletrodo de Retorno)\nSistema de monitoramento da qualidade do contato do eletrodo de retorno (REM). O sistema REM monitora continuamente os níveis de impedância do paciente e desativa o gerador caso seja detectada falha no contato entre paciente e eletrodo de retorno, minimizando o risco de queimaduras.\nAutoteste automático\nUma vez ligado, o gerador da Shinova realiza um teste interno abrangente\nSistema de monitoramento em tempo real e resposta instantânea à densidade do tecido\nEsta tecnologia proprietária proporciona efeitos clínicos ideais por meio da sincronização contínua de corrente e tensão. Ela amostra a corrente e a tensão 450.000 vezes por segundo, o que permite responder a mudanças na impedância do tecido em menos de 10 milissegundos, garantindo que o equipamento atinja os níveis ideais de saída de energia de forma mais rápida e precisa, assegurando que apenas a tensão exata necessária seja entregue com segurança a cada tipo de tecido.\nSelagem de vasos LigaSure\nCom o sistema de tempo real e resposta instantânea acima mencionado, é possível selar permanentemente vasos sanguíneos com diâmetro de até 7mm com esta tecnologia, sob coagulação bipolar (modos Seal-safe).\nInício/Parada automáticos\nNos modos de corte e coagulação bipolar, o usuário pode escolher entre controle por pedal ou controle automático.\nCompatível com outros equipamentos\n- Sistema de coagulação por plasma de argônio\n- Sistema otimizado de evacuação de fumaça\nÁreas de aplicação\nCirurgia geral, cirurgia de ligadura, gastroenterologia, dermatologia, cirurgia vascular, obstetrícia e ginecologia, cirurgia cardíaca/torácica, otorrinolaringologia, cirurgia minimamente invasiva (MSI), cirurgia cerebral, neurocirurgia, ortopedia e cirurgia plástica, ressecção transuretral (RTU), entre outras.",
+    "especificacoes": [
+      { "label": "Frequência de saída", "valor": "512KHz" },
+      { "label": "Alimentação", "valor": "100-240V / 50-60Hz" },
+      { "label": "Dimensões", "valor": "34*16*47" },
+      { "label": "Peso", "valor": "8,5KG" },
+      { "label": "Monopolar", "valor": "< 150mA>" },
+      { "label": "Bipolar", "valor": "< 60mA>" },
+      { "label": "Polaridade normal, terra aberto", "valor": "< 50>" },
+      { "label": "Polaridade reversa, terra aberto", "valor": "< 50>" },
+      { "label": "Corrente de fuga, 140V aplicados, todas as entradas", "valor": "< 50>" }
+    ]
+  }
+]

@@ -39,10 +39,9 @@ export function CategoriesBanner() {
                 params={{ slug: c.slug }}
                 className="group block relative rounded-2xl overflow-hidden bg-paper border border-line hover:border-conecta-orange/40 transition-all hover:-translate-y-1 hover:shadow-xl"
               >
-                <div className="relative aspect-[5/4] overflow-hidden">
-                  <img src={c.img} alt={c.nome} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
-                  <span className="absolute top-3 right-3 h-9 w-9 rounded-full bg-paper/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition translate-y-1 group-hover:translate-y-0">
+                <div className="relative aspect-square overflow-hidden bg-white">
+                  <img src={c.img} alt={c.nome} loading="lazy" className="h-full w-full object-contain p-4 transition-transform duration-700 group-hover:scale-105" />
+                  <span className="absolute top-3 right-3 h-9 w-9 rounded-full bg-paper/90 backdrop-blur flex items-center justify-center opacity-0 group-hover:opacity-100 transition translate-y-1 group-hover:translate-y-0 z-10">
                     <ArrowUpRight className="h-4 w-4 text-conecta-blue" />
                   </span>
                 </div>

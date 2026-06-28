@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { Menu, Phone, X } from "lucide-react";
 import logoUrl from "@/assets/conecta-logo.png";
 import { useLocale } from "@/hooks/useLocale";
-import { LocaleSwitcher } from "@/components/shared/LocaleSwitcher";
 import { buildWaLink, useSiteConfig } from "@/hooks/useSiteConfig";
 import { SITE } from "@/lib/site-data";
 
@@ -60,7 +59,6 @@ export function Navbar() {
         </nav>
 
         <div className="hidden md:flex items-center gap-2 lg:gap-3">
-          <LocaleSwitcher />
           <a
             href={`tel:+${config.contato.telefone_principal_raw || SITE.phoneRaw}`}
             className="hidden xl:flex items-center gap-2 text-sm text-ink-soft hover:text-ink"
@@ -100,12 +98,6 @@ export function Navbar() {
                 {t(n.labelKey)}
               </Link>
             ))}
-            <div className="pt-3 mt-2 border-t border-line">
-              <p className="text-xs font-mono uppercase tracking-wider text-ink-soft mb-2">
-                Idioma
-              </p>
-              <LocaleSwitcher variant="drawer" />
-            </div>
             <a
               href={buildWaLink()}
               target="_blank"

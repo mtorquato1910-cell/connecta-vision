@@ -142,5 +142,5 @@ import { ScrollToTop } from "@/components/shared/ScrollToTop";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { organizationSchema } from "@/lib/schema-org";
 function ToasterMount() {
-  return <Toaster position="top-right" richColors />;
+  return <Toaster position="top-center" richColors />;
 }

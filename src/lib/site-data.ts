@@ -20,7 +20,7 @@ export const SITE = {
   phoneRaw: "5511943436177",
   whatsappMsg:
     "Olá! Vim pelo site da Conecta e gostaria de saber mais sobre os equipamentos veterinários.",
-  email: "comercial@conectavet.com.br",
+  email: "conectamondragon@gmail.com",
   topBar:
     "🇧🇷 Distribuição oficial Shinova no Brasil · Representação oficial · Suporte técnico nacional",
 };
@@ -91,10 +91,13 @@ type ProdutoRaw = {
   subcategoria: string | null;
   descricao_curta: string | null;
   descricao_longa: string | null;
+  diferenciais?: string[];
+  aplicacoes?: string[];
   especificacoes: { chave: string; valor: string }[];
   configuracoes: string | null;
   imagem_principal: string | null;
   galeria: { url: string; ordem: number; alt: string }[];
+  capa_ajuste?: { fit?: "contain" | "cover"; zoom?: number; posX?: number; posY?: number } | null;
   url_fabricante: string | null;
   destaque: boolean;
   publicado: boolean;
@@ -135,6 +138,14 @@ function toProduto(p: ProdutoRaw): Produto {
 
   const imgPrincipal = p.imagem_principal || galeriaUrls[0] || FALLBACK_IMG;
 
+  const diferenciais = Array.isArray(p.diferenciais) ? p.diferenciais.filter(Boolean) : [];
+  const aplicacoesRaw = Array.isArray(p.aplicacoes) ? p.aplicacoes.filter(Boolean) : [];
+  const aplicacoes = aplicacoesRaw.length
+    ? aplicacoesRaw
+    : p.subcategoria
+      ? [p.subcategoria]
+      : [];
+
   return {
     slug: p.slug,
     modelo: p.modelo ?? p.nome,
@@ -146,14 +157,15 @@ function toProduto(p: ProdutoRaw): Produto {
     destaque: p.destaque,
     resumo: p.descricao_curta ?? undefined,
     descricao: p.descricao_longa ?? p.descricao_curta ?? undefined,
-    diferenciais: [],
-    aplicacoes: p.subcategoria ? [p.subcategoria] : [],
+    diferenciais,
+    aplicacoes,
     especificacoes: p.especificacoes.map((e) => ({
       label: e.chave,
       valor: e.valor,
     })),
     subcategoria: p.subcategoria,
     urlFabricante: p.url_fabricante,
+    capaAjuste: p.capa_ajuste ?? undefined,
   };
 }
 

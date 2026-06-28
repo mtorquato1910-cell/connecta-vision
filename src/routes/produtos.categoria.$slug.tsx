@@ -1,62 +1,45 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { Seo } from "@/components/shared/Seo";
-import { type Produto } from "@/lib/site-data";
-import { listCategorias, listProdutos } from "@/lib/catalog.functions";
-import { dtoToCategoria, dtoToProdutoList } from "@/lib/catalog-adapter";
+import {
+  CATEGORIAS,
+  findCategoria,
+  produtosPorCategoria,
+  type Produto,
+} from "@/lib/site-data";
 
 export const Route = createFileRoute("/produtos/categoria/$slug")({
-  head: () => ({
-    meta: [{ title: "Categoria, Catálogo Conecta" }],
-  }),
+  // Dados estáticos do bundle, resolvidos no servidor (SSR-safe). A categoria
+  // e seus produtos saem renderizados no HTML cru, indexáveis sem JS.
+  loader: ({ params }) => {
+    const cat = findCategoria(params.slug);
+    if (!cat) throw notFound();
+    const produtos = produtosPorCategoria(params.slug);
+    const outras = CATEGORIAS.filter((c) => c.slug !== params.slug);
+    return { cat: { ...cat, qtd: produtos.length }, produtos, outras };
+  },
+  head: ({ loaderData }) => {
+    const nome = loaderData?.cat.nome ?? "Categoria";
+    const qtd = loaderData?.produtos.length ?? 0;
+    const plural = qtd === 1 ? "equipamento" : "equipamentos";
+    return {
+      meta: [
+        { title: `${nome}, Equipamentos Veterinários | Conecta` },
+        {
+          name: "description",
+          content: `${qtd} ${plural} da linha ${nome} no catálogo Conecta. Distribuidor oficial Shinova no Brasil, com instalação, calibração e treinamento inclusos.`,
+        },
+      ],
+    };
+  },
   component: CategoriaPage,
 });
 
 function CategoriaPage() {
-  const { slug } = Route.useParams();
-  const { data, isLoading } = useQuery({
-    queryKey: ["categoria", slug],
-    queryFn: async () => {
-      const cats = await listCategorias();
-      const catDto = cats.find((c) => c.slug === slug);
-      if (!catDto) return null;
-      const prods = await listProdutos({ data: { categoriaSlug: slug } });
-      return {
-        cat: dtoToCategoria(catDto, prods.length),
-        produtos: prods.map(dtoToProdutoList),
-        outras: cats.filter((c) => c.slug !== slug).map((c) => dtoToCategoria(c)),
-      };
-    },
-  });
-  if (isLoading) {
-    return (
-      <SiteShell>
-        <div className="container-edge py-32 text-center text-ink-soft">Carregando…</div>
-      </SiteShell>
-    );
-  }
-  if (!data) {
-    return (
-      <SiteShell>
-        <div className="container-edge py-32 text-center">
-          <h1 className="font-serif text-4xl">Categoria não encontrada</h1>
-          <Link to="/produtos" className="btn-primary mt-6 inline-flex">Voltar ao catálogo</Link>
-        </div>
-      </SiteShell>
-    );
-  }
-  const { cat, produtos, outras } = data;
+  const { cat, produtos, outras } = Route.useLoaderData();
   return (
     <SiteShell>
-      <Seo
-        title={`${cat.nome}, Equipamentos Veterinários`}
-        description={`${produtos.length} ${produtos.length === 1 ? "equipamento" : "equipamentos"} da linha ${cat.nome} no catálogo Conecta. Distribuidor oficial Shinova no Brasil.`}
-        path={`/produtos/categoria/${cat.slug}`}
-        image={produtos[0]?.img}
-      />
       <section className="container-edge pt-16 md:pt-24 pb-10">
         <Reveal>
           <div className="flex items-center gap-3 text-sm text-ink-soft">

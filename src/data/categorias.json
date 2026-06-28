@@ -6,8 +6,38 @@
     "descricao_curta": "Monitores multiparâmetros, anestesia inalatória, oxímetros e equipamentos para monitorização vital.",
     "numero": "01",
     "ordem": 1,
-    "destaque": true,
-    "fonte_aba": "Anesthesia-Monitoring"
+    "destaque": false,
+    "fonte_aba": ""
+  },
+  {
+    "id": "imagem-diagnostico",
+    "slug": "imagem-diagnostico",
+    "nome": "Imagem & Diagnóstico",
+    "descricao_curta": "Ultrassom, raio-X digital, endoscopia e tecnologias de imagem clínica.",
+    "numero": "02",
+    "ordem": 2,
+    "destaque": false,
+    "fonte_aba": ""
+  },
+  {
+    "id": "laboratorio-clinico",
+    "slug": "laboratorio-clinico",
+    "nome": "Laboratório Clínico",
+    "descricao_curta": "Analisadores hematológicos, bioquímicos e centrifugas para diagnóstico laboratorial.",
+    "numero": "03",
+    "ordem": 3,
+    "destaque": false,
+    "fonte_aba": ""
+  },
+  {
+    "id": "tratamento-recuperacao",
+    "slug": "tratamento-recuperacao",
+    "nome": "Tratamento & Recuperação",
+    "descricao_curta": "Equipamentos para internação, recuperação cirúrgica e cuidados intensivos.",
+    "numero": "04",
+    "ordem": 4,
+    "destaque": false,
+    "fonte_aba": ""
   },
   {
     "id": "odontologia-veterinaria",
@@ -17,37 +47,7 @@
     "numero": "05",
     "ordem": 5,
     "destaque": false,
-    "fonte_aba": "Dental-Care"
-  },
-  {
-    "id": "exame-diagnostico",
-    "slug": "exame-diagnostico",
-    "nome": "Exame & Diagnóstico",
-    "descricao_curta": "Estetoscópios, otoscópios, balanças e equipamentos para exame clínico de rotina.",
-    "numero": "07",
-    "ordem": 7,
-    "destaque": false,
-    "fonte_aba": "Exam-Diagnostics"
-  },
-  {
-    "id": "laboratorio-clinico",
-    "slug": "laboratorio-clinico",
-    "nome": "Laboratório Clínico",
-    "descricao_curta": "Analisadores hematológicos, bioquímicos e centrifugas para diagnóstico laboratorial.",
-    "numero": "03",
-    "ordem": 3,
-    "destaque": true,
-    "fonte_aba": "Laboratory-Diagnostics"
-  },
-  {
-    "id": "imagem-diagnostico",
-    "slug": "imagem-diagnostico",
-    "nome": "Imagem & Diagnóstico",
-    "descricao_curta": "Ultrassom, raio-X digital, endoscopia e tecnologias de imagem clínica.",
-    "numero": "02",
-    "ordem": 2,
-    "destaque": true,
-    "fonte_aba": "Medical-Imaging"
+    "fonte_aba": ""
   },
   {
     "id": "oftalmologia-veterinaria",
@@ -57,7 +57,17 @@
     "numero": "06",
     "ordem": 6,
     "destaque": false,
-    "fonte_aba": "Ophthalmic-Care"
+    "fonte_aba": ""
+  },
+  {
+    "id": "exame-diagnostico",
+    "slug": "exame-diagnostico",
+    "nome": "Exame & Diagnóstico",
+    "descricao_curta": "Estetoscópios, otoscópios, balanças e equipamentos para exame clínico de rotina.",
+    "numero": "07",
+    "ordem": 7,
+    "destaque": false,
+    "fonte_aba": ""
   },
   {
     "id": "pet-grooming-estetica",
@@ -67,16 +77,6 @@
     "numero": "08",
     "ordem": 8,
     "destaque": false,
-    "fonte_aba": "Pet-Grooming"
-  },
-  {
-    "id": "tratamento-recuperacao",
-    "slug": "tratamento-recuperacao",
-    "nome": "Tratamento & Recuperação",
-    "descricao_curta": "Equipamentos para internação, recuperação cirúrgica e cuidados intensivos.",
-    "numero": "04",
-    "ordem": 4,
-    "destaque": true,
-    "fonte_aba": "Treatment-Recovery"
+    "fonte_aba": ""
   }
 ]

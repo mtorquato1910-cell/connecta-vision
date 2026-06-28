@@ -17,6 +17,10 @@ function AdminPerfil() {
   const [currentEmail, setCurrentEmail] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
 
+  // Nome de exibição (usado na saudação do dashboard)
+  const [displayName, setDisplayName] = useState("");
+  const [savingName, setSavingName] = useState(false);
+
   // Email form
   const [newEmail, setNewEmail] = useState("");
   const [savingEmail, setSavingEmail] = useState(false);
@@ -33,10 +37,25 @@ function AdminPerfil() {
         setCurrentEmail(data.user.email ?? "");
         setNewEmail(data.user.email ?? "");
         setUserId(data.user.id);
+        setDisplayName((data.user.user_metadata?.nome as string) ?? "");
       }
       setLoading(false);
     })();
   }, []);
+
+  async function handleNameSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setSavingName(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ data: { nome: displayName.trim() } });
+      if (error) throw error;
+      toast.success("Nome de exibição salvo. Recarregue o painel para ver na saudação.");
+    } catch (err) {
+      toast.error((err as Error).message);
+    } finally {
+      setSavingName(false);
+    }
+  }
 
   async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -119,6 +138,36 @@ function AdminPerfil() {
             <div className="mt-1 font-mono text-xs truncate">{userId || ", "}</div>
           </div>
         </div>
+      </Card>
+
+      <Card className="p-6">
+        <div className="flex items-start gap-3 mb-6">
+          <div className="rounded-md bg-muted p-2">
+            <User className="h-4 w-4" />
+          </div>
+          <div>
+            <h2 className="text-lg font-serif font-normal leading-none">Nome de exibição</h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              Aparece na saudação do painel ("Bem-vindo de volta, ..."). Use seu nome, não o e-mail.
+            </p>
+          </div>
+        </div>
+        <form onSubmit={handleNameSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="display-name">Nome</Label>
+            <Input
+              id="display-name"
+              type="text"
+              autoComplete="name"
+              placeholder="Ex: Henrique Mondragon"
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+            />
+          </div>
+          <Button type="submit" disabled={savingName}>
+            {savingName ? "Salvando..." : "Salvar nome"}
+          </Button>
+        </form>
       </Card>
 
       <Card className="p-6">

@@ -1,6 +1,5 @@
-import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Check, MessageCircle, Send } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
@@ -8,80 +7,68 @@ import { QuoteModal } from "@/components/site/QuoteModal";
 import { Reveal } from "@/components/site/Reveal";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
-import { Seo } from "@/components/shared/Seo";
 import { productSchema, breadcrumbSchema } from "@/lib/schema-org";
-import { waLink, type Produto, type Especificacao } from "@/lib/site-data";
-import { getProduto, getRelacionados } from "@/lib/catalog.functions";
-import { dtoToProduto, dtoToProdutoList } from "@/lib/catalog-adapter";
+import {
+  waLink,
+  findProduto,
+  produtosRelacionados,
+  type Produto,
+  type Especificacao,
+} from "@/lib/site-data";
 
 export const Route = createFileRoute("/produtos/$slug")({
-  head: () => ({
-    meta: [{ title: "Produto, Conecta Equipamentos Veterinários" }],
-  }),
+  // Dados estáticos do bundle, resolvidos no servidor (SSR-safe). A ficha do
+  // produto (nome, resumo, descrição, specs) sai no HTML cru, indexável sem JS.
+  loader: ({ params }) => {
+    const p = findProduto(params.slug);
+    if (!p) throw notFound();
+    const relacionados = produtosRelacionados(p, 3);
+    return { p, relacionados };
+  },
+  head: ({ loaderData }) => {
+    const p = loaderData?.p;
+    if (!p) {
+      return { meta: [{ title: "Produto, Conecta Equipamentos Veterinários" }] };
+    }
+    const descricao =
+      p.resumo ??
+      p.descricao ??
+      `${p.nome} (${p.modelo}), ${p.categoriaNome} no catálogo Conecta Equipamentos Veterinários.`;
+    return {
+      meta: [
+        { title: `${p.modelo}, ${p.nome} | Conecta` },
+        { name: "description", content: descricao },
+        { property: "og:title", content: `${p.modelo}, ${p.nome}` },
+        { property: "og:description", content: descricao },
+        { property: "og:type", content: "product" },
+        { property: "og:image", content: p.img },
+      ],
+    };
+  },
   component: ProdutoPage,
 });
 
 function ProdutoPage() {
-  const { slug } = Route.useParams();
-  const { data, isLoading } = useQuery({
-    queryKey: ["produto", slug],
-    queryFn: async () => {
-      const dto = await getProduto({ data: { slug } });
-      if (!dto) return { p: null as Produto | null, relacionados: [] as Produto[] };
-      const rel = await getRelacionados({
-        data: { categoriaSlug: dto.categoria_slug, excluirSlug: dto.slug, limit: 3 },
-      });
-      return { p: dtoToProduto(dto), relacionados: rel.map(dtoToProdutoList) };
-    },
-  });
-
-  if (isLoading) {
-    return (
-      <SiteShell>
-        <div className="container-edge py-32 text-center text-ink-soft">Carregando…</div>
-      </SiteShell>
-    );
-  }
-  if (!data?.p) {
-    return (
-      <SiteShell>
-        <div className="container-edge py-32 text-center">
-          <h1 className="font-serif text-4xl">Produto não encontrado</h1>
-          <Link to="/produtos" className="btn-primary mt-6 inline-flex">Ver catálogo</Link>
-        </div>
-      </SiteShell>
-    );
-  }
-  return <ProdutoView p={data.p} relacionados={data.relacionados} />;
+  const { p, relacionados } = Route.useLoaderData();
+  return <ProdutoView p={p} relacionados={relacionados} />;
 }
 
 function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] }) {
   const router = useRouter();
   const [activeImg, setActiveImg] = useState(p.galeria?.[0] ?? p.img);
-  const [tab, setTab] = useState<"desc" | "specs" | "uso">("desc");
   const [open, setOpen] = useState(false);
 
   const waMsg = `Olá! Tenho interesse no ${p.modelo}, ${p.nome}. Pode me enviar mais informações?`;
+  const temEspecificacoes = !!p.especificacoes && p.especificacoes.length > 0;
+  const aplicacoes = p.aplicacoes && p.aplicacoes.length > 0 ? p.aplicacoes : [];
 
   const goBack = () => {
-    // navigate(-1) equivalente em TanStack Router; fallback para /produtos se não houver histórico
     if (window.history.length > 1) router.history.back();
     else router.navigate({ to: "/produtos" });
   };
 
   return (
     <SiteShell>
-      <Seo
-        title={`${p.modelo}, ${p.nome}`}
-        description={
-          p.resumo ??
-          p.descricao ??
-          `${p.nome} (${p.modelo}), ${p.categoriaNome} no catálogo Conecta Equipamentos Veterinários.`
-        }
-        path={`/produtos/${p.slug}`}
-        image={p.img}
-        type="product"
-      />
       <SchemaOrg
         schema={productSchema({
           modelo: p.modelo,
@@ -122,6 +109,7 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
         </div>
 
         <div className="mt-8 grid lg:grid-cols-2 gap-10 lg:gap-16">
+          {/* Galeria / carrossel */}
           <div>
             <div className="aspect-square rounded-3xl overflow-hidden bg-paper border border-line">
               <img src={activeImg} alt={p.nome} className="h-full w-full object-contain p-4" />
@@ -141,12 +129,17 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
             )}
           </div>
 
+          {/* Cabeçalho: NOME em destaque → resumo logo abaixo */}
           <div>
             <Reveal>
               <CategoryBadge>{p.categoriaNome}</CategoryBadge>
-              <div className="mt-4 font-mono text-[11px] tracking-[0.2em] uppercase text-conecta-orange">{p.modelo}</div>
-              <h1 className="mt-3 font-serif text-4xl md:text-5xl text-ink leading-[1.05]">{p.nome}</h1>
-              {p.resumo && <p className="mt-5 text-lg text-ink-soft leading-relaxed">{p.resumo}</p>}
+              <h1 className="mt-4 font-serif text-4xl md:text-5xl text-ink leading-[1.05]">{p.nome}</h1>
+              <div className="mt-3 font-mono text-[11px] tracking-[0.2em] uppercase text-conecta-orange">
+                {p.modelo}
+              </div>
+              {p.resumo && (
+                <p className="mt-5 text-lg text-ink-soft leading-relaxed">{p.resumo}</p>
+              )}
 
               {p.diferenciais && p.diferenciais.length > 0 && (
                 <ul className="mt-6 space-y-2">
@@ -180,63 +173,67 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
         </div>
       </section>
 
+      {/* Seção completa: descrição → especificações → aplicações */}
       <section className="container-edge pb-20">
-        <div className="border-b border-line flex gap-6">
-          {[
-            { id: "desc" as const, label: "Descrição" },
-            { id: "specs" as const, label: "Especificações" },
-            { id: "uso" as const, label: "Aplicações" },
-          ].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`relative pb-3 text-sm font-medium transition ${tab === t.id ? "text-ink" : "text-ink-soft hover:text-ink"}`}
-            >
-              {t.label}
-              {tab === t.id && <span className="absolute left-0 right-0 -bottom-px h-[2px] bg-conecta-orange" />}
-            </button>
-          ))}
-        </div>
+        <div className="grid lg:grid-cols-[1fr_360px] gap-12 lg:gap-16">
+          <div className="max-w-3xl">
+            {(p.descricao || p.resumo) && (
+              <div>
+                <h2 className="font-serif text-2xl md:text-3xl text-ink">Descrição completa</h2>
+                <div className="mt-5 prose-conecta text-ink-soft leading-relaxed space-y-3">
+                  {(p.descricao ?? p.resumo ?? "")
+                    .split(/\n+/)
+                    .map((par) => par.trim())
+                    .filter(Boolean)
+                    .map((par, i) => (
+                      <p key={i}>{par}</p>
+                    ))}
+                </div>
+                {p.diferenciais && p.diferenciais.length > 0 && (
+                  <ul className="mt-6 space-y-2 text-ink">
+                    {p.diferenciais.map((d: string) => (
+                      <li key={d} className="flex items-start gap-3">
+                        <Check className="h-4 w-4 text-conecta-orange mt-1 shrink-0" />
+                        <span>{d}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
 
-        <div className="mt-8 max-w-3xl">
-          {tab === "desc" && (
-            <div className="prose-conecta text-ink-soft leading-relaxed space-y-4">
-              <p>{p.descricao ?? p.resumo}</p>
-              {p.diferenciais && (
-                <ul className="space-y-2 text-ink">
-                  {p.diferenciais.map((d: string) => (
-                    <li key={d} className="flex items-start gap-3">
-                      <Check className="h-4 w-4 text-conecta-orange mt-1 shrink-0" />
-                      <span>{d}</span>
-                    </li>
-                  ))}
-                </ul>
+            <div className="mt-12">
+              <h2 className="font-serif text-2xl md:text-3xl text-ink">Especificações técnicas</h2>
+              <div className="mt-5 bg-paper border border-line rounded-3xl overflow-hidden">
+                {temEspecificacoes ? (
+                  <dl>
+                    {p.especificacoes!.map((e: Especificacao, i: number) => (
+                      <div key={`${e.label}-${i}`} className={`grid grid-cols-3 gap-4 px-6 py-4 ${i % 2 ? "bg-bone/50" : ""}`}>
+                        <dt className="text-sm font-mono uppercase tracking-wider text-ink-soft">{e.label}</dt>
+                        <dd className="col-span-2 text-sm text-ink">{e.valor}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                ) : (
+                  <p className="p-6 text-ink-soft">Solicite a ficha técnica completa pelo orçamento.</p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Aplicações */}
+          <aside className="lg:sticky lg:top-24 lg:self-start">
+            <h2 className="font-serif text-2xl md:text-3xl text-ink">Aplicações</h2>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {(aplicacoes.length > 0 ? aplicacoes : ["Clínica geral", "Hospital veterinário"]).map(
+                (a: string) => (
+                  <span key={a} className="px-4 py-2 rounded-full bg-paper border border-line-strong text-sm text-ink">
+                    {a}
+                  </span>
+                ),
               )}
             </div>
-          )}
-          {tab === "specs" && (
-            <div className="bg-paper border border-line rounded-3xl overflow-hidden">
-              {p.especificacoes && p.especificacoes.length > 0 ? (
-                <dl>
-                  {p.especificacoes.map((e: Especificacao, i: number) => (
-                    <div key={e.label} className={`grid grid-cols-3 gap-4 px-6 py-4 ${i % 2 ? "bg-bone/50" : ""}`}>
-                      <dt className="text-sm font-mono uppercase tracking-wider text-ink-soft">{e.label}</dt>
-                      <dd className="col-span-2 text-sm text-ink">{e.valor}</dd>
-                    </div>
-                  ))}
-                </dl>
-              ) : (
-                <p className="p-6 text-ink-soft">Solicite a ficha técnica completa pelo orçamento.</p>
-              )}
-            </div>
-          )}
-          {tab === "uso" && (
-            <div className="flex flex-wrap gap-2">
-              {(p.aplicacoes ?? ["Clínica geral", "Hospital veterinário"]).map((a: string) => (
-                <span key={a} className="px-4 py-2 rounded-full bg-paper border border-line-strong text-sm text-ink">{a}</span>
-              ))}
-            </div>
-          )}
+          </aside>
         </div>
       </section>
 

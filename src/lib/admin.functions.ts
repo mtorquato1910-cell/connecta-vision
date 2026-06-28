@@ -377,6 +377,139 @@ export const deleteFormulario = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// ---------- Pipelines (funil de vendas / Kanban) ----------
+const CORES_PIPELINE = ["blue", "amber", "violet", "green", "rose", "slate"] as const;
+
+function slugifyChave(text: string): string {
+  return (
+    text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "_")
+      .replace(/^_+|_+$/g, "")
+      .slice(0, 40) || "etapa"
+  );
+}
+
+export const listPipelines = createServerFn({ method: "GET" })
+  .middleware([requireAdmin])
+  .handler(async () => {
+    const sb = supabaseAdmin as unknown as { from: (t: string) => any };
+    const { data, error } = await sb
+      .from("pipelines")
+      .select("id, chave, nome, ordem, cor")
+      .order("ordem");
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+export const upsertPipeline = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        id: z.string().uuid().optional(),
+        chave: z.string().min(1).max(40).regex(/^[a-z0-9_]+$/).optional(),
+        nome: z.string().min(1).max(80),
+        ordem: z.number().int().min(0).max(999).optional(),
+        cor: z.enum(CORES_PIPELINE).optional().default("slate"),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }) => {
+    const sb = supabaseAdmin as unknown as { from: (t: string) => any };
+
+    // Gera chave única (slug do nome) quando não veio uma explícita (criação).
+    let chave = data.chave;
+    if (!chave) {
+      const base = slugifyChave(data.nome);
+      chave = base;
+      let n = 1;
+      // Garante unicidade da chave, sufixando _2, _3, ... se necessário.
+      while (true) {
+        const { data: existing, error: e } = await sb
+          .from("pipelines")
+          .select("id")
+          .eq("chave", chave)
+          .maybeSingle();
+        if (e) throw new Error(e.message);
+        if (!existing) break;
+        n += 1;
+        chave = `${base}_${n}`.slice(0, 40);
+      }
+    }
+
+    // Define ordem no fim do funil quando não informada (criação).
+    let ordem = data.ordem;
+    if (ordem === undefined) {
+      const { data: last, error: e } = await sb
+        .from("pipelines")
+        .select("ordem")
+        .order("ordem", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (e) throw new Error(e.message);
+      ordem = ((last?.ordem as number | undefined) ?? -1) + 1;
+    }
+
+    const row: Record<string, unknown> = {
+      nome: data.nome,
+      cor: data.cor,
+      chave,
+      ordem,
+    };
+    if (data.id) row.id = data.id;
+
+    const { error } = await sb.from("pipelines").upsert(row as never);
+    if (error) throw new Error(error.message);
+    return { ok: true, chave };
+  });
+
+export const deletePipeline = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .handler(async ({ data }) => {
+    const sb = supabaseAdmin as unknown as { from: (t: string) => any };
+
+    // Carrega a pipeline a ser excluída e todas as demais (ordenadas).
+    const { data: pipelines, error: listErr } = await sb
+      .from("pipelines")
+      .select("id, chave, ordem")
+      .order("ordem");
+    if (listErr) throw new Error(listErr.message);
+
+    const alvo = (pipelines ?? []).find((p: any) => p.id === data.id);
+    if (!alvo) throw new Error("Etapa não encontrada.");
+    if ((pipelines ?? []).length <= 1) {
+      throw new Error("Não é possível excluir a única etapa do funil.");
+    }
+
+    // Destino dos leads: a primeira etapa restante (menor ordem) que não seja a excluída.
+    const destino = (pipelines ?? []).find((p: any) => p.id !== data.id);
+
+    // Reatribui leads dessa etapa para o destino (não perde nenhum lead).
+    let reatribuidos = 0;
+    const { count, error: cErr } = await supabaseAdmin
+      .from("formularios")
+      .select("id", { count: "exact", head: true })
+      .eq("status", alvo.chave);
+    if (cErr) throw new Error(cErr.message);
+    reatribuidos = count ?? 0;
+
+    if (reatribuidos > 0 && destino) {
+      const { error: upErr } = await supabaseAdmin
+        .from("formularios")
+        .update({ status: destino.chave } as never)
+        .eq("status", alvo.chave);
+      if (upErr) throw new Error(upErr.message);
+    }
+
+    const { error } = await sb.from("pipelines").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true, reatribuidos, destino: destino?.chave ?? null };
+  });
+
 // ---------- Conteúdo do site (key/value JSON) ----------
 export const listConteudo = createServerFn({ method: "GET" })
   .middleware([requireAdmin])

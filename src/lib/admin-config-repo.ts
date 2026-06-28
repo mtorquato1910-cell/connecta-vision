@@ -64,8 +64,8 @@ export const DEFAULT_CONFIG: ConfigAll = {
     visao: "Ser a distribuidora veterinária de referência no Brasil, reconhecida por entregar equipamento certo, no prazo combinado, com suporte técnico que responde de verdade.",
   },
   contato: {
-    email_comercial: "comercial@conectavet.com.br",
-    email_suporte: "suporte@conectavet.com.br",
+    email_comercial: "conectamondragon@gmail.com",
+    email_suporte: "conectamondragon@gmail.com",
     telefone_principal: "(11) 94343-6177",
     telefone_principal_raw: "5511943436177",
     whatsapp: "(11) 94343-6177",

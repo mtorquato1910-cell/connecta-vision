@@ -1,12 +1,10 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Search, X } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { listCategorias, listProdutos } from "@/lib/catalog.functions";
-import { dtoToCategoria, dtoToProdutoList } from "@/lib/catalog-adapter";
+import { CATEGORIAS, PRODUTOS } from "@/lib/site-data";
 import { useLocale } from "@/hooks/useLocale";
 
 type Search = { q?: string; cat?: string };
@@ -22,30 +20,21 @@ export const Route = createFileRoute("/produtos/")({
     q: typeof s.q === "string" ? s.q : undefined,
     cat: typeof s.cat === "string" ? s.cat : undefined,
   }),
+  // Dados estáticos do bundle, lidos no servidor (SSR-safe). O catálogo sai
+  // renderizado no HTML cru, sem depender de JS.
+  loader: () => ({ categorias: CATEGORIAS, produtos: PRODUTOS }),
   component: ProdutosPage,
 });
 
 function ProdutosPage() {
   const { q, cat } = Route.useSearch();
-  const { data, isLoading } = useQuery({
-    queryKey: ["catalogo"],
-    queryFn: async () => {
-      const [cats, prods] = await Promise.all([
-        listCategorias(),
-        listProdutos({ data: {} }),
-      ]);
-      return {
-        categorias: cats.map((c) => dtoToCategoria(c)),
-        produtos: prods.map(dtoToProdutoList),
-      };
-    },
-  });
-  const categorias = data?.categorias ?? [];
-  const produtos = data?.produtos ?? [];
+  // Produtos e categorias vêm do loader (já no HTML inicial do servidor).
+  const { categorias, produtos } = Route.useLoaderData();
   const navigate = useNavigate({ from: "/produtos" });
   const [query, setQuery] = useState(q ?? "");
   const { t } = useLocale();
 
+  // Busca/filtro continuam client-side, mas SOBRE os dados do loader.
   const filtered = useMemo(() => {
     const term = (q ?? "").trim().toLowerCase();
     return produtos.filter((p) => {
@@ -132,11 +121,7 @@ function ProdutosPage() {
           </aside>
 
           <div>
-            {isLoading ? (
-              <div className="bg-paper border border-line rounded-3xl p-16 text-center text-ink-soft">
-                Carregando catálogo…
-              </div>
-            ) : filtered.length === 0 ? (
+            {filtered.length === 0 ? (
               <div className="bg-paper border border-line rounded-3xl p-16 text-center">
                 <h3 className="font-serif text-2xl text-ink">{t("products.empty")}</h3>
                 <p className="mt-2 text-ink-soft">{t("products.empty_hint")}</p>

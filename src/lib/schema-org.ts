@@ -13,11 +13,12 @@ const SITE_NAME = "Conecta Equipamentos Veterinários";
 export function organizationSchema() {
   return {
     "@context": "https://schema.org",
-    "@type": "Organization",
+    "@type": ["Organization", "LocalBusiness"],
     name: SITE_NAME,
     alternateName: "Conecta",
     url: SITE_URL,
     logo: `${SITE_URL}/icon-512.png`,
+    image: `${SITE_URL}/icon-512.png`,
     description:
       "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil.",
     address: {
@@ -29,6 +30,7 @@ export function organizationSchema() {
       addressCountry: "BR",
     },
     telephone: "+5511943436177",
+    priceRange: "$$",
     areaServed: "BR",
     contactPoint: {
       "@type": "ContactPoint",

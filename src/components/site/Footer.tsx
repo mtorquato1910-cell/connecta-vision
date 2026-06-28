@@ -71,7 +71,6 @@ export function Footer() {
             <li><Link to="/blog" className="text-white/70 hover:text-white">Blog</Link></li>
             <li><Link to="/eventos" className="text-white/70 hover:text-white">Eventos</Link></li>
             <li><Link to="/contato" className="text-white/70 hover:text-white">Contato</Link></li>
-            <li><Link to="/admin/login" className="text-white/50 hover:text-white">Acesso admin</Link></li>
           </ul>
         </div>
 

@@ -181,12 +181,12 @@ function AdminLayout() {
               Textos do site
             </NavItem>
           </NavGroup>
-          <NavGroup title="Mensagens">
+          <NavGroup title="Comercial">
             <NavItem to="/admin/orcamentos" icon={<Inbox className="h-4 w-4" />}>
               Orçamentos
             </NavItem>
             <NavItem to="/admin/formularios" icon={<MessageSquare className="h-4 w-4" />}>
-              Formulários
+              Funil de vendas
             </NavItem>
           </NavGroup>
           <NavGroup title="Sistema">
@@ -202,7 +202,7 @@ function AdminLayout() {
         {/* Card do admin */}
         <div className="px-2.5 py-3 border-t border-white/10 space-y-2">
           <a
-            href="/"
+            href="https://www.conecta2lab.com.br/"
             target="_blank"
             rel="noreferrer"
             className="flex items-center justify-between rounded-lg px-3 py-2 text-xs text-white/70 hover:text-white hover:bg-white/5 transition-colors"

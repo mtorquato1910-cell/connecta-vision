@@ -18,9 +18,9 @@ export function AboutBanner() {
           </Reveal>
           <Reveal delay={0.1}>
             <div className="mt-6 space-y-4 text-ink-soft leading-relaxed">
-              <p>A Conecta nasceu da insatisfação com o status quo de distribuição de equipamentos veterinários no Brasil — catálogos inflados de marca de gaveta, suporte genérico, importação atravessada por múltiplos intermediários que inflam preço sem agregar serviço.</p>
+              <p>A Conecta nasceu da insatisfação com o status quo de distribuição de equipamentos veterinários no Brasil, catálogos inflados de marca de gaveta, suporte genérico, importação atravessada por múltiplos intermediários que inflam preço sem agregar serviço.</p>
               <p>Hoje somos representante oficial da linha completa Shinova no país, com sede em Vespasiano/MG e cobertura nacional. Nosso compromisso é simples: equipamento certo, no prazo certo, com suporte técnico que entende a rotina clínica.</p>
-              <p>Mais de 40 clínicas, hospitais, universidades e centros de pesquisa já operam com Conecta — e essa rede cresce porque entregamos exatamente o que promete o catálogo.</p>
+              <p>Mais de 40 clínicas, hospitais, universidades e centros de pesquisa já operam com Conecta, e essa rede cresce porque entregamos exatamente o que promete o catálogo.</p>
             </div>
           </Reveal>
           <Reveal delay={0.15}>

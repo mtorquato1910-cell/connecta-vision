@@ -7,7 +7,7 @@ import { SITE } from "@/lib/site-data";
 export const Route = createFileRoute("/sobre")({
   head: () => ({
     meta: [
-      { title: "Sobre a Conecta — Distribuição oficial Shinova no Brasil" },
+      { title: "Sobre a Conecta, Distribuição oficial Shinova no Brasil" },
       { name: "description", content: "Distribuidora oficial Shinova no Brasil. Sediada em Vespasiano/MG, com cobertura nacional, importação direta e suporte técnico." },
       { property: "og:title", content: "Sobre a Conecta" },
       { property: "og:description", content: "Distribuição oficial Shinova no Brasil. Operação técnica para clínicas e hospitais veterinários." },
@@ -26,7 +26,7 @@ function SobrePage() {
             Uma operação brasileira com olhar global para a medicina veterinária.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-ink-soft">
-            Somos a distribuidora oficial Shinova no Brasil. De Vespasiano/MG levamos equipamentos de alto desempenho a clínicas, hospitais e centros de referência em todo o país — com importação direta, treinamento e suporte técnico próprio.
+            Somos a distribuidora oficial Shinova no Brasil. De Vespasiano/MG levamos equipamentos de alto desempenho a clínicas, hospitais e centros de referência em todo o país, com importação direta, treinamento e suporte técnico próprio.
           </p>
         </Reveal>
       </section>
@@ -48,7 +48,7 @@ function SobrePage() {
           <Reveal>
             <div className="space-y-5 text-ink-soft text-lg">
               <p>Acreditamos que a tecnologia veterinária só vira resultado clínico quando vem acompanhada de curadoria técnica, treinamento e suporte verdadeiro.</p>
-              <p>Por isso operamos como uma extensão do time da clínica: ajudamos a especificar, importamos sob demanda, entregamos e treinamos a equipe — e seguimos disponíveis para qualquer dúvida ao longo do uso.</p>
+              <p>Por isso operamos como uma extensão do time da clínica: ajudamos a especificar, importamos sob demanda, entregamos e treinamos a equipe, e seguimos disponíveis para qualquer dúvida ao longo do uso.</p>
             </div>
           </Reveal>
         </div>

@@ -10,7 +10,7 @@ import { dtoToCategoria, dtoToProdutoList } from "@/lib/catalog-adapter";
 
 export const Route = createFileRoute("/produtos/categoria/$slug")({
   head: () => ({
-    meta: [{ title: "Categoria — Catálogo Conecta" }],
+    meta: [{ title: "Categoria, Catálogo Conecta" }],
   }),
   component: CategoriaPage,
 });
@@ -52,7 +52,7 @@ function CategoriaPage() {
   return (
     <SiteShell>
       <Seo
-        title={`${cat.nome} — Equipamentos Veterinários`}
+        title={`${cat.nome}, Equipamentos Veterinários`}
         description={`${produtos.length} ${produtos.length === 1 ? "equipamento" : "equipamentos"} da linha ${cat.nome} no catálogo Conecta. Distribuidor oficial Shinova no Brasil.`}
         path={`/produtos/categoria/${cat.slug}`}
         image={produtos[0]?.img}

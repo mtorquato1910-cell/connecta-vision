@@ -63,7 +63,7 @@ export function QuoteForm() {
       `Estabelecimento: ${estabelecimento} (${tipo})`,
       `Cidade/UF: ${cidade}`,
       `Volume: ${volume}`,
-      `Itens: ${equipamentos.join(", ") || "—"}`,
+      `Itens: ${equipamentos.join(", ") || ", "}`,
       `Prazo: ${prazo}`,
       `Obs: ${obs}`,
     ].join("\n");
@@ -72,7 +72,7 @@ export function QuoteForm() {
   };
 
   const checkboxes = [
-    ...site.products.map((p) => ({ id: p.model, label: `${p.model} — ${p.shortName}` })),
+    ...site.products.map((p) => ({ id: p.model, label: `${p.model}, ${p.shortName}` })),
     { id: "pacote-completo", label: site.quote.packageLabel },
     { id: "avaliando", label: "Ainda avaliando" },
   ];
@@ -104,7 +104,7 @@ export function QuoteForm() {
             {site.quote.bulletsHtml.map((t) => (
               <li key={t} className="flex gap-3 text-primary-foreground/90">
                 <Check className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                <span dangerouslySetInnerHTML={{ __html: t.replace(/^(.+?) —/, "<strong>$1</strong> —") }} />
+                <span dangerouslySetInnerHTML={{ __html: t.replace(/^(.+?), /, "<strong>$1</strong>, ") }} />
               </li>
             ))}
           </ul>

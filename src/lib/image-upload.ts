@@ -6,7 +6,7 @@
  * persistidas como data URL (base64) dentro do mock localStorage.
  *
  * Quando o storage real estiver pronto (Sprint 6), basta trocar
- * `processImageFile` por uma chamada PUT ao servidor — o retorno
+ * `processImageFile` por uma chamada PUT ao servidor, o retorno
  * continua sendo uma string (URL pública).
  */
 
@@ -26,7 +26,7 @@ export type ProcessImageOptions = {
   maxDimension?: number;
   /** Qualidade JPEG entre 0 e 1 (default 0.85). */
   quality?: number;
-  /** Força saída como JPEG mesmo se entrada for PNG (default true — economiza espaço). */
+  /** Força saída como JPEG mesmo se entrada for PNG (default true, economiza espaço). */
   forceJpeg?: boolean;
 };
 

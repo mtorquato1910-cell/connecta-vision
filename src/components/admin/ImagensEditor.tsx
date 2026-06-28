@@ -33,7 +33,7 @@ export interface ImagensEditorProps {
  * - Botões por imagem: marcar como capa (★), mover ↑/↓, remover ×.
  *
  * Quando o servidor estiver pronto (Sprint 6), adicionar upload real
- * substituindo o input de URL — o estado interno fica idêntico.
+ * substituindo o input de URL, o estado interno fica idêntico.
  */
 export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
   const [input, setInput] = useState("");
@@ -161,7 +161,7 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      {/* Overlay quando arrastando — cobre tudo, inclusive grid de imagens */}
+      {/* Overlay quando arrastando, cobre tudo, inclusive grid de imagens */}
       {dragOver && (
         <div className="absolute inset-0 z-20 rounded-xl border-2 border-dashed border-conecta-blue bg-conecta-blue/10 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none">
           <Upload className="h-8 w-8 text-conecta-blue" />
@@ -220,7 +220,7 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
       />
       <p className="text-xs text-ink-soft">
         Cole URLs ou envie PNG/JPG/WebP do computador (até {MAX_FILE_SIZE_MB} MB
-        cada). A primeira imagem é a capa — você pode mudar com ★. Pode arrastar
+        cada). A primeira imagem é a capa, você pode mudar com ★. Pode arrastar
         arquivos para esta área.
       </p>
 
@@ -306,7 +306,7 @@ function ImagemCard({
         </span>
       )}
 
-      {/* Botões de ação — visíveis em hover/touch */}
+      {/* Botões de ação, visíveis em hover/touch */}
       <div className="absolute top-2 right-2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity focus-within:opacity-100">
         {!isCover && (
           <button
@@ -350,7 +350,7 @@ function ImagemCard({
         </button>
       </div>
 
-      {/* URL truncada na base — fica útil para debugar */}
+      {/* URL truncada na base, fica útil para debugar */}
       <div className="px-2 py-1.5 text-[10px] font-mono text-ink-mute truncate bg-bone/40 border-t border-line">
         {url.replace(/^https?:\/\//, "").slice(0, 40)}
       </div>

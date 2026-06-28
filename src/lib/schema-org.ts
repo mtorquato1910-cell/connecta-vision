@@ -49,7 +49,7 @@ export function productSchema(p: {
   return {
     "@context": "https://schema.org",
     "@type": "Product",
-    name: `${p.modelo} — ${p.nome}`,
+    name: `${p.modelo}, ${p.nome}`,
     sku: p.modelo,
     description: p.descricao,
     image: p.imagem,

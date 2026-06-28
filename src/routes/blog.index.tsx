@@ -41,7 +41,7 @@ function formatDate(iso: string | null): string {
 export const Route = createFileRoute("/blog/")({
   head: () => ({
     meta: [
-      { title: "Blog Conecta — Conteúdo técnico para veterinários" },
+      { title: "Blog Conecta, Conteúdo técnico para veterinários" },
       {
         name: "description",
         content:

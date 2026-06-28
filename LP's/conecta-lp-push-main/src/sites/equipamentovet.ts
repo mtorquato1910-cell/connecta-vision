@@ -62,7 +62,7 @@ export const equipamentovet: SiteConfig = {
   hero: {
     eyebrow: "Equipamentos Veterinários",
     kicker: "Catálogo Premium · Distribuição Conecta · Representação oficial",
-    titleHtml: 'Equipamentos veterinários — <em class="text-accent">de anestesia a microscopia, em um só lugar.</em>',
+    titleHtml: 'Equipamentos veterinários, <em class="text-accent">de anestesia a microscopia, em um só lugar.</em>',
     subtitle:
       "Um catálogo que cobre toda a clínica veterinária, cirurgia, anestesia, monitoramento, odontologia, ultrassom, laboratório, endoscopia e microscopia, com representação oficial e suporte técnico nacional.",
     bulletsHtml: [

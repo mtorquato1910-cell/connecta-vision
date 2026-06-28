@@ -9,7 +9,7 @@ const ITEMS = [
   {
     n: "ii.",
     title: "Suporte que entende clínica",
-    body: "Equipe técnica formada por profissionais com background veterinário. Você conversa com quem sabe usar o equipamento na rotina real — não com SAC genérico de importadora.",
+    body: "Equipe técnica formada por profissionais com background veterinário. Você conversa com quem sabe usar o equipamento na rotina real, não com SAC genérico de importadora.",
   },
   {
     n: "iii.",

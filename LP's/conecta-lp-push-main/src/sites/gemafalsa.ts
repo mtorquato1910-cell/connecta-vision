@@ -386,7 +386,7 @@ export const gemafalsa: SiteConfig = {
   hero: {
     eyebrow: "Gemologia & Perícia de Gemas",
     kicker: "Instrumentos Gemológicos · Distribuição Conecta · Representação oficial",
-    titleHtml: 'Identifique a gema — <em class="text-accent">e desmascare a falsa.</em>',
+    titleHtml: 'Identifique a gema, <em class="text-accent">e desmascare a falsa.</em>',
     h2: "Instrumentos profissionais de gemologia para identificação, classificação e perícia de gemas.",
     subtitle:
       "Instrumentos profissionais de gemologia para identificar pedras, classificar qualidade e detectar imitações e sintéticos, de refratômetros e polariscópios a espectrômetros Raman. Representação da A. KRÜSS (Alemanha) e GoyaLab (França).",

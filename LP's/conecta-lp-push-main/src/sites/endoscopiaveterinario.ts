@@ -229,7 +229,7 @@ export const endoscopiaveterinario: SiteConfig = {
   hero: {
     eyebrow: "Endoscopia Veterinária",
     kicker: "Linha de Endoscopia Premium · Distribuição Conecta · Representação oficial",
-    titleHtml: 'Endoscopia veterinária — <em class="text-accent">diagnóstico por dentro, sem cirurgia aberta.</em>',
+    titleHtml: 'Endoscopia veterinária, <em class="text-accent">diagnóstico por dentro, sem cirurgia aberta.</em>',
     subtitle:
       "Seis equipamentos de endoscopia veterinária, endoscópios flexíveis, broncoscópio equino, sistema de vídeo 3-em-1 e câmera sem fio, para diagnóstico e procedimentos minimamente invasivos, com representação oficial e suporte técnico nacional.",
     bulletsHtml: [

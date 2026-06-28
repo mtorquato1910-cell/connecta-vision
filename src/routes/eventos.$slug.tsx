@@ -34,7 +34,7 @@ function formatEventDate(iso: string): string {
 
 export const Route = createFileRoute("/eventos/$slug")({
   head: () => ({
-    meta: [{ title: "Evento — Conecta" }],
+    meta: [{ title: "Evento, Conecta" }],
   }),
   component: EventoPage,
 });

@@ -33,7 +33,7 @@ export function Seo({
   useEffect(() => {
     const fullTitle =
       appendSiteName && !title.includes("Conecta")
-        ? `${title} — ${SITE_NAME}`
+        ? `${title}, ${SITE_NAME}`
         : title;
     document.title = fullTitle;
 

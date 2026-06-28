@@ -112,11 +112,11 @@ function AdminPerfil() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Email atual</Label>
-            <div className="mt-1 font-mono">{currentEmail || "—"}</div>
+            <div className="mt-1 font-mono">{currentEmail || ", "}</div>
           </div>
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">ID</Label>
-            <div className="mt-1 font-mono text-xs truncate">{userId || "—"}</div>
+            <div className="mt-1 font-mono text-xs truncate">{userId || ", "}</div>
           </div>
         </div>
       </Card>

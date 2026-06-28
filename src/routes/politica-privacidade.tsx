@@ -6,7 +6,7 @@ import { useSiteConfig } from "@/hooks/useSiteConfig";
 export const Route = createFileRoute("/politica-privacidade")({
   head: () => ({
     meta: [
-      { title: "Política de Privacidade — Conecta Equipamentos Veterinários" },
+      { title: "Política de Privacidade, Conecta Equipamentos Veterinários" },
       {
         name: "description",
         content:
@@ -53,18 +53,18 @@ function PoliticaPage() {
               <ul>
                 <li>
                   <strong>Dados de contato:</strong> nome, e-mail, telefone,
-                  WhatsApp, cidade e estado — informados voluntariamente em
+                  WhatsApp, cidade e estado, informados voluntariamente em
                   formulários de orçamento, contato ou submissão de artigo.
                 </li>
                 <li>
                   <strong>Dados profissionais:</strong> nome do estabelecimento,
-                  tipo (clínica, hospital, universidade) e cargo —
+                  tipo (clínica, hospital, universidade) e cargo, 
                   informados em formulários.
                 </li>
                 <li>
                   <strong>Dados de navegação:</strong> endereço IP, tipo de
                   dispositivo, sistema operacional, páginas visitadas e tempo de
-                  permanência — coletados automaticamente via cookies analíticos.
+                  permanência, coletados automaticamente via cookies analíticos.
                 </li>
               </ul>
             </Section>
@@ -137,7 +137,7 @@ function PoliticaPage() {
                 >
                   {config.contato.email_comercial}
                 </a>{" "}
-                com o assunto "LGPD — Solicitação de direito". Responderemos em
+                com o assunto "LGPD, Solicitação de direito". Responderemos em
                 até 15 dias úteis.
               </p>
             </Section>

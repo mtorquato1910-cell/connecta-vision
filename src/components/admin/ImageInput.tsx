@@ -22,7 +22,7 @@ export interface ImageInputProps {
 }
 
 /**
- * Input de imagem único — aceita URL externa OU upload de PNG/JPG/WebP do
+ * Input de imagem único, aceita URL externa OU upload de PNG/JPG/WebP do
  * desktop (clique, drag-and-drop). Resultado é sempre uma string (URL pública
  * ou data URL base64).
  *
@@ -75,7 +75,7 @@ export function ImageInput({
 
   const isUploaded = value.startsWith("data:");
 
-  // Drag handlers no container raiz — funcionam sempre, tenha imagem ou não.
+  // Drag handlers no container raiz, funcionam sempre, tenha imagem ou não.
   const onDragEnter = (e: React.DragEvent) => {
     if (!e.dataTransfer.types.includes("Files")) return;
     e.preventDefault();
@@ -106,7 +106,7 @@ export function ImageInput({
       onDragLeave={onDragLeave}
       onDrop={onDrop}
     >
-      {/* Overlay visual quando arrastando — cobre tudo */}
+      {/* Overlay visual quando arrastando, cobre tudo */}
       {dragOver && (
         <div className="absolute inset-0 z-20 rounded-xl border-2 border-dashed border-conecta-blue bg-conecta-blue/10 backdrop-blur-sm flex flex-col items-center justify-center pointer-events-none">
           <Upload className="h-8 w-8 text-conecta-blue" />

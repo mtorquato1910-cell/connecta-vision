@@ -79,7 +79,7 @@ export function QuoteModal({
     }
   };
 
-  const waMsg = `Olá! Tenho interesse no ${produto.modelo} — ${produto.nome}. Pode me enviar um orçamento?`;
+  const waMsg = `Olá! Tenho interesse no ${produto.modelo}, ${produto.nome}. Pode me enviar um orçamento?`;
 
   return (
     <div
@@ -134,7 +134,7 @@ export function QuoteModal({
             onSubmit={handleSubmit(onSubmit)}
             className="p-6 sm:p-8 md:p-10 grid md:grid-cols-2 gap-4"
           >
-            {/* Honeypot anti-spam — oculto para humanos */}
+            {/* Honeypot anti-spam, oculto para humanos */}
             <input
               type="text"
               tabIndex={-1}

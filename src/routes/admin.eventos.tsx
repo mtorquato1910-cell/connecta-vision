@@ -349,7 +349,7 @@ function EventoForm({
     const galeria = galeriaUrls.map((url, i) => ({
       url,
       ordem: i,
-      alt: `${nome.trim()} — foto ${i + 1}`,
+      alt: `${nome.trim()}, foto ${i + 1}`,
     }));
     // slug: mantém o existente ao editar (onConflict: "slug"), gera ao criar.
     const slug = evento?.slug || ensureUniqueSlug(slugify(nome));
@@ -421,7 +421,7 @@ function EventoForm({
                 required
                 value={local}
                 onChange={(e) => setLocal(e.target.value)}
-                placeholder="Expo Center Norte — São Paulo/SP"
+                placeholder="Expo Center Norte, São Paulo/SP"
                 className="input"
               />
             </Field>

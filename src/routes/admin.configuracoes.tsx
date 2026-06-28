@@ -387,7 +387,7 @@ function SeoForm({
           placeholder="G-XXXXXXXXXX"
         />
       </Field>
-      <Field label="Google Search Console — token verificação" hint="Opcional.">
+      <Field label="Google Search Console, token verificação" hint="Opcional.">
         <input
           value={data.google_search_console_token}
           onChange={(e) => set("google_search_console_token", e.target.value)}

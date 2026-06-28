@@ -16,7 +16,7 @@ import { dtoToProduto, dtoToProdutoList } from "@/lib/catalog-adapter";
 
 export const Route = createFileRoute("/produtos/$slug")({
   head: () => ({
-    meta: [{ title: "Produto — Conecta Equipamentos Veterinários" }],
+    meta: [{ title: "Produto, Conecta Equipamentos Veterinários" }],
   }),
   component: ProdutoPage,
 });
@@ -61,7 +61,7 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
   const [tab, setTab] = useState<"desc" | "specs" | "uso">("desc");
   const [open, setOpen] = useState(false);
 
-  const waMsg = `Olá! Tenho interesse no ${p.modelo} — ${p.nome}. Pode me enviar mais informações?`;
+  const waMsg = `Olá! Tenho interesse no ${p.modelo}, ${p.nome}. Pode me enviar mais informações?`;
 
   const goBack = () => {
     // navigate(-1) equivalente em TanStack Router; fallback para /produtos se não houver histórico
@@ -72,11 +72,11 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
   return (
     <SiteShell>
       <Seo
-        title={`${p.modelo} — ${p.nome}`}
+        title={`${p.modelo}, ${p.nome}`}
         description={
           p.resumo ??
           p.descricao ??
-          `${p.nome} (${p.modelo}) — ${p.categoriaNome} no catálogo Conecta Equipamentos Veterinários.`
+          `${p.nome} (${p.modelo}), ${p.categoriaNome} no catálogo Conecta Equipamentos Veterinários.`
         }
         path={`/produtos/${p.slug}`}
         image={p.img}

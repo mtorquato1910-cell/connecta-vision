@@ -1,5 +1,5 @@
 /**
- * Catálogo Conecta — dados carregados da planilha shinova_todos_produtos.xlsx
+ * Catálogo Conecta, dados carregados da planilha shinova_todos_produtos.xlsx
  * (extraída via scripts/extract-products.py → src/data/*.json)
  *
  * Esta camada adapta o JSON da planilha para o formato esperado pelos
@@ -98,7 +98,7 @@ type ProdutoRaw = {
   publicado: boolean;
 };
 
-// Imagem fallback (off-white com inicial — placeholder neutro)
+// Imagem fallback (off-white com inicial, placeholder neutro)
 const FALLBACK_IMG =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(

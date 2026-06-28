@@ -14,7 +14,7 @@ type Search = { q?: string; cat?: string };
 export const Route = createFileRoute("/produtos/")({
   head: () => ({
     meta: [
-      { title: "Catálogo de Equipamentos Veterinários — Conecta" },
+      { title: "Catálogo de Equipamentos Veterinários, Conecta" },
       { name: "description", content: "Catálogo completo de equipamentos veterinários: anestesia, imagem, laboratório, odontologia, oftalmologia e mais." },
     ],
   }),

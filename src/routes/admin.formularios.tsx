@@ -68,7 +68,7 @@ function mapRow(r: Record<string, any>): Formulario {
     if (p.volume) parts.push(`Volume: ${p.volume}`);
     if (p.prazo) parts.push(`Prazo: ${p.prazo}`);
     if (p.line_name) parts.push(`Linha: ${p.line_name}`);
-    mensagem = parts.join(" · ") || "—";
+    mensagem = parts.join(" · ") || ", ";
   }
 
   return {

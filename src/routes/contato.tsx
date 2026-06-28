@@ -9,7 +9,7 @@ import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 export const Route = createFileRoute("/contato")({
   head: () => ({
     meta: [
-      { title: "Contato — Conecta Equipamentos Veterinários" },
+      { title: "Contato, Conecta Equipamentos Veterinários" },
       { name: "description", content: "Fale com nosso time comercial e técnico. Atendimento por WhatsApp, telefone e e-mail em todo o Brasil." },
       { property: "og:title", content: "Fale com a Conecta" },
       { property: "og:description", content: "Atendimento técnico-comercial em todo o Brasil." },
@@ -37,7 +37,7 @@ function ContatoPage() {
             Fale com gente que entende de equipamento veterinário.
           </h1>
           <p className="mt-6 max-w-2xl text-lg text-ink-soft">
-            Atendemos clínicas em todo o Brasil. Escolha o canal mais confortável — respondemos rápido.
+            Atendemos clínicas em todo o Brasil. Escolha o canal mais confortável, respondemos rápido.
           </p>
         </Reveal>
 

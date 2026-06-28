@@ -12,7 +12,7 @@ import { submitBlogPost } from "@/lib/admin.functions";
 export const Route = createFileRoute("/blog/enviar")({
   head: () => ({
     meta: [
-      { title: "Enviar artigo — Blog Conecta" },
+      { title: "Enviar artigo, Blog Conecta" },
       {
         name: "description",
         content:
@@ -209,7 +209,7 @@ function SubmitPage() {
 
           <Field
             label="URL do vídeo YouTube"
-            hint="Opcional. Cole o link do YouTube — se preenchido, o post abre com o vídeo em vez da imagem."
+            hint="Opcional. Cole o link do YouTube, se preenchido, o post abre com o vídeo em vez da imagem."
             error={errors.video_url?.message}
           >
             <input

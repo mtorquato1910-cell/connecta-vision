@@ -33,7 +33,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "home.hero.titulo",
     label: "Título principal (Hero)",
     valor:
-      "Equipamentos veterinários de origem — para quem não aceita aproximação clínica.",
+      "Equipamentos veterinários de origem, para quem não aceita aproximação clínica.",
     tipo: "texto",
     pagina: "home",
     multiline: true,
@@ -43,7 +43,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "home.hero.subtitulo",
     label: "Subtítulo do hero",
     valor:
-      "Distribuímos a linha completa Shinova no Brasil — anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária.",
+      "Distribuímos a linha completa Shinova no Brasil, anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária.",
     tipo: "texto",
     pagina: "home",
     multiline: true,
@@ -64,7 +64,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
   },
   {
     chave: "home.depoimento.texto",
-    label: "Depoimento — texto",
+    label: "Depoimento, texto",
     valor:
       "A Conecta vai muito além de fornecer equipamentos. O suporte técnico e o treinamento da equipe fizeram toda a diferença na rotina da clínica.",
     tipo: "texto",
@@ -73,14 +73,14 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
   },
   {
     chave: "home.depoimento.autor",
-    label: "Depoimento — autor",
+    label: "Depoimento, autor",
     valor: "Dr. André Lopes",
     tipo: "texto",
     pagina: "home",
   },
   {
     chave: "home.depoimento.cargo",
-    label: "Depoimento — cargo",
+    label: "Depoimento, cargo",
     valor: "VetClínica Premium, Belo Horizonte/MG",
     tipo: "texto",
     pagina: "home",

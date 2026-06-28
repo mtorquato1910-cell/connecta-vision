@@ -323,7 +323,7 @@ function AdminProdutosPage() {
       {confirmDelete && (
         <ConfirmDialog
           title="Excluir produto"
-          message={`Tem certeza que quer excluir "${confirmDelete.modelo} — ${confirmDelete.nome}"? Esta ação não pode ser desfeita.`}
+          message={`Tem certeza que quer excluir "${confirmDelete.modelo}, ${confirmDelete.nome}"? Esta ação não pode ser desfeita.`}
           onCancel={() => setConfirmDelete(null)}
           onConfirm={handleDelete}
         />
@@ -520,7 +520,7 @@ function ProductForm({
               {editing ? "Editar produto" : "Novo produto"}
             </div>
             <h2 className="font-serif text-xl text-ink mt-0.5">
-              {editing ? `${produto?.modelo} — ${produto?.nome}` : "Cadastrar novo equipamento"}
+              {editing ? `${produto?.modelo}, ${produto?.nome}` : "Cadastrar novo equipamento"}
             </h2>
           </div>
           <button onClick={onClose} aria-label="Fechar" className="h-9 w-9 rounded-md text-ink-soft hover:text-ink hover:bg-bone flex items-center justify-center">

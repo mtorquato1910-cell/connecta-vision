@@ -208,7 +208,7 @@ export const equipamentodentalvet: SiteConfig = {
   hero: {
     eyebrow: "Odontologia Veterinária",
     kicker: "Linha Odontológica Premium · Distribuição Conecta · Fabricação Shinova",
-    titleHtml: 'Odontologia veterinária completa — <em class="text-accent">do raio-X à profilaxia, em uma linha só.</em>',
+    titleHtml: 'Odontologia veterinária completa, <em class="text-accent">do raio-X à profilaxia, em uma linha só.</em>',
     subtitle:
       "Cinco equipamentos de odontologia veterinária: unidade odontológica móvel, radiografia intraoral digital e CR, e canetas de alta e baixa rotação. Representação oficial e suporte técnico nacional.",
     bulletsHtml: [

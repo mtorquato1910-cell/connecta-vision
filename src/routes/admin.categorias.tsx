@@ -212,7 +212,7 @@ function AdminCategoriasPage() {
 
         <div className="mt-6 rounded-xl border border-line bg-bone/40 p-4 text-xs text-ink-soft">
           <strong>📌 Estrutura fixa:</strong> as 8 categorias vêm da planilha
-          Shinova e não podem ser adicionadas/removidas pelo painel — apenas
+          Shinova e não podem ser adicionadas/removidas pelo painel, apenas
           editadas e reordenadas. Para mudanças estruturais, fale com o suporte.
         </div>
       </div>

@@ -81,7 +81,7 @@ export const DEFAULT_CONFIG: ConfigAll = {
     youtube: "",
   },
   seo: {
-    meta_titulo_global: "Conecta — Equipamentos Veterinários | Distribuidora Shinova Brasil",
+    meta_titulo_global: "Conecta, Equipamentos Veterinários | Distribuidora Shinova Brasil",
     meta_descricao_global:
       "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários: anestesia, imagem, laboratório, odontologia e mais.",
     palavras_chave:

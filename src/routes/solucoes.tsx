@@ -6,7 +6,7 @@ import { Reveal } from "@/components/site/Reveal";
 export const Route = createFileRoute("/solucoes")({
   head: () => ({
     meta: [
-      { title: "Soluções por perfil — Conecta Equipamentos Veterinários" },
+      { title: "Soluções por perfil, Conecta Equipamentos Veterinários" },
       { name: "description", content: "Soluções completas para clínicas, hospitais, pet shops e centros de especialidade." },
       { property: "og:title", content: "Soluções Conecta" },
       { property: "og:description", content: "Pacotes técnicos sob medida por perfil de operação veterinária." },

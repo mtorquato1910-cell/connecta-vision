@@ -8,7 +8,7 @@ export function ProductCard({ p }: { p: Produto }) {
     <Link
       to="/produtos/$slug"
       params={{ slug: p.slug }}
-      aria-label={`Ver detalhes do ${p.modelo} — ${p.nome}`}
+      aria-label={`Ver detalhes do ${p.modelo}, ${p.nome}`}
       className="group block bg-paper rounded-3xl overflow-hidden border border-line hover:border-conecta-blue/30 transition-all hover:-translate-y-1 hover:shadow-[0_24px_60px_-30px_rgba(28,30,120,0.35)]"
     >
       <div className="aspect-[4/3] overflow-hidden bg-bone relative">

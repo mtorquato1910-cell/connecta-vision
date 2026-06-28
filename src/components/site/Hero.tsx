@@ -15,12 +15,12 @@ export function Hero() {
           </Reveal>
           <Reveal delay={0.05}>
             <h1 className="mt-5 sm:mt-6 font-serif text-[32px] sm:text-[40px] md:text-[52px] lg:text-[64px] leading-[1.02] tracking-tight text-ink">
-              Equipamentos veterinários <em className="italic text-conecta-blue">de origem</em> — para quem não aceita aproximação clínica.
+              Equipamentos veterinários <em className="italic text-conecta-blue">de origem</em>, para quem não aceita aproximação clínica.
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-5 sm:mt-6 text-base sm:text-lg text-ink-soft max-w-xl leading-relaxed">
-              Distribuímos a linha completa <strong className="text-ink">Shinova</strong> no Brasil — anestesia, monitoramento, imagem, laboratório,
+              Distribuímos a linha completa <strong className="text-ink">Shinova</strong> no Brasil, anestesia, monitoramento, imagem, laboratório,
               odontologia, cirurgia, oftalmologia e estética veterinária. Mais de 230 equipamentos em catálogo,
               importação direta, suporte técnico nacional.
             </p>

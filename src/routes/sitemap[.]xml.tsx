@@ -98,6 +98,6 @@ export const Route = createFileRoute("/sitemap.xml")({
       },
     });
   },
-  // Sem componente — apenas retorna a Response do loader
+  // Sem componente, apenas retorna a Response do loader
   component: () => null,
 });

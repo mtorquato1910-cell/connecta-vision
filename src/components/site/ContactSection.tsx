@@ -115,7 +115,7 @@ export function ContactSection() {
               <>
                 <h3 className="font-serif text-2xl">Solicite um orçamento</h3>
                 <p className="text-sm text-ink-soft mt-1">Resposta em até 4 horas úteis.</p>
-                {/* Honeypot anti-spam — oculto para humanos, preenchido por bots */}
+                {/* Honeypot anti-spam, oculto para humanos, preenchido por bots */}
                 <input
                   type="text"
                   name="website"

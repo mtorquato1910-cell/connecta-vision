@@ -8,7 +8,7 @@ function ogImageOf(site: SiteConfig): string {
   return `${base}?auto=format&fit=crop&w=1200&h=630&q=80`;
 }
 
-// Bloco de <head> com canonical, Open Graph/Twitter de imagem e JSON-LD — servido no HTML inicial.
+// Bloco de <head> com canonical, Open Graph/Twitter de imagem e JSON-LD, servido no HTML inicial.
 export function buildHead(site: SiteConfig): string {
   const canonical = `https://${site.domain}/`;
   const ogImage = ogImageOf(site);

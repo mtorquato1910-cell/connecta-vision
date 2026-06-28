@@ -17,9 +17,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Conecta — Equipamentos Veterinários Premium | Distribuidor oficial Shinova" },
+      { title: "Conecta, Equipamentos Veterinários Premium | Distribuidor oficial Shinova" },
       { name: "description", content: "Distribuidora brasileira oficial da linha Shinova. 230+ equipamentos veterinários em catálogo: anestesia, imagem, laboratório, odontologia, oftalmologia, grooming e mais. Importação direta, suporte técnico nacional." },
-      { property: "og:title", content: "Conecta — Equipamentos Veterinários Premium" },
+      { property: "og:title", content: "Conecta, Equipamentos Veterinários Premium" },
       { property: "og:description", content: "230+ equipamentos veterinários Shinova com importação direta e suporte técnico nacional." },
       { property: "og:type", content: "website" },
     ],

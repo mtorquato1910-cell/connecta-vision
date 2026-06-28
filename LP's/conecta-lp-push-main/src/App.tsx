@@ -268,7 +268,7 @@ function Footer() {
           </a>
         </div>
 
-        {/* Catálogo — cada item abre o produto na galeria */}
+        {/* Catálogo, cada item abre o produto na galeria */}
         <div>
           <p className="font-mono-tech text-[11px] tracking-widest text-accent uppercase mb-5">Catálogo</p>
           <ul className="space-y-2.5 text-sm">
@@ -280,7 +280,7 @@ function Footer() {
           </ul>
         </div>
 
-        {/* Atendimento — apenas informativo, nada clicável */}
+        {/* Atendimento, apenas informativo, nada clicável */}
         <div>
           <p className="font-mono-tech text-[11px] tracking-widest text-accent uppercase mb-5">Atendimento</p>
           <ul className="space-y-2.5 text-sm text-white/70">

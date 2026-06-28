@@ -6,7 +6,7 @@ import { useSiteConfig } from "@/hooks/useSiteConfig";
 export const Route = createFileRoute("/termos-de-uso")({
   head: () => ({
     meta: [
-      { title: "Termos de uso — Conecta Equipamentos Veterinários" },
+      { title: "Termos de uso, Conecta Equipamentos Veterinários" },
       {
         name: "description",
         content:
@@ -50,7 +50,7 @@ function TermosPage() {
               <p>
                 Este site é uma vitrine institucional dos equipamentos
                 veterinários distribuídos pela Conecta. Não é um site de
-                e-commerce — não realizamos vendas diretamente pelo site. Todas
+                e-commerce, não realizamos vendas diretamente pelo site. Todas
                 as cotações passam por nosso time comercial após contato pelos
                 formulários ou WhatsApp.
               </p>

@@ -38,7 +38,7 @@ export function Navbar() {
       }`}
     >
       <div className="container-edge flex h-[72px] items-center justify-between gap-4 sm:gap-6">
-        <Link to="/" className="flex items-center shrink-0" aria-label="Conecta — Home">
+        <Link to="/" className="flex items-center shrink-0" aria-label="Conecta, Home">
           <img
             src={logoUrl}
             alt="Conecta Equipamentos Veterinários"

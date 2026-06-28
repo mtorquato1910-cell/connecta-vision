@@ -27,7 +27,7 @@ export const veterinarioultrassom: SiteConfig = {
   hero: {
     eyebrow: "Ultrassom Veterinário",
     kicker: "Linha de Ultrassom Premium · Distribuição Conecta · Fabricação Shinova",
-    titleHtml: 'Ultrassom veterinário que cabe na sua mão — <em class="text-accent">do consultório ao campo.</em>',
+    titleHtml: 'Ultrassom veterinário que cabe na sua mão, <em class="text-accent">do consultório ao campo.</em>',
     subtitle:
       "Três aparelhos de ultrassom veterinário, color doppler, portátil e de mão, do diagnóstico abdominal e cardíaco à confirmação de gestação no campo, com representação oficial e suporte técnico nacional.",
     bulletsHtml: [

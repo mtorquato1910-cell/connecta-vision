@@ -278,7 +278,7 @@ function AdminPaginaInicialPage() {
 
           {destaquesDirty && (
             <p className="text-xs text-conecta-orange font-medium mt-2">
-              Alterações de destaque pendentes — clique em "Salvar destaques" acima para aplicar.
+              Alterações de destaque pendentes, clique em "Salvar destaques" acima para aplicar.
             </p>
           )}
         </section>

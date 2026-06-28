@@ -113,7 +113,7 @@ function AdminLayout() {
 
   return (
     <div data-admin-shell className="flex min-h-screen bg-bone">
-      {/* Sidebar — desktop sempre visível, mobile como drawer */}
+      {/* Sidebar, desktop sempre visível, mobile como drawer */}
       <aside
         className={`
           fixed lg:static inset-y-0 left-0 z-50 w-60 shrink-0
@@ -124,7 +124,7 @@ function AdminLayout() {
           ${drawerOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}
       >
-        {/* Botão fechar — só mobile */}
+        {/* Botão fechar, só mobile */}
         <button
           onClick={() => setDrawerOpen(false)}
           aria-label="Fechar menu"

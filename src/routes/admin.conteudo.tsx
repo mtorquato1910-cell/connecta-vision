@@ -229,7 +229,7 @@ function ConteudoField({
       )}
       {isDirty && (
         <p className="text-[11px] text-conecta-orange mt-2 font-medium">
-          Alteração pendente — clique em Salvar tudo para aplicar
+          Alteração pendente, clique em Salvar tudo para aplicar
         </p>
       )}
     </div>

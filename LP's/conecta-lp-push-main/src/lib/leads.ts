@@ -4,7 +4,7 @@
  * As LPs são sites ESTÁTICOS (sem back-end). O lead vai direto para a tabela
  * `public.formularios` via PostgREST usando a chave PÚBLICA (publishable/anon).
  * Isso é seguro: a tabela tem RLS que só permite INSERT do papel `anon`
- * (policy "Visitantes podem enviar formulario", exige nome>1 e email>3) —
+ * (policy "Visitantes podem enviar formulario", exige nome>1 e email>3), 
  * ninguém consegue LER os leads com esta chave, só o admin autenticado.
  *
  * Os campos extras do formulário (função, volume, itens, prazo...) vão no

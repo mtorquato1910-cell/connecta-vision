@@ -27,7 +27,7 @@ export const ultrassomdoppler: SiteConfig = {
   hero: {
     eyebrow: "Ultrassom Color Doppler Veterinário",
     kicker: "DopScan 10V · Distribuição Conecta · Fabricação Shinova",
-    titleHtml: 'DopScan 10V — <em class="text-accent">color doppler veterinário digital de alta definição.</em>',
+    titleHtml: 'DopScan 10V, <em class="text-accent">color doppler veterinário digital de alta definição.</em>',
     subtitle:
       "O DopScan 10V é a plataforma color doppler totalmente digital da Shinova: síntese multifeixe, foco dinâmico em tempo real, estação de trabalho de 500 GB e DICOM 3.0. Representação oficial e suporte técnico nacional.",
     bulletsHtml: [

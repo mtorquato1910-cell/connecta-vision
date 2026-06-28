@@ -149,7 +149,7 @@ export const microscopiodermatologico: SiteConfig = {
   hero: {
     eyebrow: "Microscopia Veterinária",
     kicker: "Linha de Microscopia Premium · Distribuição Conecta · Fabricação Shinova",
-    titleHtml: 'Microscopia veterinária — <em class="text-accent">do raspado de pele à microcirurgia.</em>',
+    titleHtml: 'Microscopia veterinária, <em class="text-accent">do raspado de pele à microcirurgia.</em>',
     subtitle:
       "Três microscópios veterinários, biológico, digital com tela e cirúrgico, da dermatologia e citologia ao centro cirúrgico, com representação oficial e suporte técnico nacional.",
     bulletsHtml: [

@@ -107,7 +107,7 @@ export async function detectLocale(): Promise<Locale> {
       if (fromCountry) return fromCountry;
     }
   } catch {
-    // sem conexão / bloqueado — ok
+    // sem conexão / bloqueado, ok
   }
 
   // 4. Fallback

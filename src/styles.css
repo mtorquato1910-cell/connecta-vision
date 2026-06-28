@@ -55,7 +55,7 @@
 :root {
   --radius: 0.625rem;
 
-  /* Brand — direto da logo Conecta */
+  /* Brand, direto da logo Conecta */
   --conecta-blue: oklch(0.27 0.17 270);          /* navy profundo da wordmark */
   --conecta-blue-deep: oklch(0.20 0.16 272);     /* midnight */
   --conecta-blue-light: oklch(0.48 0.18 268);    /* navy claro p/ hovers */
@@ -126,7 +126,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    /* Inter — alternativas estilísticas para parecerem mais limpas */
+    /* Inter, alternativas estilísticas para parecerem mais limpas */
     font-feature-settings: "cv02", "cv03", "cv04", "cv11", "ss01";
   }
   h1, h2, h3, h4 {

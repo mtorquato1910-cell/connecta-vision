@@ -88,7 +88,7 @@ export function QuoteForm() {
   return (
     <section id="orcamento" className="relative py-20 sm:py-24 md:py-32 bg-primary overflow-hidden scroll-mt-20">
       <div className="hidden sm:block absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-accent/20 blur-3xl pointer-events-none" />
-      <div className="relative max-w-[1600px] mx-auto container-x grid lg:grid-cols-[1.2fr_1fr] gap-10 lg:gap-16 items-start">
+      <div className="relative max-w-7xl mx-auto container-x grid lg:grid-cols-[1.2fr_1fr] gap-10 lg:gap-16 items-start">
         {/* Left */}
         <div className="text-primary-foreground">
           <p className="text-xs font-semibold tracking-[0.16em] uppercase text-accent mb-4">

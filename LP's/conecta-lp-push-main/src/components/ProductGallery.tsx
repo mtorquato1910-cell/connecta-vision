@@ -106,7 +106,7 @@ export function ProductGallery() {
 
   return (
     <section id="galeria" className="py-20 sm:py-24 md:py-32 bg-background scroll-mt-20">
-      <div className="max-w-[1600px] mx-auto container-x">
+      <div className="max-w-7xl mx-auto container-x">
         {!selected && (
           <div className="max-w-3xl mb-12 sm:mb-16">
             <p className="eyebrow mb-4">{site.gallery.eyebrow}</p>

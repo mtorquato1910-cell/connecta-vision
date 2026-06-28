@@ -1,35 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useRef, useState } from "react";
-import {
-  Activity,
-  ChevronDown,
-  Menu,
-  Phone,
-  Scan,
-  TestTube,
-  HeartPulse,
-  Stethoscope,
-  Eye,
-  Microscope,
-  Scissors,
-  X,
-} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ChevronDown, Menu, Phone, X } from "lucide-react";
 import logoUrl from "@/assets/conecta-logo.png";
 import { useLocale } from "@/hooks/useLocale";
 import { buildWaLink, useSiteConfig } from "@/hooks/useSiteConfig";
 import { CATEGORIAS, SITE } from "@/lib/site-data";
-
-// Ícones minimalistas por linha clínica (fallback genérico se faltar).
-const CAT_ICONS: Record<string, typeof Activity> = {
-  "anestesia-monitorizacao": Activity,
-  "imagem-diagnostico": Scan,
-  "laboratorio-clinico": TestTube,
-  "tratamento-recuperacao": HeartPulse,
-  "odontologia-veterinaria": Stethoscope,
-  "oftalmologia-veterinaria": Eye,
-  "exame-diagnostico": Microscope,
-  "pet-grooming-estetica": Scissors,
-};
+import { resolveCategoryIcon } from "@/lib/category-icons";
+import { homeCatalogo } from "@/lib/catalog.functions";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -39,6 +17,23 @@ export function Navbar() {
   const { t } = useLocale();
   const { config } = useSiteConfig();
   const megaRef = useRef<HTMLDivElement | null>(null);
+
+  // Categorias com ícone. Base estática (SSR/sem flicker) + override ao vivo do
+  // banco, para refletir imediatamente a escolha de ícone feita no admin.
+  const { data: liveCatalogo } = useQuery({
+    queryKey: ["home-catalogo"],
+    queryFn: () => homeCatalogo(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const categorias = useMemo(() => {
+    const iconeBySlug = new Map(
+      (liveCatalogo?.categorias ?? []).map((c) => [c.slug, c.icone]),
+    );
+    return CATEGORIAS.map((c) => ({
+      ...c,
+      icone: iconeBySlug.get(c.slug) ?? c.icone,
+    }));
+  }, [liveCatalogo]);
 
   const NAV_I18N: { to: string; labelKey: string; mega?: boolean }[] = [
     { to: "/produtos", labelKey: "nav.products", mega: true },
@@ -123,8 +118,8 @@ export function Navbar() {
                   >
                     <div className="rounded-2xl border border-line bg-paper shadow-[0_30px_80px_-40px_rgba(28,30,120,0.4)] p-3">
                       <div className="grid grid-cols-2 gap-1">
-                        {CATEGORIAS.map((c) => {
-                          const Icon = CAT_ICONS[c.slug] ?? Activity;
+                        {categorias.map((c) => {
+                          const Icon = resolveCategoryIcon(c.icone, c.slug);
                           return (
                             <Link
                               key={c.slug}
@@ -233,8 +228,8 @@ export function Navbar() {
                       >
                         Ver tudo
                       </Link>
-                      {CATEGORIAS.map((c) => {
-                        const Icon = CAT_ICONS[c.slug] ?? Activity;
+                      {categorias.map((c) => {
+                        const Icon = resolveCategoryIcon(c.icone, c.slug);
                         return (
                           <Link
                             key={c.slug}

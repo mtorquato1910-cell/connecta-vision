@@ -13,6 +13,11 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import {
+  CATEGORY_ICON_OPTIONS,
+  resolveCategoryIcon,
+  defaultIconKeyForSlug,
+} from "@/lib/category-icons";
+import {
   listAllCategorias,
   upsertCategoria,
   reorderCategorias,
@@ -28,6 +33,7 @@ type Categoria = {
   destaque: boolean;
   descricao_curta: string;
   imagem_url: string | null;
+  icone: string | null;
 };
 
 function toUpsert(c: Categoria) {
@@ -38,6 +44,7 @@ function toUpsert(c: Categoria) {
     numero: c.numero,
     descricao: c.descricao_curta || null,
     imagem_url: c.imagem_url,
+    icone: c.icone || null,
     ordem: c.ordem,
     destaque: c.destaque,
   };
@@ -65,6 +72,7 @@ function AdminCategoriasPage() {
             destaque: !!c.destaque,
             descricao_curta: c.descricao ?? "",
             imagem_url: c.imagem_url ?? null,
+            icone: c.icone ?? null,
           })),
         );
         const map: Record<string, number> = {};
@@ -154,8 +162,14 @@ function AdminCategoriasPage() {
                 </button>
               </div>
 
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-100 to-violet-50 text-violet-700 flex items-center justify-center font-mono text-xs font-medium shrink-0">
-                {c.numero}
+              <div
+                className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-100 to-violet-50 text-violet-700 flex items-center justify-center shrink-0"
+                title={`Ícone exibido no menu do site (categoria ${c.numero})`}
+              >
+                {(() => {
+                  const Icon = resolveCategoryIcon(c.icone, c.slug);
+                  return <Icon className="h-5 w-5" />;
+                })()}
               </div>
 
               <div className="flex-1 min-w-0">
@@ -249,6 +263,9 @@ function CategoriaForm({
   const [nome, setNome] = useState(categoria.nome);
   const [descricao, setDescricao] = useState(categoria.descricao_curta);
   const [destaque, setDestaque] = useState(categoria.destaque);
+  const [icone, setIcone] = useState<string>(
+    categoria.icone || defaultIconKeyForSlug(categoria.slug),
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -260,6 +277,7 @@ function CategoriaForm({
       nome: nome.trim(),
       descricao_curta: descricao.trim(),
       destaque,
+      icone,
     });
   };
 
@@ -325,6 +343,39 @@ function CategoriaForm({
             <p className="text-xs text-ink-soft">
               O slug não pode ser alterado para preservar links existentes.
             </p>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="block text-sm font-medium text-ink">
+              Ícone no menu do site
+            </label>
+            <p className="text-xs text-ink-soft">
+              Aparece no menu "Produtos" do topo do site quando o visitante passa
+              o mouse e escolhe esta categoria. Clique para trocar.
+            </p>
+            <div className="mt-1 grid grid-cols-7 sm:grid-cols-9 gap-1.5 rounded-xl border border-line bg-bone/40 p-2">
+              {CATEGORY_ICON_OPTIONS.map((opt) => {
+                const Icon = opt.Icon;
+                const selected = icone === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    type="button"
+                    onClick={() => setIcone(opt.key)}
+                    title={opt.label}
+                    aria-label={opt.label}
+                    aria-pressed={selected}
+                    className={`aspect-square rounded-lg flex items-center justify-center transition-colors ${
+                      selected
+                        ? "bg-conecta-blue text-white shadow-sm"
+                        : "bg-paper text-ink-soft hover:text-conecta-blue hover:bg-blue-50 border border-line"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           <label className="flex items-center gap-2 cursor-pointer pt-2">

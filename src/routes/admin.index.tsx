@@ -45,10 +45,11 @@ export const Route = createFileRoute("/admin/")({
 });
 
 function AdminDashboard() {
-  const [firstName, setFirstName] = useState("Administrador");
+  const [displayName, setDisplayName] = useState("Administrador");
   useEffect(() => {
     getCurrentUser().then((u) => {
-      if (u?.nome) setFirstName(u.nome.split(" ")[0]);
+      const nome = u?.nome?.trim();
+      if (nome) setDisplayName(nome);
     });
   }, []);
 
@@ -185,7 +186,7 @@ function AdminDashboard() {
                 })}
               </div>
               <h1 className="mt-2 text-3xl sm:text-4xl md:text-5xl font-serif leading-[1.1] max-w-2xl">
-                Bem-vindo de volta, {firstName}.
+                Bem-vindo de volta, {displayName}.
               </h1>
               <p className="mt-3 text-sm sm:text-base text-white/75 max-w-xl">
                 Aqui você gerencia o catálogo, o blog editorial, eventos e a

@@ -232,7 +232,7 @@ function AdminLayout() {
       {/* Sidebar: full no lg, rail no md, drawer off-canvas no < md */}
       <aside
         className={`
-          fixed md:static inset-y-0 left-0 z-50 shrink-0
+          fixed md:sticky md:top-0 md:h-screen inset-y-0 left-0 z-50 shrink-0
           flex flex-col
           bg-gradient-to-b from-[#0F1357] via-[#15186B] to-[#1A1F8F]
           text-white
@@ -324,8 +324,8 @@ function AdminLayout() {
           ))}
         </nav>
 
-        {/* Rodapé: link site + bloco de usuário/logout */}
-        <div className="px-2 py-3 border-t border-white/10 space-y-2">
+        {/* Rodapé: link site + bloco de usuário/logout — fixo no fundo, sempre visível */}
+        <div className="mt-auto shrink-0 px-2 py-3 border-t border-white/10 space-y-2">
           <a
             href="https://www.conecta2lab.com.br/"
             target="_blank"

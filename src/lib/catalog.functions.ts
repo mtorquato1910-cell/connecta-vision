@@ -11,6 +11,7 @@ export type CategoriaDTO = {
   nome: string;
   numero: string;
   imagem_url: string | null;
+  icone: string | null;
   ordem: number;
 };
 
@@ -108,7 +109,7 @@ export const listCategorias = createServerFn({ method: "GET" }).handler(
   async (): Promise<CategoriaDTO[]> => {
     const { data, error } = await supabaseAdmin
       .from("categorias")
-      .select("id, slug, nome, numero, imagem_url, ordem")
+      .select("id, slug, nome, numero, imagem_url, icone, ordem")
       .order("ordem", { ascending: true });
     if (error) throw new Error(error.message);
     return (data ?? []) as CategoriaDTO[];

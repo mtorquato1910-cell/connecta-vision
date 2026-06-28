@@ -89,6 +89,7 @@ const categoriaSchema = z.object({
   numero: z.string().min(1).max(8),
   descricao: z.string().max(500).optional().nullable(),
   imagem_url: z.string().url().max(500).optional().nullable(),
+  icone: z.string().max(40).optional().nullable(),
   ordem: z.number().int().min(0).max(999).default(0),
   destaque: z.boolean().optional().default(false),
 });
@@ -98,7 +99,7 @@ export const listAllCategorias = createServerFn({ method: "GET" })
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("categorias")
-      .select("id, slug, nome, numero, descricao, imagem_url, ordem, destaque")
+      .select("id, slug, nome, numero, descricao, imagem_url, icone, ordem, destaque")
       .order("ordem");
     if (error) throw new Error(error.message);
     return data ?? [];

@@ -36,7 +36,7 @@ export default function App() {
 function TopBar() {
   return (
     <div className="bg-primary text-primary-foreground text-xs py-2">
-      <div className="max-w-[1600px] mx-auto container-x text-center" dangerouslySetInnerHTML={{ __html: site.topbarHtml }} />
+      <div className="max-w-7xl mx-auto container-x text-center" dangerouslySetInnerHTML={{ __html: site.topbarHtml }} />
     </div>
   );
 }
@@ -44,7 +44,7 @@ function TopBar() {
 function Navbar() {
   return (
     <header className="sticky top-0 z-40 bg-background/85 backdrop-blur-md border-b border-border">
-      <div className="max-w-[1600px] mx-auto container-x py-3 md:py-4 flex items-center justify-between gap-3">
+      <div className="max-w-7xl mx-auto container-x py-3 md:py-4 flex items-center justify-between gap-3">
         <a href="#" className="flex items-center gap-2 shrink-0">
           <img src={logo} alt="Conecta" className="h-12 sm:h-16 md:h-24 w-auto" />
         </a>
@@ -76,7 +76,7 @@ function Hero() {
   const h = site.hero;
   return (
     <section className="relative">
-      <div className="max-w-[1600px] mx-auto container-x py-12 sm:py-16 md:py-24 grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-start">
+      <div className="max-w-7xl mx-auto container-x py-12 sm:py-16 md:py-24 grid lg:grid-cols-[1.1fr_1fr] gap-10 lg:gap-16 items-start">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -173,7 +173,7 @@ function Benefits() {
   const b = site.benefits;
   return (
     <section className="py-20 sm:py-24 md:py-32 border-y border-border bg-card">
-      <div className="max-w-[1600px] mx-auto container-x">
+      <div className="max-w-7xl mx-auto container-x">
         <div className="max-w-3xl mb-12 sm:mb-16">
           <p className="eyebrow mb-4">{b.eyebrow}</p>
           <h2
@@ -199,7 +199,7 @@ function Applications() {
   const a = site.applications;
   return (
     <section className="py-20 sm:py-24 md:py-32 bg-background">
-      <div className="max-w-[1600px] mx-auto container-x">
+      <div className="max-w-7xl mx-auto container-x">
         <div className="max-w-3xl mb-12 sm:mb-14">
           <p className="eyebrow mb-4">{a.eyebrow}</p>
           <h2
@@ -255,7 +255,7 @@ function Testimonial() {
 function Footer() {
   return (
     <footer className="bg-[var(--brand-navy-deep)] text-white/70 pt-16 sm:pt-20" style={{ paddingBottom: "max(6rem, calc(env(safe-area-inset-bottom) + 5.5rem))" }}>
-      <div className="max-w-[1600px] mx-auto container-x grid sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-14">
+      <div className="max-w-7xl mx-auto container-x grid sm:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 mb-12 sm:mb-14">
         {/* Marca */}
         <div>
           <span className="inline-flex bg-white rounded-2xl px-4 py-3 mb-5 shadow-sm">
@@ -309,7 +309,7 @@ function Footer() {
           </a>
         </div>
       </div>
-      <div className="max-w-[1600px] mx-auto container-x pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/50 text-center md:text-left">
+      <div className="max-w-7xl mx-auto container-x pt-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-white/50 text-center md:text-left">
         <span>© 2026 {site.brand.companyName ?? "Conecta Equipamentos Veterinários"} · CNPJ {site.brand.cnpj}</span>
         <span>Site por Adabtech</span>
       </div>

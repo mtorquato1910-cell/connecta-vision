@@ -5,24 +5,19 @@ export function AboutBanner() {
     <section className="bg-paper">
       <div className="container-edge py-20 md:py-28 grid lg:grid-cols-12 gap-12 items-center">
         <Reveal className="lg:col-span-6">
-          {/* Tratamento gráfico sem foto de stock. */}
           <div className="relative rounded-3xl overflow-hidden aspect-[4/5] lg:aspect-[5/6] bg-conecta-blue text-white">
-            <svg viewBox="0 0 400 500" className="absolute inset-0 h-full w-full" aria-hidden preserveAspectRatio="xMidYMid slice">
-              <defs>
-                <pattern id="about-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-                  <path d="M36 0H0V36" fill="none" stroke="#ffffff" strokeOpacity="0.08" strokeWidth="1" />
-                </pattern>
-              </defs>
-              <rect width="400" height="500" fill="url(#about-grid)" />
-              <circle cx="300" cy="150" r="140" fill="none" stroke="var(--conecta-teal)" strokeOpacity="0.5" strokeWidth="1.5" />
-              <circle cx="100" cy="380" r="90" fill="none" stroke="var(--conecta-orange)" strokeOpacity="0.45" strokeWidth="1.5" />
-            </svg>
+            <img
+              src="https://images.unsplash.com/photo-1591946614720-90a587da4a36?w=900&q=85"
+              alt="Hospital veterinário em operação"
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-conecta-blue/85 via-conecta-blue/20 to-transparent" />
             <div className="relative h-full flex flex-col justify-end p-8">
               <div className="font-serif text-5xl leading-tight">230+</div>
-              <div className="mt-1 text-sm text-white/70">equipamentos importados de alta tecnologia</div>
-              <div className="mt-6 h-px bg-white/15" />
+              <div className="mt-1 text-sm text-white/80">equipamentos importados de alta tecnologia</div>
+              <div className="mt-6 h-px bg-white/20" />
               <div className="mt-6 font-serif text-5xl leading-tight">300+</div>
-              <div className="mt-1 text-sm text-white/70">clínicas e hospitais ativos no Brasil</div>
+              <div className="mt-1 text-sm text-white/80">clínicas e hospitais ativos no Brasil</div>
             </div>
           </div>
         </Reveal>

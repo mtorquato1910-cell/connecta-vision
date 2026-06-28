@@ -7,6 +7,7 @@
     "numero": "01",
     "ordem": 1,
     "destaque": false,
+    "icone": "activity",
     "fonte_aba": ""
   },
   {
@@ -17,6 +18,7 @@
     "numero": "02",
     "ordem": 2,
     "destaque": false,
+    "icone": "scan",
     "fonte_aba": ""
   },
   {
@@ -27,6 +29,7 @@
     "numero": "03",
     "ordem": 3,
     "destaque": false,
+    "icone": "test-tube",
     "fonte_aba": ""
   },
   {
@@ -37,6 +40,7 @@
     "numero": "04",
     "ordem": 4,
     "destaque": false,
+    "icone": "heart-pulse",
     "fonte_aba": ""
   },
   {
@@ -47,6 +51,7 @@
     "numero": "05",
     "ordem": 5,
     "destaque": false,
+    "icone": "stethoscope",
     "fonte_aba": ""
   },
   {
@@ -57,6 +62,7 @@
     "numero": "06",
     "ordem": 6,
     "destaque": false,
+    "icone": "eye",
     "fonte_aba": ""
   },
   {
@@ -67,6 +73,7 @@
     "numero": "07",
     "ordem": 7,
     "destaque": false,
+    "icone": "microscope",
     "fonte_aba": ""
   },
   {
@@ -77,6 +84,7 @@
     "numero": "08",
     "ordem": 8,
     "destaque": false,
+    "icone": "scissors",
     "fonte_aba": ""
   }
 ]

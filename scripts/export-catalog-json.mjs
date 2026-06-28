@@ -106,7 +106,7 @@ async function main() {
   // Categorias
   const { data: catsRaw, error: catsErr } = await sb
     .from("categorias")
-    .select("id, slug, nome, numero, ordem, destaque, descricao")
+    .select("id, slug, nome, numero, ordem, destaque, descricao, icone")
     .order("ordem", { ascending: true });
   if (catsErr) throw new Error(`categorias: ${catsErr.message}`);
 
@@ -134,6 +134,7 @@ async function main() {
     numero: c.numero,
     ordem: c.ordem ?? 0,
     destaque: c.destaque ?? false,
+    icone: c.icone ?? null,
     fonte_aba: "",
   }));
 

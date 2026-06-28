@@ -42,6 +42,7 @@ export type Categoria = {
   nome: string;
   qtd: number;
   img: string;
+  icone?: string | null;
   descricaoCurta?: string;
 };
 
@@ -76,6 +77,7 @@ type CategoriaRaw = {
   numero: string;
   ordem: number;
   destaque: boolean;
+  icone?: string | null;
   fonte_aba: string;
 };
 
@@ -176,6 +178,7 @@ function toCategoria(c: CategoriaRaw): Categoria {
     nome: c.nome,
     qtd: countByCat[c.slug] ?? 0,
     img: firstImgByCat[c.slug] ?? FALLBACK_IMG,
+    icone: c.icone ?? null,
     descricaoCurta: c.descricao_curta,
   };
 }

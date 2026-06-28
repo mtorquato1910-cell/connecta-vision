@@ -6,10 +6,11 @@
 import sharp from "sharp";
 import { execSync } from "node:child_process";
 import { rmSync, mkdirSync, cpSync, readdirSync, statSync, existsSync, writeFileSync } from "node:fs";
-import { join, extname, dirname } from "node:path";
-import { pathToFileURL } from "node:url";
+import { join, extname, dirname, resolve } from "node:path";
+import { pathToFileURL, fileURLToPath } from "node:url";
 
-const root = "d:/Projetos/ADABTECH/adabech/Conecta/conecta-lp";
+// Raiz do projeto = pasta-pai de scripts/ (resolvida em runtime, portável).
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..").replace(/\\/g, "/");
 const sites = [
   "cirugiavet", "analiseveterinaria", "equipamentodentalvet", "veterinarioultrassom",
   "ultrassomdoppler", "endoscopiaveterinario", "microscopiodermatologico", "equipamentovet", "gemafalsa",

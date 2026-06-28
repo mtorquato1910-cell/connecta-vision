@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { ContactSection } from "@/components/site/ContactSection";
-import { SITE, waLink } from "@/lib/site-data";
+import { SITE } from "@/lib/site-data";
+import { buildWaLink, useSiteConfig } from "@/hooks/useSiteConfig";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 
 export const Route = createFileRoute("/contato")({
@@ -18,6 +19,15 @@ export const Route = createFileRoute("/contato")({
 });
 
 function ContatoPage() {
+  const { config } = useSiteConfig();
+  const c = config.contato;
+  const e = config.empresa;
+  const telefone = c.telefone_principal || SITE.phone;
+  const whatsapp = c.whatsapp || SITE.phone;
+  const email = c.email_comercial || SITE.email;
+  const cidade = e.cidade ? `${e.cidade}/${e.estado}` : SITE.city;
+  const cnpj = e.cnpj || SITE.cnpj;
+
   return (
     <SiteShell>
       <section className="container-edge pt-16 md:pt-24 pb-12">
@@ -32,10 +42,10 @@ function ContatoPage() {
         </Reveal>
 
         <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Info icon={MessageCircle} t="WhatsApp" v={SITE.phone} href={waLink()} cta="Conversar agora" />
-          <Info icon={Phone} t="Telefone" v={SITE.phone} href={`tel:+${SITE.phoneRaw}`} cta="Ligar" />
-          <Info icon={Mail} t="E-mail comercial" v={SITE.email} href={`mailto:${SITE.email}`} cta="Enviar e-mail" />
-          <Info icon={MapPin} t="Sede" v={SITE.city} cta={SITE.cnpj} />
+          <Info icon={MessageCircle} t="WhatsApp" v={whatsapp} href={buildWaLink()} cta="Conversar agora" />
+          <Info icon={Phone} t="Telefone" v={telefone} href={`tel:+${c.telefone_principal_raw || SITE.phoneRaw}`} cta="Ligar" />
+          <Info icon={Mail} t="E-mail comercial" v={email} href={`mailto:${email}`} cta="Enviar e-mail" />
+          <Info icon={MapPin} t="Sede" v={cidade} cta={cnpj} />
         </div>
       </section>
 

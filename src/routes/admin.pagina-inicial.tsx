@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowDown,
   ArrowUp,
@@ -14,38 +15,80 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import {
-  getConfig,
-  reorderSecoes,
-  reset as resetHome,
-  setProdutosDestaque,
-  toggleSecao,
+  DEFAULT_HOME,
+  type HomeConfig,
+  type SecaoConfig,
   type SecaoHome,
 } from "@/lib/admin-home-repo";
-import { getAll as getAllProdutos } from "@/lib/admin-produtos-repo";
+import {
+  getConteudoPublic,
+  upsertConteudo,
+  deleteConteudo,
+  listAllProdutos,
+} from "@/lib/admin.functions";
+
+const HOME_KEY = "home_config";
 
 export const Route = createFileRoute("/admin/pagina-inicial")({
   component: AdminPaginaInicialPage,
 });
 
 function AdminPaginaInicialPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
-  const config = useMemo(() => getConfig(), [refreshKey]);
-  const refresh = () => setRefreshKey((k) => k + 1);
+  const qc = useQueryClient();
 
-  const produtos = useMemo(() => getAllProdutos(), [refreshKey]);
-  const [destaques, setDestaques] = useState<string[]>(config.produtos_destaque_slugs);
-  const destaquesDirty =
-    JSON.stringify(destaques) !== JSON.stringify(config.produtos_destaque_slugs);
+  const { data: config = DEFAULT_HOME } = useQuery({
+    queryKey: ["admin-home-config"],
+    queryFn: async () => {
+      const rows = (await getConteudoPublic()) as Array<{ chave: string; valor: unknown }>;
+      const row = rows.find((r) => r.chave === HOME_KEY);
+      return (row?.valor as HomeConfig) ?? DEFAULT_HOME;
+    },
+    initialData: DEFAULT_HOME,
+  });
+
+  const { data: produtos = [] } = useQuery({
+    queryKey: ["admin-produtos"],
+    queryFn: async () => await listAllProdutos(),
+  });
+
+  const saveMut = useMutation({
+    mutationFn: (cfg: HomeConfig) => upsertConteudo({ data: { chave: HOME_KEY, valor: cfg } }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-home-config"] }),
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao salvar."),
+  });
+
+  const persistSecoes = (secoes: SecaoConfig[]) =>
+    saveMut.mutate({ ...config, secoes });
 
   const ordered = config.secoes.slice().sort((a, b) => a.ordem - b.ordem);
+
+  // Destaques são rascunho local com botão de salvar explícito.
+  const persistedDestaqueKey = JSON.stringify(config.produtos_destaque_slugs);
+  const [destaques, setDestaques] = useState<string[]>(config.produtos_destaque_slugs);
+  useEffect(() => {
+    setDestaques(config.produtos_destaque_slugs);
+    // só reseta quando a lista SALVA muda (evita perder rascunho em re-fetch)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [persistedDestaqueKey]);
+  const destaquesDirty =
+    JSON.stringify(destaques) !== persistedDestaqueKey;
+
+  const reassignOrdem = (ids: SecaoHome[]): SecaoConfig[] => {
+    const map = new Map(config.secoes.map((s) => [s.id, s]));
+    return ids
+      .map((id, i) => {
+        const s = map.get(id);
+        return s ? { ...s, ordem: i + 1 } : null;
+      })
+      .filter(Boolean) as SecaoConfig[];
+  };
 
   const moveUp = (id: SecaoHome) => {
     const ids = ordered.map((s) => s.id);
     const i = ids.indexOf(id);
     if (i <= 0) return;
     [ids[i - 1], ids[i]] = [ids[i], ids[i - 1]];
-    reorderSecoes(ids);
-    refresh();
+    persistSecoes(reassignOrdem(ids));
   };
 
   const moveDown = (id: SecaoHome) => {
@@ -53,13 +96,11 @@ function AdminPaginaInicialPage() {
     const i = ids.indexOf(id);
     if (i < 0 || i >= ids.length - 1) return;
     [ids[i + 1], ids[i]] = [ids[i], ids[i + 1]];
-    reorderSecoes(ids);
-    refresh();
+    persistSecoes(reassignOrdem(ids));
   };
 
   const handleToggle = (id: SecaoHome) => {
-    toggleSecao(id);
-    refresh();
+    persistSecoes(config.secoes.map((s) => (s.id === id ? { ...s, ativa: !s.ativa } : s)));
   };
 
   const toggleDestaque = (slug: string) => {
@@ -69,17 +110,26 @@ function AdminPaginaInicialPage() {
   };
 
   const handleSaveDestaques = () => {
-    setProdutosDestaque(destaques);
-    toast.success(`${destaques.length} ${destaques.length === 1 ? "produto" : "produtos"} em destaque.`);
-    refresh();
+    saveMut.mutate(
+      { ...config, produtos_destaque_slugs: destaques },
+      {
+        onSuccess: () =>
+          toast.success(
+            `${destaques.length} ${destaques.length === 1 ? "produto" : "produtos"} em destaque.`,
+          ),
+      },
+    );
   };
 
   const handleReset = () => {
     if (!confirm("Restaurar configuração da página inicial ao padrão?")) return;
-    resetHome();
-    refresh();
-    setDestaques(getConfig().produtos_destaque_slugs);
-    toast.success("Página inicial restaurada.");
+    deleteConteudo({ data: { chave: HOME_KEY } })
+      .then(() => {
+        qc.invalidateQueries({ queryKey: ["admin-home-config"] });
+        setDestaques(DEFAULT_HOME.produtos_destaque_slugs);
+        toast.success("Página inicial restaurada.");
+      })
+      .catch((e: any) => toast.error(e?.message ?? "Erro ao restaurar."));
   };
 
   const ativasCount = ordered.filter((s) => s.ativa).length;
@@ -207,7 +257,7 @@ function AdminPaginaInicialPage() {
                     }`}
                   >
                     <img
-                      src={p.imagem_principal ?? ""}
+                      src={p.imagem_url ?? ""}
                       alt=""
                       className="h-10 w-10 rounded-md object-cover bg-bone shrink-0"
                     />

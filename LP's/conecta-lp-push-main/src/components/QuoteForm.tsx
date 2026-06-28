@@ -17,6 +17,10 @@ export function QuoteForm() {
     setEnviando(true);
     const fd = new FormData(e.currentTarget);
 
+    // Honeypot anti-spam: campo "website" é invisível ao usuário; se vier
+    // preenchido, foi um bot. Não envia ao Supabase (descarta silenciosamente).
+    const honeypot = String(fd.get("website") ?? "").trim();
+
     const nome = String(fd.get("nome") ?? "");
     const whatsapp = String(fd.get("whatsapp") ?? "");
     const email = String(fd.get("email") ?? "");
@@ -29,21 +33,25 @@ export function QuoteForm() {
     const obs = String(fd.get("obs") ?? "");
 
     // 1) Salva o lead no Supabase (cai no painel admin). Não bloqueia o WhatsApp.
-    await submitLead({
-      nome,
-      email,
-      whatsapp,
-      funcao,
-      tipoEstabelecimento: tipo,
-      nomeEstabelecimento: estabelecimento,
-      cidade,
-      volume,
-      itens: equipamentos,
-      prazo,
-      observacoes: obs,
-      origem: site.domain || site.id,
-      lineName: site.lineName,
-    });
+    //    Bots geralmente preenchem o honeypot; nesse caso pulamos o insert.
+    if (!honeypot) {
+      await submitLead({
+        nome,
+        email,
+        whatsapp,
+        funcao,
+        tipoEstabelecimento: tipo,
+        nomeEstabelecimento: estabelecimento,
+        cidade,
+        volume,
+        itens: equipamentos,
+        prazo,
+        observacoes: obs,
+        origem: site.domain || site.id,
+        lineName: site.lineName,
+        website: honeypot,
+      });
+    }
 
     // 2) Abre o WhatsApp com a mensagem preenchida (comportamento original).
     const lines = [
@@ -133,6 +141,19 @@ export function QuoteForm() {
           <p className="text-sm text-muted-foreground mt-1 mb-8">
             Preenchimento leva ~2 minutos. Quanto mais detalhe, mais precisa a proposta.
           </p>
+
+          {/* Honeypot anti-spam: invisível ao usuário e a leitores de tela,
+              fora do fluxo de tab. Bots tendem a preenchê-lo. */}
+          <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+            <label htmlFor="website">Não preencha este campo</label>
+            <input
+              type="text"
+              id="website"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+            />
+          </div>
 
           <Step n={1} title="Sobre você">
             <Field label="Nome completo" name="nome" required />

@@ -6,6 +6,20 @@ Este documento lista **TUDO que falta** para terminar. Marque `[x]` ao concluir.
 
 ---
 
+## 🟢 PROGRESSO 2026-06-28 (sessão Orion)
+
+Concluído nesta sessão (typecheck + `npm run build` limpos):
+- **Domínio definitivo = `conecta2lab.com.br`** — corrigido em `schema-org.ts`, `sitemap[.]xml.tsx`, OG absoluto no `__root.tsx`. (era `conectavet.com.br` chumbado)
+- **SEO produto/categoria** — novo `components/shared/Seo.tsx` (client-side: title/description/canonical/OG dinâmicos). Aplicado em `produtos.$slug` e `produtos.categoria.$slug`. Resolve o problema dos 200+ produtos com meta genérica.
+- **Admin 100% no Supabase** — migradas as telas que estavam em localStorage: **blog, eventos, conteúdo, configurações, página-inicial, dashboard** (produtos/categorias/perfil já estavam). Dashboard agora usa `dashboardStats` + contagens reais.
+- **Site público no Supabase** — blog (index/$slug/enviar) e eventos (index/$slug) ligados às server-fns; `eventos.$slug`/`blog.$slug` tiveram o `loader` removido (evita 500 do adapter) → `useQuery` client-side.
+- **Config/conteúdo refletem no site** — novas server-fns PÚBLICAS `getConfigPublic`/`getConteudoPublic`; novo `lib/site-config-adapter.ts`; `hooks/useSiteConfig.ts` agora lê do Supabase; `contato.tsx` ligado ao config. (Footer/TopBar/Navbar/WhatsAppFab já usavam o hook.)
+- Persistência de `home_config` em `conteudo_site` (chave única).
+
+⚠️ Ainda PENDENTE (precisa do Matheus / acesso externo): hospedar LPs + domínios no Vercel, DNS no Registro.br, promover produção, dados reais de contato do cliente, revogar chave Supabase antiga, hardening de segurança. Detalhes nas seções E/F/K abaixo + nova seção **L. Segurança**.
+
+---
+
 ## ✅ JÁ PRONTO (pra referência)
 - Banco Supabase (10 tabelas + RLS + seeds: 8 categorias, 230 produtos, 5 posts, 3 eventos)
 - **Catálogo** público (produtos/categorias) + **admin de produtos e categorias** → Supabase
@@ -89,6 +103,34 @@ Este documento lista **TUDO que falta** para terminar. Marque `[x]` ao concluir.
 - [ ] **Revogar a chave secreta ANTIGA** no Supabase (ainda funciona — só criamos a nova). Settings ▸ API Keys ▸ revoke `sb_secret_yOH9...`.
 - [ ] Confirmar que `.claude/settings.local.json` segue **fora do Git** (já gitignorado ✅).
 - [ ] Criar usuários admin adicionais se o cliente precisar (hoje só `conectamondragon@gmail.com`).
+
+## L. SEGURANÇA (hardening — site + admin + LPs)
+> Objetivo: deixar tudo o mais seguro possível contra invasão/abuso antes de ir ao ar.
+
+**Banco / Supabase**
+- [ ] Revisar **RLS** de TODAS as tabelas: público só faz INSERT em `formularios`/`orcamentos`/`blog_posts(submit)`; leitura pública só do que deve ser público (produtos/categorias/posts publicados/eventos). Admin via `service_role` server-side.
+- [ ] Confirmar que a **service role key** NUNCA vai pro client (só em `client.server.ts` / server-fns). Conferir que `getConfigPublic`/`getConteudoPublic` não expõem segredo (não expõem — só dados públicos).
+- [ ] **Revogar a chave secreta ANTIGA** (`sb_secret_yOH9...`).
+- [ ] Rotacionar/guardar service role só em env do Vercel (nunca no Git).
+
+**Admin**
+- [ ] Auth real já existe (Supabase Auth + `requireAdmin` por `user_roles`). Validar que toda server-fn de escrita tem `requireAdmin`.
+- [ ] Senha forte no usuário admin + (ideal) 2FA no Supabase Auth.
+- [ ] Rate limit / proteção brute-force no login (Supabase tem; validar). Considerar bloquear `/admin` por header secreto ou Vercel firewall se quiser camada extra.
+
+**Headers HTTP (no adapter Vercel `build-vercel.mjs`)**
+- [ ] `Strict-Transport-Security` (HSTS), `X-Frame-Options: DENY` (anti-clickjacking), `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, e **CSP** básica.
+- [ ] HTTPS forçado (Vercel já faz) + cookies `Secure`/`HttpOnly`/`SameSite`.
+
+**Formulários (site + 9 LPs) — anti-spam/bot**
+- [ ] **Honeypot** + time-trap nos forms (campo oculto que bot preenche).
+- [ ] Rate limit no `submitFormulario`/`submitBlogPost` (por IP) ou Vercel BotID/WAF.
+- [ ] Validação/sanitização server-side já existe (zod). Validar limites de tamanho.
+- [ ] CORS: as server-fns só devem aceitar origem dos domínios próprios.
+
+**LPs**
+- [ ] Garantir que as LPs estáticas só conseguem INSERT em `formularios` (nada de chave admin embutida no bundle).
+- [ ] CSP nas LPs também.
 
 ---
 

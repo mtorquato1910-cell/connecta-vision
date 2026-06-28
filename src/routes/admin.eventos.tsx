@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Calendar,
   Camera,
@@ -10,7 +11,6 @@ import {
   MapPin,
   Pencil,
   Plus,
-  RotateCcw,
   Trash2,
   X,
 } from "lucide-react";
@@ -20,47 +20,112 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { ImageInput } from "@/components/admin/ImageInput";
 import { ImagensEditor } from "@/components/admin/ImagensEditor";
 import {
-  create as createEvento,
-  getAll as getAllEventos,
-  remove as removeEvento,
-  reset as resetEventos,
-  update as updateEvento,
-  type Evento,
-  type EventoInput,
-} from "@/lib/admin-eventos-repo";
+  listAllEventos,
+  upsertEvento,
+  deleteEvento,
+} from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/eventos")({
   component: AdminEventosPage,
 });
 
+type EventoFoto = { url: string; ordem: number; alt: string; caption?: string };
+
+type Evento = {
+  id: string;
+  slug: string;
+  nome: string;
+  data_evento: string | null;
+  local: string | null;
+  descricao_curta: string | null;
+  descricao_longa: string | null;
+  capa_url: string | null;
+  galeria: EventoFoto[];
+  publicado: boolean;
+  ordem: number;
+};
+
+type EventoInput = {
+  id?: string;
+  slug: string;
+  nome: string;
+  data_evento: string;
+  local: string;
+  descricao_curta: string;
+  descricao_longa: string;
+  capa_url: string;
+  galeria: EventoFoto[];
+  publicado: boolean;
+  ordem?: number;
+};
+
+function slugify(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
 function AdminEventosPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const queryClient = useQueryClient();
   const [editing, setEditing] = useState<Evento | null>(null);
   const [creating, setCreating] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<Evento | null>(null);
 
-  const refresh = () => setRefreshKey((k) => k + 1);
-  const eventos = useMemo(() => getAllEventos(), [refreshKey]);
+  const { data: eventos = [], isLoading } = useQuery({
+    queryKey: ["admin-eventos"],
+    queryFn: async () => {
+      const rows = (await listAllEventos()) as any[];
+      return rows.map((e) => ({
+        ...e,
+        galeria: Array.isArray(e.galeria) ? e.galeria : [],
+      })) as Evento[];
+    },
+  });
 
-  const handleDelete = () => {
-    if (!confirmDelete) return;
-    removeEvento(confirmDelete.id);
-    toast.success(`Evento "${confirmDelete.nome}" excluído.`);
-    setConfirmDelete(null);
-    refresh();
-  };
+  const invalidate = () =>
+    queryClient.invalidateQueries({ queryKey: ["admin-eventos"] });
+
+  const saveMutation = useMutation({
+    mutationFn: (payload: EventoInput) => upsertEvento({ data: payload }),
+    onSuccess: (_res, payload) => {
+      toast.success(payload.id ? "Evento atualizado." : "Evento criado.");
+      setEditing(null);
+      setCreating(false);
+      invalidate();
+    },
+    onError: (e) =>
+      toast.error(e instanceof Error ? e.message : "Erro ao salvar evento."),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteEvento({ data: { id } }),
+    onSuccess: () => {
+      toast.success(`Evento "${confirmDelete?.nome}" excluído.`);
+      setConfirmDelete(null);
+      invalidate();
+    },
+    onError: (e) =>
+      toast.error(e instanceof Error ? e.message : "Erro ao excluir."),
+  });
 
   const togglePublicado = (e: Evento) => {
-    updateEvento(e.id, { publicado: !e.publicado });
-    toast.success(`Evento ${!e.publicado ? "publicado" : "ocultado"}.`);
-    refresh();
-  };
-
-  const handleReset = () => {
-    if (!confirm("Restaurar eventos ao estado original? Suas edições serão perdidas.")) return;
-    resetEventos();
-    refresh();
-    toast.success("Eventos restaurados.");
+    saveMutation.mutate({
+      id: e.id,
+      slug: e.slug,
+      nome: e.nome,
+      data_evento: e.data_evento ?? "",
+      local: e.local ?? "",
+      descricao_curta: e.descricao_curta ?? "",
+      descricao_longa: e.descricao_longa ?? "",
+      capa_url: e.capa_url ?? "",
+      galeria: e.galeria,
+      publicado: !e.publicado,
+      ordem: e.ordem,
+    });
   };
 
   return (
@@ -72,31 +137,31 @@ function AdminEventosPage() {
         icon={Camera}
         tone="rose"
         actions={
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={handleReset} className="gap-1.5">
-              <RotateCcw className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Restaurar</span>
-            </Button>
-            <Button onClick={() => setCreating(true)} className="gap-2 bg-rose-600 hover:bg-rose-700 text-white">
-              <Plus className="h-4 w-4" />
-              Novo evento
-            </Button>
-          </div>
+          <Button onClick={() => setCreating(true)} className="gap-2 bg-rose-600 hover:bg-rose-700 text-white">
+            <Plus className="h-4 w-4" />
+            Novo evento
+          </Button>
         }
       />
 
       <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-7xl">
         <div className="text-xs text-ink-soft mb-3 px-1">
-          {eventos.length} evento{eventos.length === 1 ? "" : "s"}
+          {isLoading
+            ? "Carregando…"
+            : `${eventos.length} evento${eventos.length === 1 ? "" : "s"}`}
         </div>
 
         {eventos.length === 0 ? (
           <div className="bg-paper border border-line rounded-2xl py-16 text-center">
             <Camera className="h-10 w-10 text-ink-mute mx-auto mb-3" />
-            <p className="text-ink-soft mb-4">Nenhum evento cadastrado.</p>
-            <Button onClick={() => setCreating(true)} className="bg-rose-600 hover:bg-rose-700 text-white gap-2">
-              <Plus className="h-4 w-4" /> Adicionar primeiro evento
-            </Button>
+            <p className="text-ink-soft mb-4">
+              {isLoading ? "Carregando eventos…" : "Nenhum evento cadastrado."}
+            </p>
+            {!isLoading && (
+              <Button onClick={() => setCreating(true)} className="bg-rose-600 hover:bg-rose-700 text-white gap-2">
+                <Plus className="h-4 w-4" /> Adicionar primeiro evento
+              </Button>
+            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -116,22 +181,13 @@ function AdminEventosPage() {
       {(editing || creating) && (
         <EventoForm
           evento={editing}
+          existing={eventos}
+          saving={saveMutation.isPending}
           onClose={() => {
             setEditing(null);
             setCreating(false);
           }}
-          onSave={(input) => {
-            if (editing) {
-              updateEvento(editing.id, input);
-              toast.success("Evento atualizado.");
-            } else {
-              createEvento(input);
-              toast.success("Evento criado.");
-            }
-            setEditing(null);
-            setCreating(false);
-            refresh();
-          }}
+          onSave={(input) => saveMutation.mutate(input)}
         />
       )}
 
@@ -140,7 +196,7 @@ function AdminEventosPage() {
           title="Excluir evento"
           message={`Tem certeza que quer excluir "${confirmDelete.nome}"? Todas as fotos da galeria também serão removidas. Esta ação não pode ser desfeita.`}
           onCancel={() => setConfirmDelete(null)}
-          onConfirm={handleDelete}
+          onConfirm={() => deleteMutation.mutate(confirmDelete.id)}
         />
       )}
     </div>
@@ -163,7 +219,7 @@ function EventoRow({
   return (
     <div className="bg-paper border border-line rounded-2xl overflow-hidden flex flex-col md:flex-row hover:border-rose-300 transition-colors">
       <img
-        src={ev.capa_url}
+        src={ev.capa_url ?? ""}
         alt={ev.nome}
         className="h-48 md:h-auto md:w-64 object-cover bg-bone shrink-0"
       />
@@ -171,11 +227,13 @@ function EventoRow({
         <div className="flex items-center gap-2 text-xs text-ink-soft mb-2 flex-wrap">
           <span className="inline-flex items-center gap-1">
             <Calendar className="h-3 w-3" />
-            {new Date(ev.data_evento).toLocaleDateString("pt-BR", {
-              day: "2-digit",
-              month: "long",
-              year: "numeric",
-            })}
+            {ev.data_evento
+              ? new Date(ev.data_evento).toLocaleDateString("pt-BR", {
+                  day: "2-digit",
+                  month: "long",
+                  year: "numeric",
+                })
+              : "Sem data"}
           </span>
           <span>·</span>
           <span className="inline-flex items-center gap-1">
@@ -238,10 +296,14 @@ function EventoRow({
 
 function EventoForm({
   evento,
+  existing,
+  saving,
   onClose,
   onSave,
 }: {
   evento: Evento | null;
+  existing: Evento[];
+  saving: boolean;
   onClose: () => void;
   onSave: (input: EventoInput) => void;
 }) {
@@ -259,6 +321,16 @@ function EventoForm({
     evento?.galeria?.map((g) => g.url).filter(Boolean) ?? [],
   );
   const [publicado, setPublicado] = useState(evento?.publicado ?? true);
+
+  const ensureUniqueSlug = (base: string): string => {
+    let slug = base || "evento";
+    let i = 1;
+    while (existing.some((e) => e.slug === slug && e.id !== evento?.id)) {
+      i++;
+      slug = `${base}-${i}`;
+    }
+    return slug;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,8 +351,11 @@ function EventoForm({
       ordem: i,
       alt: `${nome.trim()} — foto ${i + 1}`,
     }));
+    // slug: mantém o existente ao editar (onConflict: "slug"), gera ao criar.
+    const slug = evento?.slug || ensureUniqueSlug(slugify(nome));
     onSave({
-      slug: evento?.slug ?? "",
+      id: evento?.id,
+      slug,
       nome: nome.trim(),
       data_evento: dataEvento,
       local: local.trim(),
@@ -289,6 +364,7 @@ function EventoForm({
       capa_url: capaUrl.trim() || galeriaUrls[0] || "",
       galeria,
       publicado,
+      ordem: evento?.ordem,
     });
   };
 
@@ -402,8 +478,8 @@ function EventoForm({
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} className="bg-rose-600 hover:bg-rose-700 text-white">
-            {editing ? "Salvar alterações" : "Criar evento"}
+          <Button onClick={handleSubmit} disabled={saving} className="bg-rose-600 hover:bg-rose-700 text-white">
+            {saving ? "Salvando…" : editing ? "Salvar alterações" : "Criar evento"}
           </Button>
         </footer>
       </div>

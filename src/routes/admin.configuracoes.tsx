@@ -1,16 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Building2, Globe, Mail, RotateCcw, Save, Search, Share2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ImageInput } from "@/components/admin/ImageInput";
+import { DEFAULT_CONFIG, type ConfigAll } from "@/lib/admin-config-repo";
 import {
-  getAll as getAllConfig,
-  reset as resetConfig,
-  updateGroup as updateConfigGroup,
-  type ConfigAll,
-} from "@/lib/admin-config-repo";
+  getConfigPublic,
+  upsertConfigEmpresa,
+  deleteConfigEmpresa,
+} from "@/lib/admin.functions";
+import { rowsToConfig } from "@/lib/site-config-adapter";
 
 export const Route = createFileRoute("/admin/configuracoes")({
   component: AdminConfigPage,
@@ -26,25 +28,54 @@ const TABS: { id: Tab; label: string; icon: React.ComponentType<{ className?: st
 ];
 
 function AdminConfigPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>("empresa");
-  const config = getAllConfig();
+
+  const { data: config = DEFAULT_CONFIG, dataUpdatedAt } = useQuery({
+    queryKey: ["admin-config"],
+    queryFn: async () => rowsToConfig(await getConfigPublic()),
+    initialData: DEFAULT_CONFIG,
+  });
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["admin-config"] });
+    qc.invalidateQueries({ queryKey: ["site-config"] });
+  };
+
+  const saveMut = useMutation({
+    mutationFn: (vars: { group: keyof ConfigAll; data: any }) =>
+      upsertConfigEmpresa({ data: { chave: vars.group, valor: vars.data } }),
+    onSuccess: () => {
+      toast.success("Configurações salvas.");
+      invalidate();
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao salvar."),
+  });
 
   const handleSave = (group: keyof ConfigAll, data: any) => {
-    updateConfigGroup(group, data);
-    toast.success("Configurações salvas.");
-    setRefreshKey((k) => k + 1);
+    saveMut.mutate({ group, data });
   };
+
+  const resetMut = useMutation({
+    mutationFn: async () => {
+      for (const chave of ["empresa", "contato", "redes", "seo"]) {
+        await deleteConfigEmpresa({ data: { chave } });
+      }
+    },
+    onSuccess: () => {
+      toast.success("Configurações restauradas.");
+      invalidate();
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao restaurar."),
+  });
 
   const handleReset = () => {
     if (!confirm("Restaurar todas as configurações ao padrão?")) return;
-    resetConfig();
-    setRefreshKey((k) => k + 1);
-    toast.success("Configurações restauradas.");
+    resetMut.mutate();
   };
 
   return (
-    <div key={refreshKey}>
+    <div key={dataUpdatedAt}>
       <PageHeader
         eyebrow="Sistema"
         title="Configurações"

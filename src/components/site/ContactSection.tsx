@@ -23,6 +23,7 @@ export function ContactSection() {
     const email = String(fd.get("email") ?? "").trim();
     const tipo_estabelecimento = String(fd.get("tipo_estabelecimento") ?? "").trim();
     const mensagem = String(fd.get("mensagem") ?? "").trim();
+    const website = String(fd.get("website") ?? ""); // honeypot
     setSubmitting(true);
     try {
       await submitFormulario({
@@ -34,6 +35,7 @@ export function ContactSection() {
           mensagem,
           origem: typeof window !== "undefined" ? window.location.pathname : "/",
           payload: { tipo_estabelecimento: tipo_estabelecimento || null },
+          website,
         },
       });
       setSent(true);
@@ -113,6 +115,15 @@ export function ContactSection() {
               <>
                 <h3 className="font-serif text-2xl">Solicite um orçamento</h3>
                 <p className="text-sm text-ink-soft mt-1">Resposta em até 4 horas úteis.</p>
+                {/* Honeypot anti-spam — oculto para humanos, preenchido por bots */}
+                <input
+                  type="text"
+                  name="website"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  aria-hidden="true"
+                  className="hidden"
+                />
                 <div className="mt-5 space-y-3">
                   <div className="grid grid-cols-2 gap-3">
                     <input name="nome" required placeholder="Nome" className="rounded-lg border border-line-strong px-3 py-2.5 text-sm focus:outline-none focus:border-conecta-blue" />

@@ -1,20 +1,22 @@
 /**
  * Hook que conecta o site público às configurações editáveis pelo admin.
- * Lê de admin-config-repo + admin-conteudo-repo.
+ * Lê de `configuracoes_empresa` + `conteudo_site` (Supabase) via server-fns públicas.
  *
- * Em SSR, retorna os valores DEFAULT (do código).
- * No client, lê do localStorage e reage a mudanças.
+ * Em SSR, retorna os valores DEFAULT (do código). No client, busca do banco
+ * via react-query e atualiza. Helpers síncronos (buildWaLink/getTextoSync)
+ * leem de um cache de módulo alimentado pelo hook.
  */
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import {
   DEFAULT_CONFIG,
-  getAll as getAllConfig,
   type ConfigAll,
 } from "@/lib/admin-config-repo";
 import {
-  getAll as getAllConteudo,
+  DEFAULT_CONTEUDO,
   type ConteudoItem,
 } from "@/lib/admin-conteudo-repo";
+import { getConfigPublic, getConteudoPublic } from "@/lib/admin.functions";
+import { rowsToConfig, rowsToConteudo } from "@/lib/site-config-adapter";
 
 type SiteConfig = {
   config: ConfigAll;
@@ -22,29 +24,28 @@ type SiteConfig = {
   texto: (chave: string, fallback?: string) => string;
 };
 
+// Cache de módulo para helpers fora de componente React.
+let cachedConfig: ConfigAll = DEFAULT_CONFIG;
+let cachedConteudo: ConteudoItem[] = DEFAULT_CONTEUDO;
+
+const STALE = 5 * 60 * 1000;
+
 export function useSiteConfig(): SiteConfig {
-  const [config, setConfig] = useState<ConfigAll>(DEFAULT_CONFIG);
-  const [conteudo, setConteudo] = useState<ConteudoItem[]>([]);
+  const { data: config = DEFAULT_CONFIG } = useQuery({
+    queryKey: ["site-config"],
+    queryFn: async () => rowsToConfig(await getConfigPublic()),
+    initialData: DEFAULT_CONFIG,
+    staleTime: STALE,
+  });
+  const { data: conteudo = DEFAULT_CONTEUDO } = useQuery({
+    queryKey: ["site-conteudo"],
+    queryFn: async () => rowsToConteudo(await getConteudoPublic()),
+    initialData: DEFAULT_CONTEUDO,
+    staleTime: STALE,
+  });
 
-  useEffect(() => {
-    const load = () => {
-      setConfig(getAllConfig());
-      setConteudo(getAllConteudo());
-    };
-    load();
-
-    // Reage a mudanças do storage (outras abas) e ao próprio admin
-    const onStorage = (e: StorageEvent) => {
-      if (
-        e.key === "conecta_admin_config_v1" ||
-        e.key === "conecta_admin_conteudo_v1"
-      ) {
-        load();
-      }
-    };
-    window.addEventListener("storage", onStorage);
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
+  cachedConfig = config;
+  cachedConteudo = conteudo;
 
   const texto = (chave: string, fallback = "") =>
     conteudo.find((c) => c.chave === chave)?.valor ?? fallback;
@@ -52,16 +53,14 @@ export function useSiteConfig(): SiteConfig {
   return { config, conteudo, texto };
 }
 
-/** Helper síncrono para usar fora de componente React (SSR-safe). */
+/** Helper síncrono para usar fora de componente React. Lê do cache do hook. */
 export function getTextoSync(chave: string, fallback = ""): string {
-  if (typeof window === "undefined") return fallback;
-  return getAllConteudo().find((c) => c.chave === chave)?.valor ?? fallback;
+  return cachedConteudo.find((c) => c.chave === chave)?.valor ?? fallback;
 }
 
-/** Helper para WhatsApp link usando config do admin. */
+/** Helper para WhatsApp link usando a config carregada do admin (cache do hook). */
 export function buildWaLink(msg?: string): string {
-  const cfg = typeof window === "undefined" ? DEFAULT_CONFIG : getAllConfig();
-  const phone = cfg.contato.whatsapp_raw;
-  const text = msg ?? cfg.contato.whatsapp_msg_padrao;
+  const phone = cachedConfig.contato.whatsapp_raw;
+  const text = msg ?? cachedConfig.contato.whatsapp_msg_padrao;
   return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 }

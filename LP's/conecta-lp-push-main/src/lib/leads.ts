@@ -29,6 +29,8 @@ export type LeadInput = {
   /** identidade da LP de origem (ex.: domínio ou id do site) */
   origem: string;
   lineName?: string;
+  /** honeypot anti-spam: deve vir SEMPRE vazio (preenchido = bot) */
+  website?: string;
 };
 
 /**
@@ -55,6 +57,7 @@ export async function submitLead(input: LeadInput): Promise<boolean> {
       prazo: input.prazo ?? null,
       whatsapp: input.whatsapp ?? null,
       line_name: input.lineName ?? null,
+      website: input.website ?? null,
       origem_url:
         typeof window !== "undefined" ? window.location.href : input.origem,
     },

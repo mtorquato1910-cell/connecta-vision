@@ -11,7 +11,7 @@ import eventosJson from "@/data/eventos.json";
  */
 export const Route = createFileRoute("/sitemap.xml")({
   loader: () => {
-    const base = "https://www.conectavet.com.br";
+    const base = "https://www.conecta2lab.com.br";
     const now = new Date().toISOString();
 
     const urls: { loc: string; lastmod?: string; changefreq?: string; priority?: number }[] = [

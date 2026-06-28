@@ -5,7 +5,8 @@
 import { createServer } from "node:http";
 import { readFileSync, existsSync, statSync } from "node:fs";
 import { spawn } from "node:child_process";
-import { join, extname } from "node:path";
+import { join, extname, dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // Chrome assíncrono (spawn), pois o servidor HTTP roda no MESMO processo:
 // com execSync (bloqueante) o event loop trava e o servidor não responde.
@@ -21,7 +22,8 @@ function runChrome(chrome, url) {
   });
 }
 
-const root = "d:/Projetos/ADABTECH/adabech/Conecta/conecta-lp";
+// Raiz do projeto = pasta-pai de scripts/ (resolvida em runtime, portável).
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..").replace(/\\/g, "/");
 const sites = [
   "cirugiavet", "analiseveterinaria", "equipamentodentalvet", "veterinarioultrassom",
   "ultrassomdoppler", "endoscopiaveterinario", "microscopiodermatologico", "equipamentovet", "gemafalsa",

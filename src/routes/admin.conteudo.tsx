@@ -1,17 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { FileText, RotateCcw, Save } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import {
-  getAll as getAllConteudo,
+  DEFAULT_CONTEUDO,
   PAGINA_LABELS,
-  reset as resetConteudo,
-  updateValor as updateConteudo,
   type ConteudoItem,
   type ConteudoPagina,
 } from "@/lib/admin-conteudo-repo";
+import { getConteudoPublic, upsertConteudo, deleteConteudo } from "@/lib/admin.functions";
+import { rowsToConteudo } from "@/lib/site-config-adapter";
 
 export const Route = createFileRoute("/admin/conteudo")({
   component: AdminConteudoPage,
@@ -20,25 +21,45 @@ export const Route = createFileRoute("/admin/conteudo")({
 const TABS: ConteudoPagina[] = ["home", "sobre", "contato", "global", "footer"];
 
 function AdminConteudoPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const qc = useQueryClient();
   const [tab, setTab] = useState<ConteudoPagina>("home");
   const [drafts, setDrafts] = useState<Record<string, string>>({});
 
-  const all = useMemo(() => getAllConteudo(), [refreshKey]);
+  const { data: all = DEFAULT_CONTEUDO } = useQuery({
+    queryKey: ["admin-conteudo"],
+    queryFn: async () => rowsToConteudo(await getConteudoPublic()),
+    initialData: DEFAULT_CONTEUDO,
+  });
   const items = all.filter((c) => c.pagina === tab);
   const dirty = Object.keys(drafts).length > 0;
+
+  const invalidate = () => {
+    qc.invalidateQueries({ queryKey: ["admin-conteudo"] });
+    qc.invalidateQueries({ queryKey: ["site-conteudo"] });
+  };
 
   const handleChange = (chave: string, valor: string) => {
     setDrafts((prev) => ({ ...prev, [chave]: valor }));
   };
 
+  const saveMut = useMutation({
+    mutationFn: async (entries: [string, string][]) => {
+      for (const [chave, valor] of entries) {
+        await upsertConteudo({ data: { chave, valor } });
+      }
+    },
+    onSuccess: (_d, entries) => {
+      toast.success(`${entries.length} ${entries.length === 1 ? "texto salvo" : "textos salvos"}.`);
+      setDrafts({});
+      invalidate();
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao salvar."),
+  });
+
   const handleSave = () => {
-    Object.entries(drafts).forEach(([chave, valor]) => updateConteudo(chave, valor));
-    toast.success(
-      `${Object.keys(drafts).length} ${Object.keys(drafts).length === 1 ? "texto salvo" : "textos salvos"}.`,
-    );
-    setDrafts({});
-    setRefreshKey((k) => k + 1);
+    const entries = Object.entries(drafts);
+    if (entries.length === 0) return;
+    saveMut.mutate(entries);
   };
 
   const handleDiscard = () => {
@@ -47,12 +68,23 @@ function AdminConteudoPage() {
     setDrafts({});
   };
 
+  const resetMut = useMutation({
+    mutationFn: async () => {
+      for (const item of DEFAULT_CONTEUDO) {
+        await deleteConteudo({ data: { chave: item.chave } });
+      }
+    },
+    onSuccess: () => {
+      setDrafts({});
+      invalidate();
+      toast.success("Conteúdo restaurado ao padrão.");
+    },
+    onError: (e: any) => toast.error(e?.message ?? "Erro ao restaurar."),
+  });
+
   const handleReset = () => {
     if (!confirm("Restaurar todos os textos ao padrão original?")) return;
-    resetConteudo();
-    setDrafts({});
-    setRefreshKey((k) => k + 1);
-    toast.success("Conteúdo restaurado ao padrão.");
+    resetMut.mutate();
   };
 
   return (

@@ -295,12 +295,18 @@ const formularioSchema = z.object({
   mensagem: z.string().max(4000).optional().nullable(),
   origem: z.string().max(200).optional().nullable(),
   payload: z.record(z.string(), z.any()).optional().default({}),
+  // Honeypot anti-spam: campo oculto que humanos não preenchem.
+  // Usado pelos forms do site e das LPs (input hidden name="website").
+  website: z.string().max(200).optional(),
 });
 
 export const submitFormulario = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) => formularioSchema.parse(i))
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin.from("formularios").insert(data);
+    const { website, ...rest } = data;
+    // Honeypot preenchido → bot. Finge sucesso e descarta (não grava no banco).
+    if (website && website.trim() !== "") return { ok: true };
+    const { error } = await supabaseAdmin.from("formularios").insert(rest);
     if (error) throw new Error(error.message);
     return { ok: true };
   });
@@ -400,6 +406,21 @@ export const deleteConteudo = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// ---------- Leitura PÚBLICA de conteúdo + configurações (sem auth) ----------
+// Usadas pelo site público (hook useSiteConfig) para refletir o que o admin edita.
+// Rodam com service role (bypass RLS); nenhum dado sensível vive nessas tabelas.
+export const getConteudoPublic = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabaseAdmin.from("conteudo_site").select("chave, valor");
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const getConfigPublic = createServerFn({ method: "GET" }).handler(async () => {
+  const { data, error } = await supabaseAdmin.from("configuracoes_empresa").select("chave, valor");
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
 
 // ---------- Configurações da empresa (key/value JSON) ----------
 export const listConfigEmpresa = createServerFn({ method: "GET" })

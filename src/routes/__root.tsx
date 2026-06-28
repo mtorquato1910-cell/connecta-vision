@@ -79,9 +79,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:title", content: "Conecta — Equipamentos Veterinários" },
       { property: "og:description", content: "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários premium." },
       { name: "twitter:description", content: "Distribuidor oficial Shinova no Brasil. 230+ equipamentos veterinários premium." },
-      { property: "og:image", content: "/icon-512.png" },
-      { name: "twitter:image", content: "/icon-512.png" },
+      { property: "og:image", content: "https://www.conecta2lab.com.br/icon-512.png" },
+      { name: "twitter:image", content: "https://www.conecta2lab.com.br/icon-512.png" },
       { property: "og:type", content: "website" },
+      { property: "og:site_name", content: "Conecta Equipamentos Veterinários" },
+      { property: "og:locale", content: "pt_BR" },
       { name: "theme-color", content: "#1A1F8F" },
     ],
     links: [

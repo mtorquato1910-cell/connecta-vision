@@ -14,21 +14,31 @@ import {
   Sparkles,
   TrendingUp,
 } from "lucide-react";
-import {
-  CATEGORIAS,
-  PRODUTOS,
-  PRODUTOS_DESTAQUE,
-} from "@/lib/site-data";
-import {
-  formatDate,
-  getAllPosts,
-  getPendingPosts,
-  getPublishedPosts,
-  type BlogPost,
-} from "@/lib/blog-data";
-import { getAllEventos } from "@/lib/eventos-data";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { getCurrentUser } from "@/lib/admin-auth";
+import { dashboardStats, listAllPosts, listAllEventos } from "@/lib/admin.functions";
+
+type BlogPost = {
+  id: string;
+  titulo: string;
+  autor_nome: string;
+  capa_url: string | null;
+  created_at: string;
+  status: string;
+};
+
+function formatDate(iso: string): string {
+  try {
+    return new Date(iso).toLocaleDateString("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+}
 
 export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
@@ -42,16 +52,30 @@ function AdminDashboard() {
     });
   }, []);
 
-  const totalProdutos = PRODUTOS.length;
-  const totalDestaques = PRODUTOS_DESTAQUE.length;
-  const totalCategorias = CATEGORIAS.length;
-  const postsPublicados = getPublishedPosts().length;
-  const postsPendentes = getPendingPosts();
-  const totalPostsAll = getAllPosts().length;
-  const totalEventos = getAllEventos().length;
+  const { data: dashStats } = useQuery({
+    queryKey: ["dashboard-stats"],
+    queryFn: () => dashboardStats(),
+  });
+  const { data: posts = [] } = useQuery({
+    queryKey: ["admin", "blog"],
+    queryFn: async () => (await listAllPosts()) as unknown as BlogPost[],
+  });
+  const { data: eventos = [] } = useQuery({
+    queryKey: ["admin-eventos"],
+    queryFn: async () => (await listAllEventos()) as unknown as { id: string }[],
+  });
 
-  const totalFormularios = 0;
-  const formulariosNovos = 0;
+  const totalProdutos = dashStats?.produtos ?? 0;
+  const totalCategorias = dashStats?.categorias ?? 0;
+  const totalOrcamentos = dashStats?.orcamentos ?? 0;
+  const orcamentosNovos = dashStats?.orcamentosNovos ?? 0;
+  const postsPublicados = posts.filter((p) => p.status === "publicado").length;
+  const postsPendentes = posts.filter((p) => p.status === "pendente");
+  const totalPostsAll = posts.length;
+  const totalEventos = eventos.length;
+
+  const totalFormularios = dashStats?.formularios ?? 0;
+  const formulariosNovos = dashStats?.formulariosNovos ?? 0;
 
   type StatTone = "blue" | "orange" | "amber" | "violet" | "rose" | "slate";
   const stats: Array<{
@@ -66,7 +90,7 @@ function AdminDashboard() {
     {
       label: "Produtos",
       value: totalProdutos,
-      sub: `${totalDestaques} em destaque`,
+      sub: "No catálogo",
       icon: Package,
       to: "/admin/produtos",
       tone: "blue",
@@ -109,8 +133,8 @@ function AdminDashboard() {
     },
     {
       label: "Orçamentos",
-      value: 0,
-      sub: "Aguardando integração",
+      value: totalOrcamentos,
+      sub: `${orcamentosNovos} ${orcamentosNovos === 1 ? "novo" : "novos"}`,
       icon: Inbox,
       to: "/admin/orcamentos",
       tone: "slate",
@@ -285,15 +309,15 @@ function AdminDashboard() {
               <Sparkles className="h-5 w-5" />
             </div>
             <div>
-              <p className="font-medium text-ink mb-1">Modo desenvolvimento</p>
+              <p className="font-medium text-ink mb-1">Dados em produção</p>
               <p>
-                Catálogo com {totalProdutos} produtos da planilha Shinova. As
-                alterações feitas no admin persistem no navegador via{" "}
+                Catálogo com {totalProdutos} produtos. Todas as alterações do
+                admin (catálogo, blog, eventos, textos e configurações) são
+                salvas no banco{" "}
                 <code className="bg-bone px-1.5 py-0.5 rounded text-xs font-mono">
-                  localStorage
+                  Supabase
                 </code>{" "}
-                durante esta fase. Quando o servidor do cliente estiver
-                disponível, tudo migra para PostgreSQL real.
+                e refletem no site público em tempo real.
               </p>
             </div>
           </div>
@@ -399,7 +423,7 @@ function PendingPostRow({ post }: { post: BlogPost }) {
   return (
     <div className="flex items-center gap-4 px-5 py-4 hover:bg-bone/40 transition-colors">
       <img
-        src={post.capa_url}
+        src={post.capa_url ?? "/placeholder.svg"}
         alt=""
         className="h-14 w-20 rounded-lg object-cover bg-bone shrink-0"
       />
@@ -408,7 +432,7 @@ function PendingPostRow({ post }: { post: BlogPost }) {
           <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-amber-900 bg-amber-100 rounded-full px-2 py-0.5">
             <Clock className="h-2.5 w-2.5" /> Pendente
           </span>
-          <span className="text-xs text-ink-soft">{formatDate(post.criado_em)}</span>
+          <span className="text-xs text-ink-soft">{formatDate(post.created_at)}</span>
         </div>
         <p className="font-medium text-sm text-ink line-clamp-1">{post.titulo}</p>
         <p className="text-xs text-ink-soft line-clamp-1 mt-0.5">

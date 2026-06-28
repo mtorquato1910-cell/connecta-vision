@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
+import { Seo } from "@/components/shared/Seo";
 import { type Produto } from "@/lib/site-data";
 import { listCategorias, listProdutos } from "@/lib/catalog.functions";
 import { dtoToCategoria, dtoToProdutoList } from "@/lib/catalog-adapter";
@@ -50,6 +51,12 @@ function CategoriaPage() {
   const { cat, produtos, outras } = data;
   return (
     <SiteShell>
+      <Seo
+        title={`${cat.nome} — Equipamentos Veterinários`}
+        description={`${produtos.length} ${produtos.length === 1 ? "equipamento" : "equipamentos"} da linha ${cat.nome} no catálogo Conecta. Distribuidor oficial Shinova no Brasil.`}
+        path={`/produtos/categoria/${cat.slug}`}
+        image={produtos[0]?.img}
+      />
       <section className="container-edge pt-16 md:pt-24 pb-10">
         <Reveal>
           <div className="flex items-center gap-3 text-sm text-ink-soft">

@@ -1,17 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Check, Clock, FileText, Newspaper, Plus, Trash2, X } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Check, FileText, Newspaper, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import {
-  adminCreatePost,
+  adminUpsertPost,
   approvePost,
   deletePost,
-  formatDate,
-  getAllPosts,
+  listAllPosts,
   rejectPost,
-  type BlogPost,
-  type BlogStatus,
-} from "@/lib/blog-data";
+} from "@/lib/admin.functions";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ImageInput } from "@/components/admin/ImageInput";
@@ -20,45 +18,96 @@ export const Route = createFileRoute("/admin/blog")({
   component: AdminBlogPage,
 });
 
+type BlogStatus = "pendente" | "publicado" | "rascunho" | "rejeitado";
+
+type BlogPost = {
+  id: string;
+  slug: string;
+  titulo: string;
+  resumo: string | null;
+  conteudo: string | null;
+  capa_url: string | null;
+  video_url: string | null;
+  autor_nome: string;
+  autor_email: string;
+  tags: string[] | null;
+  status: BlogStatus;
+  origem: string;
+  publicado_em: string | null;
+  created_at: string;
+  motivo_rejeicao?: string | null;
+};
+
+const FALLBACK_CAPA =
+  "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?w=1600&q=85";
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 type Tab = "todos" | "pendente" | "publicado" | "rejeitado";
 
 function AdminBlogPage() {
-  const [refreshKey, setRefreshKey] = useState(0);
+  const queryClient = useQueryClient();
   const [tab, setTab] = useState<Tab>("pendente");
   const [showCreate, setShowCreate] = useState(false);
   const [rejecting, setRejecting] = useState<BlogPost | null>(null);
   const [rejectReason, setRejectReason] = useState("");
 
-  const refresh = () => setRefreshKey((k) => k + 1);
+  const { data, isLoading } = useQuery({
+    queryKey: ["admin", "blog"],
+    queryFn: async () => (await listAllPosts()) as unknown as BlogPost[],
+  });
 
-  const all = useMemo(() => getAllPosts(), [refreshKey]);
+  const refresh = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin", "blog"] });
+  };
+
+  const all = useMemo(() => data ?? [], [data]);
   const filtered = tab === "todos" ? all : all.filter((p) => p.status === tab);
   const pendingCount = all.filter((p) => p.status === "pendente").length;
 
-  const handleApprove = (post: BlogPost) => {
-    approvePost(post.id);
-    toast.success(`Artigo "${post.titulo}" publicado.`);
-    refresh();
+  const handleApprove = async (post: BlogPost) => {
+    try {
+      await approvePost({ data: { id: post.id } });
+      toast.success(`Artigo "${post.titulo}" publicado.`);
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao aprovar.");
+    }
   };
 
-  const handleReject = () => {
+  const handleReject = async () => {
     if (!rejecting) return;
     if (rejectReason.trim().length < 10) {
       toast.error("Motivo precisa ter no mínimo 10 caracteres.");
       return;
     }
-    rejectPost(rejecting.id, rejectReason.trim());
-    toast.success("Artigo rejeitado.");
-    setRejecting(null);
-    setRejectReason("");
-    refresh();
+    try {
+      await rejectPost({ data: { id: rejecting.id, motivo: rejectReason.trim() } });
+      toast.success("Artigo rejeitado.");
+      setRejecting(null);
+      setRejectReason("");
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao rejeitar.");
+    }
   };
 
-  const handleDelete = (post: BlogPost) => {
+  const handleDelete = async (post: BlogPost) => {
     if (!confirm(`Excluir definitivamente "${post.titulo}"?`)) return;
-    deletePost(post.id);
-    toast.success("Artigo excluído.");
-    refresh();
+    try {
+      await deletePost({ data: { id: post.id } });
+      toast.success("Artigo excluído.");
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao excluir.");
+    }
   };
 
   const tabCounts: Record<Tab, number> = {
@@ -113,7 +162,11 @@ function AdminBlogPage() {
       </nav>
 
       <div className="space-y-3">
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="text-sm text-muted-foreground py-12 text-center border rounded-lg bg-background">
+            Carregando…
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-sm text-muted-foreground py-12 text-center border rounded-lg bg-background">
             Nada nesta aba ainda.
           </div>
@@ -171,7 +224,7 @@ function PostRow({
   return (
     <div className="border rounded-lg bg-background p-4 flex gap-4 items-start">
       <img
-        src={post.capa_url}
+        src={post.capa_url || FALLBACK_CAPA}
         alt={post.titulo}
         className="h-20 w-28 rounded-md object-cover bg-muted shrink-0"
       />
@@ -183,7 +236,7 @@ function PostRow({
           </span>
           <span className="text-xs text-muted-foreground">·</span>
           <span className="text-xs text-muted-foreground">
-            {formatDate(post.criado_em)}
+            {formatDate(post.created_at)}
           </span>
         </div>
         <h3 className="mt-1 font-serif font-normal text-base line-clamp-1">{post.titulo}</h3>
@@ -257,24 +310,36 @@ function CreateModal({
   const [capa, setCapa] = useState("");
   const [videoUrl, setVideoUrl] = useState("");
 
-  const submit = () => {
+  const [saving, setSaving] = useState(false);
+
+  const submit = async () => {
     if (titulo.length < 10 || resumo.length < 30 || conteudo.length < 100) {
       toast.error("Preencha todos os campos com tamanhos mínimos.");
       return;
     }
-    adminCreatePost({
-      titulo: titulo.trim(),
-      resumo: resumo.trim(),
-      conteudo: conteudo.trim(),
-      capa_url: capa.trim() || undefined,
-      video_url: videoUrl.trim() || undefined,
-      tags: tags
-        .split(",")
-        .map((t) => t.trim().toLowerCase())
-        .filter(Boolean),
-    });
-    toast.success("Artigo publicado.");
-    onCreated();
+    setSaving(true);
+    try {
+      await adminUpsertPost({
+        data: {
+          titulo: titulo.trim(),
+          resumo: resumo.trim(),
+          conteudo: conteudo.trim(),
+          capa_url: capa.trim() || null,
+          video_url: videoUrl.trim() || null,
+          tags: tags
+            .split(",")
+            .map((t) => t.trim().toLowerCase())
+            .filter(Boolean),
+          status: "publicado",
+        },
+      });
+      toast.success("Artigo publicado.");
+      onCreated();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao publicar artigo.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -345,8 +410,8 @@ function CreateModal({
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={submit} className="gap-2">
-            <FileText className="h-4 w-4" /> Publicar
+          <Button onClick={submit} disabled={saving} className="gap-2">
+            <FileText className="h-4 w-4" /> {saving ? "Publicando…" : "Publicar"}
           </Button>
         </div>
       </div>

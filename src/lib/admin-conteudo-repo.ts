@@ -19,7 +19,7 @@ export type ConteudoItem = {
 };
 
 // Estrutura padrão de conteúdo do site (default values)
-const DEFAULT_CONTEUDO: ConteudoItem[] = [
+export const DEFAULT_CONTEUDO: ConteudoItem[] = [
   // HOME
   {
     chave: "home.eyebrow",

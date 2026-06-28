@@ -8,6 +8,7 @@ import { QuoteModal } from "@/components/site/QuoteModal";
 import { Reveal } from "@/components/site/Reveal";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
+import { Seo } from "@/components/shared/Seo";
 import { productSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { waLink, type Produto, type Especificacao } from "@/lib/site-data";
 import { getProduto, getRelacionados } from "@/lib/catalog.functions";
@@ -70,6 +71,17 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
 
   return (
     <SiteShell>
+      <Seo
+        title={`${p.modelo} — ${p.nome}`}
+        description={
+          p.resumo ??
+          p.descricao ??
+          `${p.nome} (${p.modelo}) — ${p.categoriaNome} no catálogo Conecta Equipamentos Veterinários.`
+        }
+        path={`/produtos/${p.slug}`}
+        image={p.img}
+        type="product"
+      />
       <SchemaOrg
         schema={productSchema({
           modelo: p.modelo,

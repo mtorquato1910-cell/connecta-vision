@@ -1,67 +1,103 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Calendar, MapPin, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { eventSchema } from "@/lib/schema-org";
-import { formatEventDate, getEventoBySlug } from "@/lib/eventos-data";
+import { getEventoPublic } from "@/lib/admin.functions";
+
+type EventoFoto = { url: string; ordem: number; alt: string; caption?: string };
+
+type Evento = {
+  id: string;
+  slug: string;
+  nome: string;
+  data_evento: string | null;
+  local: string | null;
+  descricao_curta: string | null;
+  descricao_longa: string | null;
+  capa_url: string | null;
+  galeria: EventoFoto[];
+  publicado: boolean;
+  ordem: number;
+};
+
+function formatEventDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export const Route = createFileRoute("/eventos/$slug")({
-  loader: ({ params }) => {
-    const evento = getEventoBySlug(params.slug);
-    if (!evento || !evento.publicado) throw notFound();
-    return { evento };
-  },
-  head: ({ loaderData }) =>
-    loaderData
-      ? {
-          meta: [
-            { title: `${loaderData.evento.nome} — Conecta` },
-            { name: "description", content: loaderData.evento.descricao_curta },
-            { property: "og:title", content: loaderData.evento.nome },
-            { property: "og:image", content: loaderData.evento.capa_url },
-          ],
-        }
-      : { meta: [] },
-  notFoundComponent: () => (
-    <SiteShell>
-      <div className="container-edge py-32 text-center">
-        <h1 className="font-serif text-4xl">Evento não encontrado</h1>
-        <Link to="/eventos" className="btn-primary mt-6 inline-flex">
-          Voltar à galeria
-        </Link>
-      </div>
-    </SiteShell>
-  ),
+  head: () => ({
+    meta: [{ title: "Evento — Conecta" }],
+  }),
   component: EventoPage,
 });
 
 function EventoPage() {
-  const { evento } = Route.useLoaderData();
+  const { slug } = Route.useParams();
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  const { data: evento, isLoading } = useQuery({
+    queryKey: ["evento", slug],
+    queryFn: async () => {
+      const row = (await getEventoPublic({ data: { slug } })) as any;
+      if (!row || !row.publicado) return null;
+      return {
+        ...row,
+        galeria: Array.isArray(row.galeria) ? row.galeria : [],
+      } as Evento;
+    },
+  });
 
   // teclado: Esc fecha, ← → navegam
   useEffect(() => {
-    if (lightboxIdx === null) return;
+    if (lightboxIdx === null || !evento) return;
+    const len = evento.galeria.length;
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") setLightboxIdx(null);
-      if (e.key === "ArrowLeft") setLightboxIdx((i) => (i! - 1 + evento.galeria.length) % evento.galeria.length);
-      if (e.key === "ArrowRight") setLightboxIdx((i) => (i! + 1) % evento.galeria.length);
+      if (e.key === "ArrowLeft") setLightboxIdx((i) => (i! - 1 + len) % len);
+      if (e.key === "ArrowRight") setLightboxIdx((i) => (i! + 1) % len);
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [lightboxIdx, evento.galeria.length]);
+  }, [lightboxIdx, evento]);
+
+  if (isLoading) {
+    return (
+      <SiteShell>
+        <div className="container-edge py-32 text-center text-ink-soft">Carregando…</div>
+      </SiteShell>
+    );
+  }
+
+  if (!evento) {
+    return (
+      <SiteShell>
+        <div className="container-edge py-32 text-center">
+          <h1 className="font-serif text-4xl">Evento não encontrado</h1>
+          <Link to="/eventos" className="btn-primary mt-6 inline-flex">
+            Voltar à galeria
+          </Link>
+        </div>
+      </SiteShell>
+    );
+  }
 
   return (
     <SiteShell>
       <SchemaOrg
         schema={eventSchema({
           nome: evento.nome,
-          data_evento: evento.data_evento,
-          local: evento.local,
-          descricao: evento.descricao_curta,
-          capa: evento.capa_url,
+          data_evento: evento.data_evento ?? "",
+          local: evento.local ?? "",
+          descricao: evento.descricao_curta ?? "",
+          capa: evento.capa_url ?? "",
           slug: evento.slug,
         })}
       />
@@ -80,7 +116,7 @@ function EventoPage() {
             <div className="mt-5 flex flex-wrap items-center gap-4 text-sm text-ink-soft">
               <span className="inline-flex items-center gap-1.5">
                 <Calendar className="h-4 w-4" />
-                {formatEventDate(evento.data_evento)}
+                {evento.data_evento ? formatEventDate(evento.data_evento) : ""}
               </span>
               <span>·</span>
               <span className="inline-flex items-center gap-1.5">
@@ -96,7 +132,7 @@ function EventoPage() {
         <div className="container-edge mt-8 md:mt-12">
           <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line">
             <img
-              src={evento.capa_url}
+              src={evento.capa_url ?? ""}
               alt={evento.nome}
               className="h-full w-full object-cover"
             />

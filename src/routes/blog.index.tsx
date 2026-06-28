@@ -1,11 +1,42 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { PlayCircle } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
-import { getPublishedPosts, formatDate, type BlogPost } from "@/lib/blog-data";
+import { listPublishedPosts } from "@/lib/admin.functions";
 import { isYoutubeUrl, youtubeThumbnail } from "@/lib/youtube";
 import { useLocale } from "@/hooks/useLocale";
+
+type BlogPost = {
+  id: string;
+  slug: string;
+  titulo: string;
+  resumo: string | null;
+  conteudo: string | null;
+  capa_url: string | null;
+  video_url: string | null;
+  autor_nome: string;
+  autor_email: string;
+  tags: string[] | null;
+  status: string;
+  origem: string;
+  publicado_em: string | null;
+  created_at: string;
+  motivo_rejeicao?: string | null;
+};
+
+const FALLBACK_CAPA =
+  "https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?w=1600&q=85";
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
@@ -22,17 +53,21 @@ export const Route = createFileRoute("/blog/")({
 });
 
 function BlogPage() {
-  const posts = getPublishedPosts();
+  const { data, isLoading } = useQuery({
+    queryKey: ["blog", "published"],
+    queryFn: async () => (await listPublishedPosts()) as unknown as BlogPost[],
+  });
+  const posts = useMemo(() => data ?? [], [data]);
   const [tag, setTag] = useState<string | null>(null);
   const { t } = useLocale();
 
   const allTags = useMemo(() => {
     const s = new Set<string>();
-    posts.forEach((p) => p.tags.forEach((tg) => s.add(tg)));
+    posts.forEach((p) => (p.tags ?? []).forEach((tg) => s.add(tg)));
     return Array.from(s).sort();
   }, [posts]);
 
-  const filtered = tag ? posts.filter((p) => p.tags.includes(tag)) : posts;
+  const filtered = tag ? posts.filter((p) => (p.tags ?? []).includes(tag)) : posts;
 
   return (
     <SiteShell>
@@ -86,7 +121,9 @@ function BlogPage() {
       )}
 
       <section className="container-edge pb-24">
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="py-16 text-center text-ink-soft">Carregando…</div>
+        ) : filtered.length === 0 ? (
           <div className="py-16 text-center text-ink-soft">{t("blog.empty")}</div>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
@@ -102,10 +139,11 @@ function BlogPage() {
 
 function BlogCard({ post }: { post: BlogPost }) {
   const hasVideo = isYoutubeUrl(post.video_url);
+  const capa = post.capa_url || FALLBACK_CAPA;
   const imgSrc =
     hasVideo && post.video_url
-      ? youtubeThumbnail(post.video_url, "max") || post.capa_url
-      : post.capa_url;
+      ? youtubeThumbnail(post.video_url, "max") || capa
+      : capa;
   return (
     <Link
       to="/blog/$slug"
@@ -132,7 +170,7 @@ function BlogCard({ post }: { post: BlogPost }) {
       </div>
       <div className="p-6">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-ink-soft">
-          {post.tags.slice(0, 2).map((t) => (
+          {(post.tags ?? []).slice(0, 2).map((t) => (
             <span key={t}>#{t}</span>
           ))}
           <span className="ml-auto text-ink-soft">{formatDate(post.publicado_em)}</span>

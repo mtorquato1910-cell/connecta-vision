@@ -4,9 +4,10 @@ import { Check, Send } from "lucide-react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
-import { submitPost } from "@/lib/blog-data";
+import { submitBlogPost } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/blog/enviar")({
   head: () => ({
@@ -50,7 +51,7 @@ function SubmitPage() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = async (data: FormData) => {
     // Anti-bot: rejeita se enviado em menos de 3s
     if (Date.now() - openedAt < 3000) return;
 
@@ -59,18 +60,24 @@ function SubmitPage() {
       .map((t) => t.trim().toLowerCase())
       .filter(Boolean);
 
-    submitPost({
-      titulo: data.titulo,
-      resumo: data.resumo,
-      conteudo: data.conteudo,
-      capa_url: data.capa_url || undefined,
-      video_url: data.video_url || undefined,
-      autor_nome: data.autor_nome,
-      autor_email: data.autor_email,
-      tags,
-    });
-    setSent(true);
-    reset();
+    try {
+      await submitBlogPost({
+        data: {
+          titulo: data.titulo,
+          resumo: data.resumo,
+          conteudo: data.conteudo,
+          capa_url: data.capa_url || null,
+          video_url: data.video_url || null,
+          autor_nome: data.autor_nome,
+          autor_email: data.autor_email,
+          tags,
+        },
+      });
+      setSent(true);
+      reset();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao enviar artigo.");
+    }
   };
 
   if (sent) {

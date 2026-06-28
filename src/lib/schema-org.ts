@@ -7,7 +7,7 @@
  * Ou injete via componente <SchemaOrg> dentro da página.
  */
 
-const SITE_URL = "https://www.conectavet.com.br";
+const SITE_URL = "https://www.conecta2lab.com.br";
 const SITE_NAME = "Conecta Equipamentos Veterinários";
 
 export function organizationSchema() {

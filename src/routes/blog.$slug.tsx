@@ -1,33 +1,54 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, MessageCircle } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { YouTubeEmbed } from "@/components/shared/YouTubeEmbed";
 import { articleSchema } from "@/lib/schema-org";
-import { formatDate, getPostBySlug } from "@/lib/blog-data";
+import { getPostPublic } from "@/lib/admin.functions";
 import { isYoutubeUrl } from "@/lib/youtube";
 import { waLink } from "@/lib/site-data";
 
+type BlogPost = {
+  id: string;
+  slug: string;
+  titulo: string;
+  resumo: string | null;
+  conteudo: string | null;
+  capa_url: string | null;
+  video_url: string | null;
+  autor_nome: string;
+  autor_email: string;
+  tags: string[] | null;
+  status: string;
+  origem: string;
+  publicado_em: string | null;
+  created_at: string;
+  motivo_rejeicao?: string | null;
+};
+
+const FALLBACK_CAPA =
+  "https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?w=1600&q=85";
+
+function formatDate(iso: string | null): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
 export const Route = createFileRoute("/blog/$slug")({
-  loader: ({ params }) => {
-    const post = getPostBySlug(params.slug);
-    if (!post || post.status !== "publicado") throw notFound();
-    return { post };
-  },
-  head: ({ loaderData }) =>
-    loaderData
-      ? {
-          meta: [
-            { title: `${loaderData.post.titulo} — Blog Conecta` },
-            { name: "description", content: loaderData.post.resumo },
-            { property: "og:title", content: loaderData.post.titulo },
-            { property: "og:description", content: loaderData.post.resumo },
-            { property: "og:image", content: loaderData.post.capa_url },
-          ],
-        }
-      : { meta: [] },
-  notFoundComponent: () => (
+  head: () => ({
+    meta: [{ title: "Blog Conecta" }],
+  }),
+  component: PostPage,
+});
+
+function NotFoundView() {
+  return (
     <SiteShell>
       <div className="container-edge py-32 text-center">
         <h1 className="font-serif text-4xl">Artigo não encontrado</h1>
@@ -36,24 +57,41 @@ export const Route = createFileRoute("/blog/$slug")({
         </Link>
       </div>
     </SiteShell>
-  ),
-  component: PostPage,
-});
+  );
+}
 
 function PostPage() {
-  const { post } = Route.useLoaderData();
-  const minutos = Math.max(1, Math.round(post.conteudo.split(/\s+/).length / 220));
+  const { slug } = Route.useParams();
+  const { data: post, isLoading } = useQuery({
+    queryKey: ["blog", "post", slug],
+    queryFn: async () =>
+      ((await getPostPublic({ data: { slug } })) as unknown as BlogPost | null) ?? null,
+  });
+
+  if (isLoading) {
+    return (
+      <SiteShell>
+        <div className="container-edge py-32 text-center text-ink-soft">Carregando…</div>
+      </SiteShell>
+    );
+  }
+  if (!post) return <NotFoundView />;
+
+  const capa = post.capa_url || FALLBACK_CAPA;
+  const conteudo = post.conteudo ?? "";
+  const resumo = post.resumo ?? "";
+  const minutos = Math.max(1, Math.round(conteudo.split(/\s+/).length / 220));
 
   return (
     <SiteShell>
       <SchemaOrg
         schema={articleSchema({
           titulo: post.titulo,
-          resumo: post.resumo,
-          capa: post.capa_url,
+          resumo: resumo,
+          capa: capa,
           slug: post.slug,
           autor: post.autor_nome,
-          publicado_em: post.publicado_em ?? post.criado_em,
+          publicado_em: post.publicado_em ?? post.created_at,
         })}
       />
       <article>
@@ -66,7 +104,7 @@ function PostPage() {
           </Link>
           <Reveal>
             <div className="mt-6 flex items-center gap-3 text-xs font-mono uppercase tracking-wider text-ink-soft">
-              {post.tags.map((t) => (
+              {(post.tags ?? []).map((t) => (
                 <span key={t}>#{t}</span>
               ))}
             </div>
@@ -93,7 +131,7 @@ function PostPage() {
           ) : (
             <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line">
               <img
-                src={post.capa_url}
+                src={capa}
                 alt={post.titulo}
                 className="h-full w-full object-cover"
               />
@@ -104,10 +142,10 @@ function PostPage() {
         <div className="container-edge py-12 md:py-16">
           <div className="max-w-3xl mx-auto prose-conecta">
             <p className="text-xl text-ink-soft leading-relaxed font-serif italic">
-              {post.resumo}
+              {resumo}
             </p>
             <div className="hairline my-8" />
-            {post.conteudo.split("\n\n").map((p, i) => (
+            {conteudo.split("\n\n").map((p, i) => (
               <PostBlock key={i} content={p} />
             ))}
           </div>

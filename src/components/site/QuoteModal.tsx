@@ -11,6 +11,7 @@ type FormData = {
   telefone: string;
   cidade: string;
   mensagem: string;
+  website?: string; // honeypot anti-spam
 };
 
 export function QuoteModal({
@@ -55,6 +56,7 @@ export function QuoteModal({
           cidade: data.cidade.split("/")[0]?.trim() ?? null,
           mensagem: data.mensagem || `Solicito orçamento do ${produto.modelo}.`,
           origem: `/produtos/${produto.slug}`,
+          website: data.website ?? "",
           payload: {
             estado: data.cidade.split("/")[1]?.trim() ?? null,
             nome_estabelecimento: data.clinica,
@@ -132,6 +134,15 @@ export function QuoteModal({
             onSubmit={handleSubmit(onSubmit)}
             className="p-6 sm:p-8 md:p-10 grid md:grid-cols-2 gap-4"
           >
+            {/* Honeypot anti-spam — oculto para humanos */}
+            <input
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              className="hidden"
+              {...register("website")}
+            />
             <Field label="Nome" error={errors.nome?.message}>
               <input
                 {...register("nome", { required: "Obrigatório" })}

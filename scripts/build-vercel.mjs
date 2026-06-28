@@ -52,12 +52,27 @@ writeFileSync(
   ),
 );
 
+// Headers de segurança aplicados a todas as respostas (anti-clickjacking,
+// HSTS, sniffing, vazamento de referrer e permissões de browser).
+const securityHeaders = {
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "X-Frame-Options": "DENY",
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), browsing-topics=()",
+  "X-DNS-Prefetch-Control": "on",
+};
+
 writeFileSync(
   join(out, "config.json"),
   JSON.stringify(
     {
       version: 3,
       routes: [
+        // Aplica headers de segurança e segue o roteamento (continue).
+        { src: "/(.*)", headers: securityHeaders, continue: true },
+        // Admin nunca deve ser indexado por buscadores.
+        { src: "/admin(.*)", headers: { "X-Robots-Tag": "noindex, nofollow" }, continue: true },
         { handle: "filesystem" },
         { src: "/(.*)", dest: "/_ssr" },
       ],
@@ -66,4 +81,4 @@ writeFileSync(
     2,
   ),
 );
-console.log("✓ config.json + .vc-config.json escritos");
+console.log("✓ config.json + .vc-config.json escritos (com headers de segurança)");

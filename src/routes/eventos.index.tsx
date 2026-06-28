@@ -1,15 +1,35 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Calendar, MapPin } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
-import {
-  formatEventDate,
-  getAllEventos,
-  eventoYears,
-  type Evento,
-} from "@/lib/eventos-data";
+import { listEventosPublic } from "@/lib/admin.functions";
 import { useLocale } from "@/hooks/useLocale";
+
+type EventoFoto = { url: string; ordem: number; alt: string; caption?: string };
+
+type Evento = {
+  id: string;
+  slug: string;
+  nome: string;
+  data_evento: string | null;
+  local: string | null;
+  descricao_curta: string | null;
+  descricao_longa: string | null;
+  capa_url: string | null;
+  galeria: EventoFoto[];
+  publicado: boolean;
+  ordem: number;
+};
+
+function formatEventDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
 
 export const Route = createFileRoute("/eventos/")({
   head: () => ({
@@ -26,13 +46,33 @@ export const Route = createFileRoute("/eventos/")({
 });
 
 function EventosPage() {
-  const eventos = getAllEventos();
   const [year, setYear] = useState<number | null>(null);
-  const years = useMemo(() => eventoYears(), []);
   const { t } = useLocale();
 
+  const { data: eventos = [] } = useQuery({
+    queryKey: ["eventos-public"],
+    queryFn: async () => {
+      const rows = (await listEventosPublic()) as any[];
+      return rows.map((e) => ({
+        ...e,
+        galeria: Array.isArray(e.galeria) ? e.galeria : [],
+      })) as Evento[];
+    },
+  });
+
+  const years = useMemo(() => {
+    const set = new Set(
+      eventos
+        .filter((e) => e.data_evento)
+        .map((e) => new Date(e.data_evento as string).getFullYear()),
+    );
+    return Array.from(set).sort((a, b) => b - a);
+  }, [eventos]);
+
   const filtered = year
-    ? eventos.filter((e) => new Date(e.data_evento).getFullYear() === year)
+    ? eventos.filter(
+        (e) => e.data_evento && new Date(e.data_evento).getFullYear() === year,
+      )
     : eventos;
 
   return (
@@ -104,7 +144,7 @@ function EventoCard({ evento }: { evento: Evento }) {
     >
       <div className="aspect-[4/3] overflow-hidden bg-bone">
         <img
-          src={evento.capa_url}
+          src={evento.capa_url ?? ""}
           alt={evento.nome}
           className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
         />
@@ -112,7 +152,7 @@ function EventoCard({ evento }: { evento: Evento }) {
       <div className="p-6">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-conecta-orange">
           <Calendar className="h-3 w-3" />
-          {formatEventDate(evento.data_evento)}
+          {evento.data_evento ? formatEventDate(evento.data_evento) : ""}
         </div>
         <h3 className="mt-3 font-serif text-2xl text-ink leading-snug line-clamp-2">
           {evento.nome}

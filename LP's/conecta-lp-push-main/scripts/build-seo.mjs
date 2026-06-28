@@ -2,9 +2,11 @@
 // canonical + og:image + JSON-LD (Organization/WebSite/ItemList/FAQPage) + robots.txt + sitemap.xml.
 import { execSync } from "node:child_process";
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from "node:fs";
-import { pathToFileURL } from "node:url";
+import { pathToFileURL, fileURLToPath } from "node:url";
+import { dirname, resolve } from "node:path";
 
-const root = "d:/Projetos/ADABTECH/adabech/Conecta/conecta-lp";
+// Raiz do projeto = pasta-pai de scripts/ (resolvida em runtime, portável).
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..").replace(/\\/g, "/");
 const sites = [
   "cirugiavet", "analiseveterinaria", "equipamentodentalvet", "veterinarioultrassom",
   "ultrassomdoppler", "endoscopiaveterinario", "microscopiodermatologico", "equipamentovet", "gemafalsa",

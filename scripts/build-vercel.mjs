@@ -1,14 +1,32 @@
 /**
- * Bundle do SSR (Edge) + arquivos de config do output Vercel.
- * A cópia do estático (dist/client) é feita fora (bash cp -r), pois cpSync
- * crasha o Node neste ambiente Windows/OneDrive.
+ * Bundle do SSR (Edge) + arquivos de config do output Vercel + cópia do estático.
+ * A cópia usa um copiador recursivo em Node puro (não `cpSync`, que crasha no
+ * ambiente Windows/OneDrive) — assim funciona tanto local quanto no builder
+ * Linux da Vercel (necessário para o auto-deploy via Git).
  *
- * Pré: `npm run build` + a pasta .vercel/output/functions/_ssr.func já criada.
+ * Pré: `npm run build` (gera dist/client + dist/server/server.js).
  */
 import { build } from "esbuild";
-import { writeFileSync, existsSync } from "node:fs";
+import {
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  copyFileSync,
+} from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+
+/** Cópia recursiva multiplataforma (evita o crash de cpSync no Windows/OneDrive). */
+function copyDir(src, dest) {
+  mkdirSync(dest, { recursive: true });
+  for (const entry of readdirSync(src, { withFileTypes: true })) {
+    const s = join(src, entry.name);
+    const d = join(dest, entry.name);
+    if (entry.isDirectory()) copyDir(s, d);
+    else copyFileSync(s, d);
+  }
+}
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const out = join(root, ".vercel/output");
@@ -82,3 +100,14 @@ writeFileSync(
   ),
 );
 console.log("✓ config.json + .vc-config.json escritos (com headers de segurança)");
+
+// Copia o estático (dist/client → .vercel/output/static) dentro do próprio script,
+// para o build da Vercel (Git auto-deploy) gerar o output completo sozinho.
+const staticSrc = join(root, "dist/client");
+const staticDest = join(out, "static");
+if (existsSync(staticSrc)) {
+  copyDir(staticSrc, staticDest);
+  console.log("✓ estático copiado para .vercel/output/static");
+} else {
+  console.warn("⚠ dist/client não encontrado — pulei a cópia do estático.");
+}

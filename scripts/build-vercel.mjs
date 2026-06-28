@@ -87,6 +87,13 @@ writeFileSync(
     {
       version: 3,
       routes: [
+        // Subdomínio do admin: a raiz redireciona direto para o login do painel.
+        {
+          src: "/",
+          has: [{ type: "host", value: "admin.conecta2lab.com.br" }],
+          status: 307,
+          headers: { Location: "/admin/login" },
+        },
         // Aplica headers de segurança e segue o roteamento (continue).
         { src: "/(.*)", headers: securityHeaders, continue: true },
         // Admin nunca deve ser indexado por buscadores.

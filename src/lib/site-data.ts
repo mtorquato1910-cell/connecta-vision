@@ -22,7 +22,7 @@ export const SITE = {
     "Olá! Vim pelo site da Conecta e gostaria de saber mais sobre os equipamentos veterinários.",
   email: "comercial@conectavet.com.br",
   topBar:
-    "Distribuidor oficial Shinova no Brasil · Entrega para todo o Brasil · Instalação, calibração e treinamento inclusos",
+    "🇧🇷 Distribuição oficial Shinova no Brasil · Representação oficial · Suporte técnico nacional",
 };
 
 export const NAV = [

@@ -168,7 +168,7 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     chave: "global.topbar",
     label: "Texto da barra superior (TopBar)",
     valor:
-      "Distribuidor oficial Shinova no Brasil · Entrega para todo o Brasil · Instalação, calibração e treinamento inclusos",
+      "🇧🇷 Distribuição oficial Shinova no Brasil · Representação oficial · Suporte técnico nacional",
     tipo: "texto",
     pagina: "global",
     multiline: true,

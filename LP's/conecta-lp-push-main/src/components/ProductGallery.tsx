@@ -1,10 +1,83 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 import type { Product } from "@/lib/types";
 import { site } from "@/lib/site";
 
 const products = site.products;
+
+// Miniatura com carrossel no hover: ao passar o mouse pula para a foto 2 e
+// avanca a cada 3s em loop; ao sair volta para a foto 1. Produto inteiro via
+// object-contain. Se houver apenas 1 imagem, comporta-se como imagem estatica.
+function HoverCarouselImg({
+  images,
+  alt,
+  imgClassName,
+  showDots = false,
+}: {
+  images: string[];
+  alt: string;
+  imgClassName?: string;
+  showDots?: boolean;
+}) {
+  const [idx, setIdx] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const multi = images.length > 1;
+
+  const stop = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
+
+  const start = () => {
+    if (!multi) return;
+    stop();
+    setIdx(1);
+    intervalRef.current = setInterval(() => {
+      setIdx((prev) => (prev + 1) % images.length);
+    }, 3000);
+  };
+
+  const reset = () => {
+    stop();
+    setIdx(0);
+  };
+
+  // Limpa o interval no unmount.
+  useEffect(() => () => stop(), []);
+
+  return (
+    <div
+      className="relative w-full h-full"
+      onMouseEnter={start}
+      onMouseLeave={reset}
+      onFocus={start}
+      onBlur={reset}
+    >
+      <img
+        src={images[idx]}
+        alt={alt}
+        loading="lazy"
+        onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/products/placeholder.jpg"; }}
+        className={imgClassName}
+      />
+      {showDots && multi && (
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          {images.map((_, i) => (
+            <span
+              key={i}
+              className={`h-1 rounded-full transition-all ${
+                i === idx ? "w-4 bg-accent" : "w-1 bg-muted-foreground/40"
+              }`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function ProductGallery() {
   const [selected, setSelected] = useState<Product | null>(null);
@@ -65,12 +138,11 @@ export function ProductGallery() {
                   className="group text-left bg-card rounded-xl overflow-hidden border border-border hover:border-accent hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 w-full sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)] max-w-[420px]"
                 >
                   <div className="aspect-[4/3] overflow-hidden bg-white">
-                    <img
-                      src={p.images[0]}
+                    <HoverCarouselImg
+                      images={p.images}
                       alt={p.name}
-                      loading="lazy"
-                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = "/products/placeholder.jpg"; }}
-                      className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+                      showDots
+                      imgClassName="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
                   <div className="p-6">
@@ -257,7 +329,11 @@ function ProductDetail({
               className="group text-left bg-card rounded-lg overflow-hidden border border-border hover:border-accent transition"
             >
               <div className="aspect-square overflow-hidden bg-white">
-                <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <HoverCarouselImg
+                  images={p.images}
+                  alt={p.name}
+                  imgClassName="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-500"
+                />
               </div>
               <div className="p-3">
                 <p className="font-display text-sm text-primary truncate">{p.model}</p>

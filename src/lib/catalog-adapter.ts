@@ -25,6 +25,7 @@ export function dtoToProdutoList(d: ProdutoListDTO): Produto {
     categoriaSlug: d.categoria_slug,
     categoriaNome: d.categoria_nome,
     img: d.imagem_url ?? FALLBACK_IMG,
+    galeria: d.galeria,
     destaque: d.destaque,
   };
 }

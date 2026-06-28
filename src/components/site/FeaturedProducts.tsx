@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { homeCatalogo } from "@/lib/catalog.functions";
 import { dtoToProdutoList } from "@/lib/catalog-adapter";
-import { CategoryBadge } from "@/components/shared/CategoryBadge";
+import { ProductCard } from "./ProductCard";
 import { Reveal } from "./Reveal";
 
 export function FeaturedProducts() {
@@ -39,23 +39,7 @@ export function FeaturedProducts() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {destaques.map((p, i) => (
             <Reveal key={p.slug} delay={i * 0.04}>
-              <Link
-                to="/produtos/$slug"
-                params={{ slug: p.slug }}
-                className="group block rounded-2xl overflow-hidden border border-line bg-bone hover:border-conecta-orange/40 hover:shadow-lg transition-all hover:-translate-y-1"
-              >
-                <div className="aspect-[4/3] overflow-hidden bg-[#f5f5f0]">
-                  <img src={p.img} alt={p.nome} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                </div>
-                <div className="p-5">
-                  <CategoryBadge>{p.categoriaNome}</CategoryBadge>
-                  <div className="mt-4 font-mono text-[11px] uppercase tracking-[0.2em] text-conecta-orange font-medium">{p.modelo}</div>
-                  <h3 className="mt-2 font-sans text-base font-normal text-ink-soft leading-snug line-clamp-2">{p.nome}</h3>
-                  <div className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-conecta-blue">
-                    Ver detalhes <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
-                  </div>
-                </div>
-              </Link>
+              <ProductCard p={p} />
             </Reveal>
           ))}
         </div>

@@ -1,0 +1,12 @@
+import puppeteer from "puppeteer-core";
+const CHROME = "C:/Program Files/Google/Chrome/Application/chrome.exe";
+const URL = process.argv[2];
+const OUT = process.argv[3] || "C:/Users/mathe/AppData/Local/Temp/shot.png";
+const browser = await puppeteer.launch({ executablePath: CHROME, headless: "new", args: ["--no-sandbox", "--disable-gpu"] });
+const page = await browser.newPage();
+await page.setViewport({ width: 1366, height: 1500 });
+await page.goto(URL, { waitUntil: "domcontentloaded", timeout: 45000 }).catch(() => {});
+await new Promise((r) => setTimeout(r, 12000));
+await page.screenshot({ path: OUT });
+console.log("salvo:", OUT);
+await browser.close();

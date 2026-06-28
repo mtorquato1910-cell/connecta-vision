@@ -124,7 +124,7 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
         <div className="mt-8 grid lg:grid-cols-2 gap-10 lg:gap-16">
           <div>
             <div className="aspect-square rounded-3xl overflow-hidden bg-paper border border-line">
-              <img src={activeImg} alt={p.nome} className="h-full w-full object-cover" />
+              <img src={activeImg} alt={p.nome} className="h-full w-full object-contain p-4" />
             </div>
             {p.galeria && p.galeria.length > 1 && (
               <div className="mt-4 grid grid-cols-4 gap-3">
@@ -134,7 +134,7 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
                     onClick={() => setActiveImg(g)}
                     className={`aspect-square rounded-xl overflow-hidden border-2 transition ${activeImg === g ? "border-conecta-orange" : "border-line hover:border-line-strong"}`}
                   >
-                    <img src={g} alt="" className="h-full w-full object-cover" />
+                    <img src={g} alt="" className="h-full w-full object-contain p-1" />
                   </button>
                 ))}
               </div>

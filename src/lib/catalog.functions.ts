@@ -22,6 +22,7 @@ export type ProdutoListDTO = {
   destaque: boolean;
   categoria_slug: string;
   categoria_nome: string;
+  galeria: string[];
 };
 
 export type ProdutoDTO = ProdutoListDTO & {
@@ -76,6 +77,8 @@ function rowToList(r: ProdutoRow): ProdutoListDTO {
     destaque: r.destaque,
     categoria_slug: cat?.slug ?? "",
     categoria_nome: cat?.nome ?? "",
+    // Até 6 imagens para o carrossel no hover do card (mantém o payload enxuto).
+    galeria: asStringArray(r.galeria).slice(0, 6),
   };
 }
 

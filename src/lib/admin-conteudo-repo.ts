@@ -6,7 +6,7 @@
 const LS_KEY = "conecta_admin_conteudo_v1";
 
 export type ConteudoTipo = "texto" | "html" | "url" | "numero";
-export type ConteudoPagina = "home" | "sobre" | "contato" | "global" | "footer";
+export type ConteudoPagina = "home" | "sobre" | "solucoes" | "contato" | "global" | "footer";
 
 export type ConteudoItem = {
   chave: string;
@@ -156,6 +156,32 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     multiline: true,
   },
 
+  // SOLUÇÕES
+  {
+    chave: "solucoes.eyebrow",
+    label: "Eyebrow",
+    valor: "Soluções por perfil",
+    tipo: "texto",
+    pagina: "solucoes",
+  },
+  {
+    chave: "solucoes.titulo",
+    label: "Título",
+    valor: "Pacotes técnicos sob medida para cada operação veterinária.",
+    tipo: "texto",
+    pagina: "solucoes",
+    multiline: true,
+  },
+  {
+    chave: "solucoes.subtitulo",
+    label: "Subtítulo",
+    valor:
+      "Da clínica de bairro ao hospital de referência, montamos o conjunto de equipamentos certo para o tamanho, o foco clínico e o orçamento do seu projeto, com instalação, calibração e treinamento da equipe inclusos. Você equipa em etapas, sem precisar decidir tudo de uma vez.",
+    tipo: "texto",
+    pagina: "solucoes",
+    multiline: true,
+  },
+
   // CONTATO
   {
     chave: "contato.eyebrow",
@@ -281,6 +307,7 @@ export function reset(): void {
 export const PAGINA_LABELS: Record<ConteudoPagina, string> = {
   home: "Home",
   sobre: "Sobre",
+  solucoes: "Soluções",
   contato: "Contato",
   global: "Global",
   footer: "Rodapé",

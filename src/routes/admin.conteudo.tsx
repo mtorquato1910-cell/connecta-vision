@@ -18,7 +18,7 @@ export const Route = createFileRoute("/admin/conteudo")({
   component: AdminConteudoPage,
 });
 
-const TABS: ConteudoPagina[] = ["home", "sobre", "contato", "global", "footer"];
+const TABS: ConteudoPagina[] = ["home", "sobre", "solucoes", "contato", "global", "footer"];
 
 function AdminConteudoPage() {
   const qc = useQueryClient();
@@ -204,9 +204,7 @@ function ConteudoField({
       <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
         <div className="min-w-0">
           <label className="block text-sm font-medium text-ink">{item.label}</label>
-          {item.descricao && (
-            <p className="text-xs text-ink-soft mt-0.5">{item.descricao}</p>
-          )}
+          {item.descricao && <p className="text-xs text-ink-soft mt-0.5">{item.descricao}</p>}
         </div>
         <span className="font-mono text-[10px] text-ink-mute uppercase tracking-wider shrink-0">
           {item.tipo} · {item.chave}

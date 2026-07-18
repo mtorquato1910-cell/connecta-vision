@@ -71,7 +71,9 @@ function asEspecificacoes(v: unknown): Especificacao[] {
   if (!Array.isArray(v)) return [];
   return v.flatMap((x) => {
     if (x && typeof x === "object" && "label" in x && "valor" in x) {
-      return [{ label: String((x as Especificacao).label), valor: String((x as Especificacao).valor) }];
+      return [
+        { label: String((x as Especificacao).label), valor: String((x as Especificacao).valor) },
+      ];
     }
     return [];
   });
@@ -124,7 +126,7 @@ export const homeCatalogo = createServerFn({ method: "GET" }).handler(
     const [catsRes, countRes, destRes] = await Promise.all([
       supabaseAdmin
         .from("categorias")
-        .select("id, slug, nome, numero, imagem_url, ordem")
+        .select("id, slug, nome, numero, imagem_url, icone, ordem")
         .order("ordem", { ascending: true }),
       supabaseAdmin.from("produtos").select("categoria_id").eq("publicado", true),
       supabaseAdmin
@@ -147,7 +149,7 @@ export const homeCatalogo = createServerFn({ method: "GET" }).handler(
       ...c,
       qtd: counts[c.id] ?? 0,
     }));
-    const destaques = (destRes.data as ProdutoRow[] | null ?? []).map(rowToList);
+    const destaques = ((destRes.data as ProdutoRow[] | null) ?? []).map(rowToList);
     return { categorias, destaques };
   },
 );
@@ -173,7 +175,7 @@ export const listProdutos = createServerFn({ method: "GET" })
     if (data.limit) q = q.limit(data.limit);
     const { data: rows, error } = await q;
     if (error) throw new Error(error.message);
-    return (rows as ProdutoRow[] | null ?? []).map(rowToList);
+    return ((rows as ProdutoRow[] | null) ?? []).map(rowToList);
   });
 
 export const getProduto = createServerFn({ method: "GET" })
@@ -191,7 +193,13 @@ export const getProduto = createServerFn({ method: "GET" })
 
 export const getRelacionados = createServerFn({ method: "GET" })
   .inputValidator((i: unknown) =>
-    z.object({ categoriaSlug: z.string(), excluirSlug: z.string(), limit: z.number().int().min(1).max(12).default(3) }).parse(i),
+    z
+      .object({
+        categoriaSlug: z.string(),
+        excluirSlug: z.string(),
+        limit: z.number().int().min(1).max(12).default(3),
+      })
+      .parse(i),
   )
   .handler(async ({ data }): Promise<ProdutoListDTO[]> => {
     const { data: rows, error } = await supabaseAdmin
@@ -202,7 +210,7 @@ export const getRelacionados = createServerFn({ method: "GET" })
       .neq("slug", data.excluirSlug)
       .limit(data.limit);
     if (error) throw new Error(error.message);
-    return (rows as ProdutoRow[] | null ?? []).map(rowToList);
+    return ((rows as ProdutoRow[] | null) ?? []).map(rowToList);
   });
 
 export const criarOrcamento = createServerFn({ method: "POST" })

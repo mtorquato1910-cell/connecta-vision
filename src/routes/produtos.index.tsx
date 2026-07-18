@@ -4,8 +4,8 @@ import { Search, X } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { ProductCard } from "@/components/site/ProductCard";
 import { Reveal } from "@/components/site/Reveal";
-import { CATEGORIAS } from "@/lib/site-data";
-import { PRODUTOS } from "@/lib/produtos-data";
+import { listCategorias, listProdutos } from "@/lib/catalog.functions";
+import { dtoToProdutoList, dtoToCategoria } from "@/lib/catalog-adapter";
 import { useLocale } from "@/hooks/useLocale";
 
 type Search = { q?: string; cat?: string };
@@ -14,16 +14,30 @@ export const Route = createFileRoute("/produtos/")({
   head: () => ({
     meta: [
       { title: "Catálogo de Equipamentos Veterinários | Conecta, Shinova" },
-      { name: "description", content: "230+ equipamentos veterinários Shinova: anestesia, imagem, laboratório, odontologia, oftalmologia e mais. Importados, instalados, calibrados e com treinamento incluso, para todo o Brasil." },
+      {
+        name: "description",
+        content:
+          "230+ equipamentos veterinários Shinova: anestesia, imagem, laboratório, odontologia, oftalmologia e mais. Importados, instalados, calibrados e com treinamento incluso, para todo o Brasil.",
+      },
     ],
   }),
   validateSearch: (s: Record<string, unknown>): Search => ({
     q: typeof s.q === "string" ? s.q : undefined,
     cat: typeof s.cat === "string" ? s.cat : undefined,
   }),
-  // Dados estáticos do bundle, lidos no servidor (SSR-safe). O catálogo sai
-  // renderizado no HTML cru, sem depender de JS.
-  loader: () => ({ categorias: CATEGORIAS, produtos: PRODUTOS }),
+  // Catálogo lido do Supabase em runtime, no servidor (loader SSR). Sai
+  // renderizado no HTML cru — categoria/produto novo aparece sem rebuild.
+  // Ordem alfabética por nome (pt-BR).
+  loader: async () => {
+    const [cats, prods] = await Promise.all([listCategorias(), listProdutos({})]);
+    const categorias = cats
+      .map((c) => dtoToCategoria(c))
+      .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    const produtos = prods
+      .map(dtoToProdutoList)
+      .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    return { categorias, produtos };
+  },
   component: ProdutosPage,
 });
 
@@ -108,13 +122,21 @@ function ProdutosPage() {
       <section className="container-edge pb-24">
         <div className="grid lg:grid-cols-[260px_1fr] gap-10">
           <aside className="lg:sticky lg:top-24 lg:self-start">
-            <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft mb-4">{t("products.lines")}</div>
+            <div className="font-mono text-[11px] tracking-[0.18em] uppercase text-ink-soft mb-4">
+              {t("products.lines")}
+            </div>
             <div className="flex lg:flex-col flex-wrap gap-2">
               <CatPill active={!cat} to="/produtos" search={{}}>
-                {t("products.all_categories")} <span className="opacity-50">({produtos.length})</span>
+                {t("products.all_categories")}{" "}
+                <span className="opacity-50">({produtos.length})</span>
               </CatPill>
               {categorias.map((c) => (
-                <CatPill key={c.slug} active={cat === c.slug} to="/produtos" search={{ cat: c.slug }}>
+                <CatPill
+                  key={c.slug}
+                  active={cat === c.slug}
+                  to="/produtos"
+                  search={{ cat: c.slug }}
+                >
                   {c.nome}
                 </CatPill>
               ))}
@@ -146,7 +168,17 @@ function ProdutosPage() {
   );
 }
 
-function CatPill({ to, search, active, children }: { to: "/produtos"; search: Search; active: boolean; children: React.ReactNode }) {
+function CatPill({
+  to,
+  search,
+  active,
+  children,
+}: {
+  to: "/produtos";
+  search: Search;
+  active: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <Link
       to={to}

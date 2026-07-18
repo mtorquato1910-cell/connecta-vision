@@ -18,21 +18,25 @@ export function Navbar() {
   const { config } = useSiteConfig();
   const megaRef = useRef<HTMLDivElement | null>(null);
 
-  // Categorias com ícone. Base estática (SSR/sem flicker) + override ao vivo do
-  // banco, para refletir imediatamente a escolha de ícone feita no admin.
+  // Categorias do menu vêm do banco ao vivo (reflete categoria nova/ícone do
+  // admin na hora). Fallback para a lista estática no SSR / antes do fetch,
+  // para não piscar vazio. Sempre em ordem alfabética.
   const { data: liveCatalogo } = useQuery({
     queryKey: ["home-catalogo"],
     queryFn: () => homeCatalogo(),
     staleTime: 5 * 60 * 1000,
   });
   const categorias = useMemo(() => {
-    const iconeBySlug = new Map(
-      (liveCatalogo?.categorias ?? []).map((c) => [c.slug, c.icone]),
-    );
-    return CATEGORIAS.map((c) => ({
-      ...c,
-      icone: iconeBySlug.get(c.slug) ?? c.icone,
-    }));
+    const live = liveCatalogo?.categorias ?? [];
+    const base = live.length
+      ? live.map((c) => ({ slug: c.slug, nome: c.nome, qtd: c.qtd, icone: c.icone }))
+      : CATEGORIAS.map((c) => ({
+          slug: c.slug,
+          nome: c.nome,
+          qtd: c.qtd,
+          icone: (c as { icone?: string | null }).icone ?? null,
+        }));
+    return base.sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
   }, [liveCatalogo]);
 
   const NAV_I18N: { to: string; labelKey: string; mega?: boolean }[] = [

@@ -1,11 +1,26 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Instagram, Linkedin, Facebook, Youtube, Mail, MapPin, Phone } from "lucide-react";
 import logoUrl from "@/assets/conecta-logo.png";
 import { CATEGORIAS, SITE } from "@/lib/site-data";
+import { homeCatalogo } from "@/lib/catalog.functions";
 import { buildWaLink, useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function Footer() {
   const { config, texto } = useSiteConfig();
+
+  // Links de catálogo do rodapé vêm do banco ao vivo (com fallback estático),
+  // em ordem alfabética — reflete categoria nova criada no admin.
+  const { data: liveCatalogo } = useQuery({
+    queryKey: ["home-catalogo"],
+    queryFn: () => homeCatalogo(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const categorias = (
+    liveCatalogo?.categorias?.length
+      ? liveCatalogo.categorias.map((c) => ({ slug: c.slug, nome: c.nome }))
+      : CATEGORIAS.map((c) => ({ slug: c.slug, nome: c.nome }))
+  ).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
   const descricao = texto(
     "footer.descricao",
     "Distribuidor oficial Shinova de equipamentos veterinários premium. Mais de 230 produtos importados, instalados, calibrados e com treinamento incluso, entregues para todo o Brasil.",
@@ -29,9 +44,7 @@ export function Footer() {
           <div className="bg-white/95 inline-block rounded-md px-3 py-2">
             <img src={logoUrl} alt="Conecta" className="h-10 w-auto" />
           </div>
-          <p className="mt-5 text-sm leading-relaxed text-white/65 max-w-sm">
-            {descricao}
-          </p>
+          <p className="mt-5 text-sm leading-relaxed text-white/65 max-w-sm">{descricao}</p>
           {redes.length > 0 && (
             <div className="mt-5 flex items-center gap-3">
               {redes.map(({ url, Icon, label }) => (
@@ -51,11 +64,17 @@ export function Footer() {
         </div>
 
         <div className="md:col-span-3">
-          <h4 className="font-mono text-[11px] tracking-[0.18em] uppercase text-conecta-orange-light mb-4">Catálogo</h4>
+          <h4 className="font-mono text-[11px] tracking-[0.18em] uppercase text-conecta-orange-light mb-4">
+            Catálogo
+          </h4>
           <ul className="space-y-2 text-sm">
-            {CATEGORIAS.map((c) => (
+            {categorias.map((c) => (
               <li key={c.slug}>
-                <Link to="/produtos/categoria/$slug" params={{ slug: c.slug }} className="text-white/70 hover:text-white">
+                <Link
+                  to="/produtos/categoria/$slug"
+                  params={{ slug: c.slug }}
+                  className="text-white/70 hover:text-white"
+                >
                   {c.nome}
                 </Link>
               </li>
@@ -64,18 +83,42 @@ export function Footer() {
         </div>
 
         <div className="md:col-span-2">
-          <h4 className="font-mono text-[11px] tracking-[0.18em] uppercase text-conecta-orange-light mb-4">Conecta</h4>
+          <h4 className="font-mono text-[11px] tracking-[0.18em] uppercase text-conecta-orange-light mb-4">
+            Conecta
+          </h4>
           <ul className="space-y-2 text-sm">
-            <li><Link to="/sobre" className="text-white/70 hover:text-white">Sobre</Link></li>
-            <li><Link to="/solucoes" className="text-white/70 hover:text-white">Soluções</Link></li>
-            <li><Link to="/blog" className="text-white/70 hover:text-white">Blog</Link></li>
-            <li><Link to="/eventos" className="text-white/70 hover:text-white">Eventos</Link></li>
-            <li><Link to="/contato" className="text-white/70 hover:text-white">Contato</Link></li>
+            <li>
+              <Link to="/sobre" className="text-white/70 hover:text-white">
+                Sobre
+              </Link>
+            </li>
+            <li>
+              <Link to="/solucoes" className="text-white/70 hover:text-white">
+                Soluções
+              </Link>
+            </li>
+            <li>
+              <Link to="/blog" className="text-white/70 hover:text-white">
+                Blog
+              </Link>
+            </li>
+            <li>
+              <Link to="/eventos" className="text-white/70 hover:text-white">
+                Eventos
+              </Link>
+            </li>
+            <li>
+              <Link to="/contato" className="text-white/70 hover:text-white">
+                Contato
+              </Link>
+            </li>
           </ul>
         </div>
 
         <div className="md:col-span-3">
-          <h4 className="font-mono text-[11px] tracking-[0.18em] uppercase text-conecta-orange-light mb-4">Atendimento</h4>
+          <h4 className="font-mono text-[11px] tracking-[0.18em] uppercase text-conecta-orange-light mb-4">
+            Atendimento
+          </h4>
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <Phone className="h-4 w-4 mt-0.5 text-conecta-orange-light shrink-0" />

@@ -9,15 +9,20 @@ import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { productSchema, breadcrumbSchema } from "@/lib/schema-org";
 import { waLink, type Produto, type Especificacao } from "@/lib/site-data";
-import { findProduto, produtosRelacionados } from "@/lib/produtos-data";
+import { getProduto, getRelacionados } from "@/lib/catalog.functions";
+import { dtoToProduto, dtoToProdutoList } from "@/lib/catalog-adapter";
 
 export const Route = createFileRoute("/produtos/$slug")({
-  // Dados estáticos do bundle, resolvidos no servidor (SSR-safe). A ficha do
-  // produto (nome, resumo, descrição, specs) sai no HTML cru, indexável sem JS.
-  loader: ({ params }) => {
-    const p = findProduto(params.slug);
-    if (!p) throw notFound();
-    const relacionados = produtosRelacionados(p, 3);
+  // Ficha do produto lida do Supabase em runtime (loader SSR). Sai no HTML cru,
+  // indexável sem JS, e reflete o admin na hora.
+  loader: async ({ params }) => {
+    const dto = await getProduto({ data: { slug: params.slug } });
+    if (!dto) throw notFound();
+    const p = dtoToProduto(dto);
+    const relDtos = await getRelacionados({
+      data: { categoriaSlug: p.categoriaSlug, excluirSlug: p.slug, limit: 3 },
+    });
+    const relacionados = relDtos.map(dtoToProdutoList);
     return { p, relacionados };
   },
   head: ({ loaderData }) => {
@@ -98,7 +103,11 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
             Catálogo
           </Link>
           <span>/</span>
-          <Link to="/produtos/categoria/$slug" params={{ slug: p.categoriaSlug }} className="hover:text-conecta-blue">
+          <Link
+            to="/produtos/categoria/$slug"
+            params={{ slug: p.categoriaSlug }}
+            className="hover:text-conecta-blue"
+          >
             {p.categoriaNome}
           </Link>
         </div>
@@ -128,13 +137,13 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
           <div>
             <Reveal>
               <CategoryBadge>{p.categoriaNome}</CategoryBadge>
-              <h1 className="mt-4 font-serif text-4xl md:text-5xl text-ink leading-[1.05]">{p.nome}</h1>
+              <h1 className="mt-4 font-serif text-4xl md:text-5xl text-ink leading-[1.05]">
+                {p.nome}
+              </h1>
               <div className="mt-3 font-mono text-[11px] tracking-[0.2em] uppercase text-conecta-orange">
                 {p.modelo}
               </div>
-              {p.resumo && (
-                <p className="mt-5 text-lg text-ink-soft leading-relaxed">{p.resumo}</p>
-              )}
+              {p.resumo && <p className="mt-5 text-lg text-ink-soft leading-relaxed">{p.resumo}</p>}
 
               {p.diferenciais && p.diferenciais.length > 0 && (
                 <ul className="mt-6 space-y-2">
@@ -203,14 +212,21 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
                 {temEspecificacoes ? (
                   <dl>
                     {p.especificacoes!.map((e: Especificacao, i: number) => (
-                      <div key={`${e.label}-${i}`} className={`grid grid-cols-3 gap-4 px-6 py-4 ${i % 2 ? "bg-bone/50" : ""}`}>
-                        <dt className="text-sm font-mono uppercase tracking-wider text-ink-soft">{e.label}</dt>
+                      <div
+                        key={`${e.label}-${i}`}
+                        className={`grid grid-cols-3 gap-4 px-6 py-4 ${i % 2 ? "bg-bone/50" : ""}`}
+                      >
+                        <dt className="text-sm font-mono uppercase tracking-wider text-ink-soft">
+                          {e.label}
+                        </dt>
                         <dd className="col-span-2 text-sm text-ink">{e.valor}</dd>
                       </div>
                     ))}
                   </dl>
                 ) : (
-                  <p className="p-6 text-ink-soft">Solicite a ficha técnica completa pelo orçamento.</p>
+                  <p className="p-6 text-ink-soft">
+                    Solicite a ficha técnica completa pelo orçamento.
+                  </p>
                 )}
               </div>
             </div>
@@ -222,7 +238,10 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
             <div className="mt-5 flex flex-wrap gap-2">
               {(aplicacoes.length > 0 ? aplicacoes : ["Clínica geral", "Hospital veterinário"]).map(
                 (a: string) => (
-                  <span key={a} className="px-4 py-2 rounded-full bg-paper border border-line-strong text-sm text-ink">
+                  <span
+                    key={a}
+                    className="px-4 py-2 rounded-full bg-paper border border-line-strong text-sm text-ink"
+                  >
                     {a}
                   </span>
                 ),
@@ -239,12 +258,18 @@ function ProdutoView({ p, relacionados }: { p: Produto; relacionados: Produto[] 
               <span className="eyebrow">Relacionados</span>
               <h2 className="mt-3 font-serif text-3xl md:text-4xl">Outros itens da mesma linha</h2>
             </div>
-            <Link to="/produtos/categoria/$slug" params={{ slug: p.categoriaSlug }} className="text-sm text-conecta-blue hover:underline">
+            <Link
+              to="/produtos/categoria/$slug"
+              params={{ slug: p.categoriaSlug }}
+              className="text-sm text-conecta-blue hover:underline"
+            >
               Ver toda a linha →
             </Link>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {relacionados.map((r: Produto) => <ProductCard key={r.slug} p={r} />)}
+            {relacionados.map((r: Produto) => (
+              <ProductCard key={r.slug} p={r} />
+            ))}
           </div>
         </section>
       )}

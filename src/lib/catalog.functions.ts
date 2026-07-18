@@ -112,7 +112,8 @@ export const listCategorias = createServerFn({ method: "GET" }).handler(
     const { data, error } = await supabaseAdmin
       .from("categorias")
       .select("id, slug, nome, numero, imagem_url, icone, ordem")
-      .order("ordem", { ascending: true });
+      .eq("oculto", false)
+      .order("nome", { ascending: true });
     if (error) throw new Error(error.message);
     return (data ?? []) as CategoriaDTO[];
   },
@@ -127,7 +128,8 @@ export const homeCatalogo = createServerFn({ method: "GET" }).handler(
       supabaseAdmin
         .from("categorias")
         .select("id, slug, nome, numero, imagem_url, icone, ordem")
-        .order("ordem", { ascending: true }),
+        .eq("oculto", false)
+        .order("nome", { ascending: true }),
       supabaseAdmin.from("produtos").select("categoria_id").eq("publicado", true),
       supabaseAdmin
         .from("produtos")
@@ -169,7 +171,8 @@ export const listProdutos = createServerFn({ method: "GET" })
       .from("produtos")
       .select(PRODUTO_BASE_SELECT)
       .eq("publicado", true)
-      .order("ordem", { ascending: true });
+      .eq("categoria.oculto", false)
+      .order("nome", { ascending: true });
     if (data.categoriaSlug) q = q.eq("categoria.slug", data.categoriaSlug);
     if (data.destaque) q = q.eq("destaque", true);
     if (data.limit) q = q.limit(data.limit);

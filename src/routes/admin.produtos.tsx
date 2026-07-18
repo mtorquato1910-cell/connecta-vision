@@ -4,6 +4,7 @@ import {
   ExternalLink,
   Eye,
   EyeOff,
+  FolderInput,
   Package,
   Pencil,
   Plus,
@@ -114,6 +115,7 @@ function AdminProdutosPage() {
   const [editing, setEditing] = useState<ProdutoFull | null>(null);
   const [creating, setCreating] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<ProdutoLista | null>(null);
+  const [migrating, setMigrating] = useState<ProdutoLista | null>(null);
 
   const refresh = useCallback(() => {
     setLoading(true);
@@ -191,6 +193,18 @@ function AdminProdutosPage() {
       if (full) setEditing(full as unknown as ProdutoFull);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro ao abrir produto.");
+    }
+  };
+
+  const handleMigrar = async (categoria_id: string) => {
+    if (!migrating) return;
+    try {
+      await updateProdutoStatus({ data: { id: migrating.id, categoria_id } });
+      toast.success(`"${migrating.modelo}" movido de categoria.`);
+      setMigrating(null);
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao migrar.");
     }
   };
 
@@ -285,6 +299,7 @@ function AdminProdutosPage() {
                 onDelete={() => setConfirmDelete(p)}
                 onTogglePublicado={() => togglePublicado(p)}
                 onToggleDestaque={() => toggleDestaque(p)}
+                onMigrar={() => setMigrating(p)}
               />
             ))}
           </div>
@@ -346,6 +361,73 @@ function AdminProdutosPage() {
           onConfirm={handleDelete}
         />
       )}
+
+      {migrating && (
+        <MigrarProdutoModal
+          produto={migrating}
+          categorias={categorias}
+          onCancel={() => setMigrating(null)}
+          onConfirm={handleMigrar}
+        />
+      )}
+    </div>
+  );
+}
+
+function MigrarProdutoModal({
+  produto,
+  categorias,
+  onCancel,
+  onConfirm,
+}: {
+  produto: ProdutoLista;
+  categorias: CategoriaOpc[];
+  onCancel: () => void;
+  onConfirm: (categoriaId: string) => void;
+}) {
+  const outras = categorias.filter((c) => c.id !== produto.categoria_id);
+  const [destino, setDestino] = useState("");
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      onClick={onCancel}
+    >
+      <div className="bg-paper rounded-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 border-b border-line">
+          <h2 className="font-serif text-xl text-ink">Migrar de categoria</h2>
+          <p className="text-sm text-ink-soft mt-1">
+            {produto.modelo}, {produto.nome}
+          </p>
+        </div>
+        <div className="p-6 space-y-3">
+          <p className="text-sm text-ink-soft">
+            Categoria atual: <strong className="text-ink">{produto.categoria_nome}</strong>
+          </p>
+          <div>
+            <label className="text-sm font-medium block mb-1.5">Mover para</label>
+            <select
+              value={destino}
+              onChange={(e) => setDestino(e.target.value)}
+              className="input w-full"
+            >
+              <option value="">Selecione a categoria de destino…</option>
+              {outras.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nome}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div className="p-6 border-t border-line flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button disabled={!destino} onClick={() => onConfirm(destino)}>
+            Migrar
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -358,12 +440,14 @@ function ProductRow({
   onDelete,
   onTogglePublicado,
   onToggleDestaque,
+  onMigrar,
 }: {
   p: ProdutoLista;
   onEdit: () => void;
   onDelete: () => void;
   onTogglePublicado: () => void;
   onToggleDestaque: () => void;
+  onMigrar: () => void;
 }) {
   return (
     <div className="bg-paper border border-line rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 hover:border-conecta-blue/30 transition-colors">
@@ -428,6 +512,14 @@ function ProductRow({
           }`}
         >
           {p.publicado ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+        </button>
+        <button
+          onClick={onMigrar}
+          aria-label="Migrar de categoria"
+          title="Migrar para outra categoria"
+          className="h-8 w-8 rounded-md flex items-center justify-center text-ink-soft hover:text-violet-700 hover:bg-violet-50 transition-colors"
+        >
+          <FolderInput className="h-4 w-4" />
         </button>
         <button
           onClick={onEdit}

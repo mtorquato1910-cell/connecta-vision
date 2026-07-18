@@ -18,11 +18,13 @@ export type Database = {
         Row: {
           created_at: string
           descricao: string | null
+          destaque: boolean
           icone: string | null
           id: string
           imagem_url: string | null
           nome: string
           numero: string
+          oculto: boolean
           ordem: number
           slug: string
           updated_at: string
@@ -30,11 +32,13 @@ export type Database = {
         Insert: {
           created_at?: string
           descricao?: string | null
+          destaque?: boolean
           icone?: string | null
           id?: string
           imagem_url?: string | null
           nome: string
           numero: string
+          oculto?: boolean
           ordem?: number
           slug: string
           updated_at?: string
@@ -42,11 +46,13 @@ export type Database = {
         Update: {
           created_at?: string
           descricao?: string | null
+          destaque?: boolean
           icone?: string | null
           id?: string
           imagem_url?: string | null
           nome?: string
           numero?: string
+          oculto?: boolean
           ordem?: number
           slug?: string
           updated_at?: string

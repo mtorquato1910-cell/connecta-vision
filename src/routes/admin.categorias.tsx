@@ -1,15 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  ExternalLink,
-  FolderTree,
-  Pencil,
-  Plus,
-  Star,
-  X,
-} from "lucide-react";
+import { Eye, EyeOff, ExternalLink, FolderTree, Pencil, Plus, Star, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -21,8 +12,9 @@ import {
 import {
   listAllCategorias,
   upsertCategoria,
-  reorderCategorias,
   listAllProdutos,
+  setCategoriaOculta,
+  deleteCategoria,
 } from "@/lib/admin.functions";
 
 type Categoria = {
@@ -32,6 +24,7 @@ type Categoria = {
   numero: string;
   ordem: number;
   destaque: boolean;
+  oculto: boolean;
   descricao_curta: string;
   imagem_url: string | null;
   icone: string | null;
@@ -47,6 +40,7 @@ function toUpsert(c: Categoria) {
     icone: c.icone || null,
     ordem: c.ordem,
     destaque: c.destaque,
+    oculto: c.oculto,
   };
   // Sem id ⇒ criação (Supabase gera o uuid). Com id ⇒ atualização.
   return c.id ? { id: c.id, ...base } : base;
@@ -82,10 +76,41 @@ function AdminCategoriasPage() {
       numero: String(proximo).padStart(2, "0"),
       ordem: maxOrdem + 1,
       destaque: false,
+      oculto: false,
       descricao_curta: "",
       imagem_url: null,
       icone: null,
     };
+  };
+
+  const [deleting, setDeleting] = useState<Categoria | null>(null);
+
+  const toggleOculto = async (cat: Categoria) => {
+    try {
+      await setCategoriaOculta({ data: { id: cat.id, oculto: !cat.oculto } });
+      toast.success(!cat.oculto ? "Categoria ocultada do site." : "Categoria visível no site.");
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao ocultar.");
+    }
+  };
+
+  const confirmDelete = async (destinoId?: string) => {
+    if (!deleting) return;
+    try {
+      const res = (await deleteCategoria({
+        data: { id: deleting.id, destinoId },
+      })) as { migrados?: number };
+      toast.success(
+        res.migrados
+          ? `Categoria excluída. ${res.migrados} produto(s) migrado(s).`
+          : "Categoria excluída.",
+      );
+      setDeleting(null);
+      refresh();
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Erro ao excluir.");
+    }
   };
 
   const refresh = useCallback(() => {
@@ -99,6 +124,7 @@ function AdminCategoriasPage() {
             numero: c.numero,
             ordem: c.ordem,
             destaque: !!c.destaque,
+            oculto: !!c.oculto,
             descricao_curta: c.descricao ?? "",
             imagem_url: c.imagem_url ?? null,
             icone: c.icone ?? null,
@@ -110,41 +136,12 @@ function AdminCategoriasPage() {
         }
         setCountByCat(map);
       })
-      .catch((e) =>
-        toast.error(e instanceof Error ? e.message : "Erro ao carregar categorias."),
-      );
+      .catch((e) => toast.error(e instanceof Error ? e.message : "Erro ao carregar categorias."));
   }, []);
 
   useEffect(() => {
     refresh();
   }, [refresh]);
-
-  const reordenar = async (ids: string[]) => {
-    try {
-      await reorderCategorias({
-        data: { ordem: ids.map((id, i) => ({ id, ordem: i + 1 })) },
-      });
-      refresh();
-    } catch (e) {
-      toast.error(e instanceof Error ? e.message : "Erro ao reordenar.");
-    }
-  };
-
-  const moveUp = (id: string) => {
-    const ids = categorias.map((c) => c.id);
-    const i = ids.indexOf(id);
-    if (i <= 0) return;
-    [ids[i - 1], ids[i]] = [ids[i], ids[i - 1]];
-    reordenar(ids);
-  };
-
-  const moveDown = (id: string) => {
-    const ids = categorias.map((c) => c.id);
-    const i = ids.indexOf(id);
-    if (i < 0 || i >= ids.length - 1) return;
-    [ids[i + 1], ids[i]] = [ids[i], ids[i + 1]];
-    reordenar(ids);
-  };
 
   const toggleDestaque = async (cat: Categoria) => {
     try {
@@ -160,7 +157,7 @@ function AdminCategoriasPage() {
       <PageHeader
         eyebrow="Catálogo"
         title="Categorias"
-        description="8 linhas clínicas. Reordene, edite descrição e marque destaques que aparecem na home."
+        description="As categorias aparecem em ordem alfabética no site. Edite, oculte, exclua (migrando os produtos) e marque destaques da home."
         icon={FolderTree}
         tone="violet"
       />
@@ -168,7 +165,7 @@ function AdminCategoriasPage() {
       <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-5xl">
         <div className="mb-4 flex items-center justify-between gap-3">
           <p className="text-sm text-ink-soft">
-            {categorias.length} categorias · reordene, edite ou crie novas linhas.
+            {categorias.length} categorias · em ordem alfabética, edite, oculte ou crie novas.
           </p>
           <Button
             onClick={() => setCreating(true)}
@@ -179,30 +176,11 @@ function AdminCategoriasPage() {
         </div>
 
         <div className="space-y-2">
-          {categorias.map((c, i) => (
+          {categorias.map((c) => (
             <div
               key={c.id}
               className="bg-paper border border-line rounded-xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 hover:border-violet-300 transition-colors"
             >
-              <div className="flex flex-col gap-0.5 shrink-0">
-                <button
-                  onClick={() => moveUp(c.id)}
-                  disabled={i === 0}
-                  aria-label="Mover para cima"
-                  className="h-6 w-6 rounded flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <ArrowUp className="h-3.5 w-3.5" />
-                </button>
-                <button
-                  onClick={() => moveDown(c.id)}
-                  disabled={i === categorias.length - 1}
-                  aria-label="Mover para baixo"
-                  className="h-6 w-6 rounded flex items-center justify-center text-ink-soft hover:text-ink hover:bg-bone disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  <ArrowDown className="h-3.5 w-3.5" />
-                </button>
-              </div>
-
               <div
                 className="h-10 w-10 rounded-lg bg-gradient-to-br from-violet-100 to-violet-50 text-violet-700 flex items-center justify-center shrink-0"
                 title={`Ícone exibido no menu do site (categoria ${c.numero})`}
@@ -223,10 +201,13 @@ function AdminCategoriasPage() {
                       <Star className="h-2.5 w-2.5" /> Destaque
                     </span>
                   )}
+                  {c.oculto && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-slate-700 bg-slate-100 rounded-full px-2 py-0.5">
+                      <EyeOff className="h-2.5 w-2.5" /> Oculta
+                    </span>
+                  )}
                 </div>
-                <p className="text-xs text-ink-soft line-clamp-1 mt-0.5">
-                  {c.descricao_curta}
-                </p>
+                <p className="text-xs text-ink-soft line-clamp-1 mt-0.5">{c.descricao_curta}</p>
                 <p className="text-[11px] font-mono text-ink-mute mt-1">
                   {countByCat[c.id] ?? 0} produtos · /{c.slug}
                 </p>
@@ -254,11 +235,31 @@ function AdminCategoriasPage() {
                   <Star className="h-4 w-4" />
                 </button>
                 <button
+                  onClick={() => toggleOculto(c)}
+                  aria-label={c.oculto ? "Mostrar no site" : "Ocultar do site"}
+                  title={c.oculto ? "Mostrar no site" : "Ocultar do site"}
+                  className={`h-8 w-8 rounded-md flex items-center justify-center transition-colors ${
+                    c.oculto
+                      ? "text-slate-500 bg-slate-100 hover:bg-slate-200"
+                      : "text-ink-soft hover:text-ink hover:bg-bone"
+                  }`}
+                >
+                  {c.oculto ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+                <button
                   onClick={() => setEditing(c)}
                   aria-label="Editar"
                   className="h-8 w-8 rounded-md flex items-center justify-center text-ink-soft hover:text-conecta-blue hover:bg-blue-50 transition-colors"
                 >
                   <Pencil className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setDeleting(c)}
+                  aria-label="Excluir"
+                  title="Excluir categoria"
+                  className="h-8 w-8 rounded-md flex items-center justify-center text-ink-soft hover:text-red-600 hover:bg-red-50 transition-colors"
+                >
+                  <Trash2 className="h-4 w-4" />
                 </button>
               </div>
             </div>
@@ -266,10 +267,9 @@ function AdminCategoriasPage() {
         </div>
 
         <div className="mt-6 rounded-xl border border-line bg-bone/40 p-4 text-xs text-ink-soft">
-          <strong>📌 Dica:</strong> as 8 linhas originais vêm da planilha Shinova.
-          Você pode criar novas categorias pelo botão "Nova categoria", escolher o
-          ícone do menu e reordenar. Categorias novas aparecem automaticamente no
-          seletor ao cadastrar um produto.
+          <strong>📌 Dica:</strong> as 8 linhas originais vêm da planilha Shinova. Você pode criar
+          novas categorias pelo botão "Nova categoria", escolher o ícone do menu e reordenar.
+          Categorias novas aparecem automaticamente no seletor ao cadastrar um produto.
         </div>
       </div>
 
@@ -310,6 +310,90 @@ function AdminCategoriasPage() {
           }}
         />
       )}
+
+      {deleting && (
+        <DeleteCategoriaModal
+          categoria={deleting}
+          qtdProdutos={countByCat[deleting.id] ?? 0}
+          outras={categorias.filter((c) => c.id !== deleting.id)}
+          onCancel={() => setDeleting(null)}
+          onConfirm={confirmDelete}
+        />
+      )}
+    </div>
+  );
+}
+
+function DeleteCategoriaModal({
+  categoria,
+  qtdProdutos,
+  outras,
+  onCancel,
+  onConfirm,
+}: {
+  categoria: Categoria;
+  qtdProdutos: number;
+  outras: Categoria[];
+  onCancel: () => void;
+  onConfirm: (destinoId?: string) => void;
+}) {
+  const precisaMigrar = qtdProdutos > 0;
+  const [destino, setDestino] = useState("");
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      onClick={onCancel}
+    >
+      <div className="bg-paper rounded-2xl w-full max-w-md" onClick={(e) => e.stopPropagation()}>
+        <div className="p-6 border-b border-line">
+          <h2 className="font-serif text-xl text-ink">Excluir categoria</h2>
+          <p className="text-sm text-ink-soft mt-1">
+            "{categoria.nome}" será removida definitivamente do site.
+          </p>
+        </div>
+        <div className="p-6 space-y-4">
+          {precisaMigrar ? (
+            <>
+              <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-900">
+                Esta categoria tem <strong>{qtdProdutos} produto(s)</strong>. Escolha uma categoria
+                de destino para migrá-los antes de excluir.
+              </div>
+              <div>
+                <label className="text-sm font-medium block mb-1.5">Migrar produtos para</label>
+                <select
+                  value={destino}
+                  onChange={(e) => setDestino(e.target.value)}
+                  className="input w-full"
+                >
+                  <option value="">Selecione uma categoria…</option>
+                  {outras.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          ) : (
+            <p className="text-sm text-ink-soft">
+              Esta categoria está vazia (sem produtos) e será excluída direto.
+            </p>
+          )}
+        </div>
+        <div className="p-6 border-t border-line flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>
+            Cancelar
+          </Button>
+          <Button
+            variant="destructive"
+            disabled={precisaMigrar && !destino}
+            onClick={() => onConfirm(precisaMigrar ? destino : undefined)}
+          >
+            Excluir{precisaMigrar ? " e migrar" : ""}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
@@ -416,9 +500,7 @@ function CategoriaForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-ink">
-              Descrição curta
-            </label>
+            <label className="block text-sm font-medium text-ink">Descrição curta</label>
             <textarea
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
@@ -441,9 +523,7 @@ function CategoriaForm({
                 setSlug(slugify(e.target.value));
               }}
               placeholder="ex.: reabilitacao-fisioterapia"
-              className={`input font-mono text-xs ${
-                isCreate ? "" : "bg-bone cursor-not-allowed"
-              }`}
+              className={`input font-mono text-xs ${isCreate ? "" : "bg-bone cursor-not-allowed"}`}
             />
             <p className="text-xs text-ink-soft">
               {isCreate
@@ -453,12 +533,10 @@ function CategoriaForm({
           </div>
 
           <div className="space-y-1.5">
-            <label className="block text-sm font-medium text-ink">
-              Ícone no menu do site
-            </label>
+            <label className="block text-sm font-medium text-ink">Ícone no menu do site</label>
             <p className="text-xs text-ink-soft">
-              Aparece no menu "Produtos" do topo do site quando o visitante passa
-              o mouse e escolhe esta categoria. Clique para trocar.
+              Aparece no menu "Produtos" do topo do site quando o visitante passa o mouse e escolhe
+              esta categoria. Clique para trocar.
             </p>
             <div className="mt-1 grid grid-cols-7 sm:grid-cols-9 gap-1.5 rounded-xl border border-line bg-bone/40 p-2">
               {CATEGORY_ICON_OPTIONS.map((opt) => {

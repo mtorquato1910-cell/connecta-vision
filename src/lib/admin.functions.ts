@@ -131,17 +131,44 @@ const categoriaSchema = z.object({
   icone: z.string().max(40).optional().nullable(),
   ordem: z.number().int().min(0).max(999).default(0),
   destaque: z.boolean().optional().default(false),
+  oculto: z.boolean().optional().default(false),
 });
 
 export const listAllCategorias = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
-    const { data, error } = await supabaseAdmin
+    // Admin vê todas (inclusive ocultas), com a contagem de produtos vinculados
+    // — necessária para decidir se a exclusão exige migração.
+    const [catsRes, prodsRes] = await Promise.all([
+      supabaseAdmin
+        .from("categorias")
+        .select("id, slug, nome, numero, descricao, imagem_url, icone, ordem, destaque, oculto")
+        .order("nome"),
+      supabaseAdmin.from("produtos").select("categoria_id"),
+    ]);
+    if (catsRes.error) throw new Error(catsRes.error.message);
+    if (prodsRes.error) throw new Error(prodsRes.error.message);
+    const counts: Record<string, number> = {};
+    for (const row of (prodsRes.data ?? []) as { categoria_id: string }[]) {
+      counts[row.categoria_id] = (counts[row.categoria_id] ?? 0) + 1;
+    }
+    return ((catsRes.data ?? []) as { id: string }[]).map((c) => ({
+      ...c,
+      qtd_produtos: counts[c.id] ?? 0,
+    }));
+  });
+
+// Ocultar/mostrar categoria no site (não exclui).
+export const setCategoriaOculta = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ id: z.string().uuid(), oculto: z.boolean() }).parse(i))
+  .handler(async ({ data }) => {
+    const { error } = await supabaseAdmin
       .from("categorias")
-      .select("id, slug, nome, numero, descricao, imagem_url, icone, ordem, destaque")
-      .order("ordem");
+      .update({ oculto: data.oculto } as never)
+      .eq("id", data.id);
     if (error) throw new Error(error.message);
-    return data ?? [];
+    return { ok: true };
   });
 
 export const upsertCategoria = createServerFn({ method: "POST" })
@@ -153,13 +180,44 @@ export const upsertCategoria = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+// Exclui a categoria de vez. Se houver produtos vinculados, é obrigatório
+// informar `destinoId` (outra categoria) para onde migrar os produtos antes de
+// remover — a FK produtos.categoria_id é ON DELETE RESTRICT, então não dá para
+// apagar deixando produtos órfãos. Categoria vazia é excluída direto.
 export const deleteCategoria = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
-  .inputValidator((i: unknown) => z.object({ id: z.string().uuid() }).parse(i))
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), destinoId: z.string().uuid().optional() }).parse(i),
+  )
   .handler(async ({ data }) => {
+    if (data.destinoId && data.destinoId === data.id) {
+      throw new Error("A categoria de destino deve ser diferente da que será excluída.");
+    }
+    const { count, error: cErr } = await supabaseAdmin
+      .from("produtos")
+      .select("id", { count: "exact", head: true })
+      .eq("categoria_id", data.id);
+    if (cErr) throw new Error(cErr.message);
+
+    const qtd = count ?? 0;
+    let migrados = 0;
+    if (qtd > 0) {
+      if (!data.destinoId) {
+        throw new Error(
+          `Esta categoria tem ${qtd} produto(s). Escolha uma categoria de destino para migrá-los antes de excluir.`,
+        );
+      }
+      const { error: mErr } = await supabaseAdmin
+        .from("produtos")
+        .update({ categoria_id: data.destinoId } as never)
+        .eq("categoria_id", data.id);
+      if (mErr) throw new Error(`Falha ao migrar produtos: ${mErr.message}`);
+      migrados = qtd;
+    }
+
     const { error } = await supabaseAdmin.from("categorias").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
-    return { ok: true };
+    return { ok: true, migrados };
   });
 
 export const reorderCategorias = createServerFn({ method: "POST" })
@@ -258,6 +316,8 @@ export const updateProdutoStatus = createServerFn({ method: "POST" })
         id: z.string().uuid(),
         publicado: z.boolean().optional(),
         destaque: z.boolean().optional(),
+        // Permite migrar o produto para outra categoria sem abrir o form inteiro.
+        categoria_id: z.string().uuid().optional(),
       })
       .parse(i),
   )

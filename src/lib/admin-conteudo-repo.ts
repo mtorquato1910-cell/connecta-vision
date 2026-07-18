@@ -86,6 +86,31 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     tipo: "texto",
     pagina: "home",
   },
+  {
+    chave: "home.sobre.eyebrow",
+    label: "Bloco 'Quem somos', eyebrow",
+    valor: "Quem somos",
+    tipo: "texto",
+    pagina: "home",
+  },
+  {
+    chave: "home.sobre.titulo",
+    label: "Bloco 'Quem somos', título",
+    valor: "Uma distribuidora brasileira com tecnologia importada e suporte que responde.",
+    tipo: "texto",
+    pagina: "home",
+    multiline: true,
+  },
+  {
+    chave: "home.sobre.texto",
+    label: "Bloco 'Quem somos', texto",
+    valor:
+      "A Conecta nasceu para acabar com o que cansava o veterinário no Brasil, catálogos cheios de marca de gaveta, suporte genérico e importação atravessada por intermediários que só inflam o preço sem agregar serviço algum.\n\nHoje somos distribuidor oficial da linha completa Shinova no país, com sede em Vespasiano/MG e entrega para todo o Brasil. Nosso compromisso é direto: equipamento certo, no prazo combinado, instalado, calibrado e com a sua equipe treinada para operar desde o primeiro dia.\n\nMais de 300 clientes ativos, entre clínicas, hospitais, universidades e centros de pesquisa, já operam com a Conecta, e essa rede cresce porque entregamos exatamente o que o catálogo promete.",
+    tipo: "texto",
+    pagina: "home",
+    multiline: true,
+    descricao: "Separe os parágrafos com uma linha em branco.",
+  },
 
   // SOBRE
   {

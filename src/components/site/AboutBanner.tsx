@@ -1,6 +1,19 @@
 import { Reveal } from "./Reveal";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function AboutBanner() {
+  // Bloco "Quem somos" editável no admin (Textos do site → Home).
+  const { texto } = useSiteConfig();
+  const eyebrow = texto("home.sobre.eyebrow", "Quem somos");
+  const titulo = texto(
+    "home.sobre.titulo",
+    "Uma distribuidora brasileira com tecnologia importada e suporte que responde.",
+  );
+  const corpo = texto(
+    "home.sobre.texto",
+    "A Conecta nasceu para acabar com o que cansava o veterinário no Brasil, catálogos cheios de marca de gaveta, suporte genérico e importação atravessada por intermediários que só inflam o preço sem agregar serviço algum.\n\nHoje somos distribuidor oficial da linha completa Shinova no país, com sede em Vespasiano/MG e entrega para todo o Brasil. Nosso compromisso é direto: equipamento certo, no prazo combinado, instalado, calibrado e com a sua equipe treinada para operar desde o primeiro dia.\n\nMais de 300 clientes ativos, entre clínicas, hospitais, universidades e centros de pesquisa, já operam com a Conecta, e essa rede cresce porque entregamos exatamente o que o catálogo promete.",
+  );
+  const paragrafos = corpo.split(/\n\s*\n/).filter((p) => p.trim());
   return (
     <section className="bg-paper">
       <div className="container-edge py-20 md:py-28 grid lg:grid-cols-12 gap-12 items-center">
@@ -14,25 +27,31 @@ export function AboutBanner() {
             <div className="absolute inset-0 bg-gradient-to-t from-conecta-blue/85 via-conecta-blue/20 to-transparent" />
             <div className="relative h-full flex flex-col justify-end p-8">
               <div className="font-serif text-5xl leading-tight">230+</div>
-              <div className="mt-1 text-sm text-white/80">equipamentos importados de alta tecnologia</div>
+              <div className="mt-1 text-sm text-white/80">
+                equipamentos importados de alta tecnologia
+              </div>
               <div className="mt-6 h-px bg-white/20" />
               <div className="mt-6 font-serif text-5xl leading-tight">300+</div>
-              <div className="mt-1 text-sm text-white/80">clínicas e hospitais ativos no Brasil</div>
+              <div className="mt-1 text-sm text-white/80">
+                clínicas e hospitais ativos no Brasil
+              </div>
             </div>
           </div>
         </Reveal>
         <div className="lg:col-span-6">
-          <Reveal><span className="eyebrow-bracket">Quem somos</span></Reveal>
+          <Reveal>
+            <span className="eyebrow-bracket">{eyebrow}</span>
+          </Reveal>
           <Reveal delay={0.05}>
             <h2 className="mt-5 font-serif text-4xl md:text-5xl leading-[1.05] text-ink">
-              Uma distribuidora <em className="italic text-conecta-orange">brasileira</em> com tecnologia importada e suporte que responde.
+              {titulo}
             </h2>
           </Reveal>
           <Reveal delay={0.1}>
             <div className="mt-6 space-y-4 text-ink-soft leading-relaxed">
-              <p>A Conecta nasceu para acabar com o que cansava o veterinário no Brasil, catálogos cheios de marca de gaveta, suporte genérico e importação atravessada por intermediários que só inflam o preço sem agregar serviço algum.</p>
-              <p>Hoje somos distribuidor oficial da linha completa Shinova no país, com sede em Vespasiano/MG e entrega para todo o Brasil. Nosso compromisso é direto: equipamento certo, no prazo combinado, instalado, calibrado e com a sua equipe treinada para operar desde o primeiro dia.</p>
-              <p>Mais de 300 clientes ativos, entre clínicas, hospitais, universidades e centros de pesquisa, já operam com a Conecta, e essa rede cresce porque entregamos exatamente o que o catálogo promete.</p>
+              {paragrafos.map((p, i) => (
+                <p key={i}>{p}</p>
+              ))}
             </div>
           </Reveal>
           <Reveal delay={0.15}>

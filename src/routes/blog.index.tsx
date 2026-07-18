@@ -7,6 +7,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { listPublishedPosts } from "@/lib/admin.functions";
 import { isYoutubeUrl, youtubeThumbnail } from "@/lib/youtube";
 import { useLocale } from "@/hooks/useLocale";
+import logoConecta from "@/assets/conecta-logo.png";
 
 type BlogPost = {
   id: string;
@@ -25,9 +26,6 @@ type BlogPost = {
   created_at: string;
   motivo_rejeicao?: string | null;
 };
-
-const FALLBACK_CAPA =
-  "https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?w=1600&q=85";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -139,23 +137,30 @@ function BlogPage() {
 
 function BlogCard({ post }: { post: BlogPost }) {
   const hasVideo = isYoutubeUrl(post.video_url);
-  const capa = post.capa_url || FALLBACK_CAPA;
   const imgSrc =
     hasVideo && post.video_url
-      ? youtubeThumbnail(post.video_url, "max") || capa
-      : capa;
+      ? youtubeThumbnail(post.video_url, "max") || post.capa_url || ""
+      : post.capa_url || "";
   return (
     <Link
       to="/blog/$slug"
       params={{ slug: post.slug }}
       className="group block bg-paper border border-line rounded-2xl overflow-hidden hover:border-line-strong transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_-8px_rgba(10,10,10,0.08)]"
     >
-      <div className="aspect-[4/3] overflow-hidden bg-bone relative">
-        <img
-          src={imgSrc}
-          alt={post.titulo}
-          className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-        />
+      <div className="aspect-[4/3] overflow-hidden bg-bone relative flex items-center justify-center">
+        {imgSrc ? (
+          <img
+            src={imgSrc}
+            alt={post.titulo}
+            className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+          />
+        ) : (
+          <img
+            src={logoConecta}
+            alt="Conecta"
+            className="max-h-[42%] max-w-[52%] object-contain opacity-60"
+          />
+        )}
         {hasVideo && (
           <>
             <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />

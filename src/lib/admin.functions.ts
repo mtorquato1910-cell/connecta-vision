@@ -81,6 +81,35 @@ export const uploadImagem = createServerFn({ method: "POST" })
     return { url: pub.publicUrl };
   });
 
+// Versão PÚBLICA do upload (sem auth), usada pelo formulário "Enviar meu artigo"
+// do blog. Restrita à pasta "blog", só imagem e tamanho limitado — o post fica
+// pendente de aprovação de qualquer forma.
+export const uploadImagemPublica = createServerFn({ method: "POST" })
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        dataUrl: z.string().regex(/^data:image\/(png|jpe?g|webp);base64,/i, "Imagem inválida"),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }): Promise<{ url: string }> => {
+    const match = data.dataUrl.match(/^data:(image\/[a-z+]+);base64,(.+)$/i);
+    if (!match) throw new Error("Formato de imagem inválido.");
+    const contentType = match[1].toLowerCase();
+    const buffer = Buffer.from(match[2], "base64");
+    if (buffer.byteLength > 8 * 1024 * 1024) {
+      throw new Error("Imagem grande demais (máx. 8 MB).");
+    }
+    const ext = contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
+    const path = `blog/enviados/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from("produtos")
+      .upload(path, buffer, { contentType, upsert: false, cacheControl: "31536000" });
+    if (error) throw new Error(`Falha ao enviar imagem: ${error.message}`);
+    const { data: pub } = supabaseAdmin.storage.from("produtos").getPublicUrl(path);
+    return { url: pub.publicUrl };
+  });
+
 // ---------- Dashboard stats ----------
 export const dashboardStats = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
@@ -790,22 +819,43 @@ export const submitBlogPost = createServerFn({ method: "POST" })
         titulo: z.string().min(3).max(240),
         resumo: z.string().max(600).optional().default(""),
         conteudo: z.string().max(40000).optional().default(""),
-        capa_url: z.string().max(1000).optional().nullable(),
-        video_url: z.string().max(1000).optional().nullable(),
+        capa_url: z.string().max(2048).optional().nullable(),
+        video_url: z.string().max(2048).optional().nullable(),
         autor_nome: z.string().min(1).max(160),
         autor_email: z.string().email().max(200),
+        autor_telefone: z.string().max(40).optional().nullable(),
         tags: z.array(z.string().max(60)).max(20).optional().default([]),
+        galeria: z.array(z.string().max(2048)).max(30).optional().default([]),
       })
       .parse(i),
   )
   .handler(async ({ data }) => {
+    // Separa o telefone (não é coluna do blog_posts; vira lead no funil).
+    const { autor_telefone, ...postData } = data;
     const slug = `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo + data.autor_email))
       .toString(36)
       .slice(0, 5)}`;
     const { error } = await sbUntyped
       .from("blog_posts")
-      .insert({ ...data, slug, status: "pendente", origem: "publico" } as never);
+      .insert({ ...postData, slug, status: "pendente", origem: "publico" } as never);
     if (error) throw new Error(error.message);
+
+    // Também registra o autor como lead no funil de vendas (tag "blog"),
+    // sempre na primeira etapa. Falha aqui não bloqueia o envio do artigo.
+    try {
+      const status = await primeiraEtapaChave();
+      await supabaseAdmin.from("formularios").insert({
+        tipo: "blog",
+        nome: data.autor_nome,
+        email: data.autor_email,
+        telefone: autor_telefone ?? null,
+        origem: "Blog — Enviar meu artigo",
+        status,
+        payload: { post_titulo: data.titulo },
+      });
+    } catch {
+      // silencioso: o artigo já foi enviado
+    }
     return { ok: true };
   });
 
@@ -873,6 +923,7 @@ export const adminUpsertPost = createServerFn({ method: "POST" })
           .default("publicado"),
         destaque: z.boolean().optional().default(false),
         ordem: z.number().int().min(0).max(9999).optional().default(0),
+        galeria: z.array(z.string().max(2048)).max(30).optional().default([]),
       })
       .parse(i),
   )

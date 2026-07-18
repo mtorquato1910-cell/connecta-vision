@@ -7,14 +7,8 @@
  * leem de um cache de módulo alimentado pelo hook.
  */
 import { useQuery } from "@tanstack/react-query";
-import {
-  DEFAULT_CONFIG,
-  type ConfigAll,
-} from "@/lib/admin-config-repo";
-import {
-  DEFAULT_CONTEUDO,
-  type ConteudoItem,
-} from "@/lib/admin-conteudo-repo";
+import { DEFAULT_CONFIG, type ConfigAll } from "@/lib/admin-config-repo";
+import { DEFAULT_CONTEUDO, type ConteudoItem } from "@/lib/admin-conteudo-repo";
 import { getConfigPublic, getConteudoPublic } from "@/lib/admin.functions";
 import { rowsToConfig, rowsToConteudo } from "@/lib/site-config-adapter";
 
@@ -28,19 +22,23 @@ type SiteConfig = {
 let cachedConfig: ConfigAll = DEFAULT_CONFIG;
 let cachedConteudo: ConteudoItem[] = DEFAULT_CONTEUDO;
 
-const STALE = 5 * 60 * 1000;
+const STALE = 30 * 1000;
 
 export function useSiteConfig(): SiteConfig {
+  // IMPORTANTE: usar placeholderData (não initialData). Com initialData + staleTime,
+  // o React Query trata o DEFAULT do código como dado "fresco" e nunca busca do
+  // banco — o site nunca refletia o que o admin edita. placeholderData mostra o
+  // default enquanto SEMPRE busca a versão real do Supabase.
   const { data: config = DEFAULT_CONFIG } = useQuery({
     queryKey: ["site-config"],
     queryFn: async () => rowsToConfig(await getConfigPublic()),
-    initialData: DEFAULT_CONFIG,
+    placeholderData: DEFAULT_CONFIG,
     staleTime: STALE,
   });
   const { data: conteudo = DEFAULT_CONTEUDO } = useQuery({
     queryKey: ["site-conteudo"],
     queryFn: async () => rowsToConteudo(await getConteudoPublic()),
-    initialData: DEFAULT_CONTEUDO,
+    placeholderData: DEFAULT_CONTEUDO,
     staleTime: STALE,
   });
 

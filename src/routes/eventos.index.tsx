@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Calendar, MapPin } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
+import logoConecta from "@/assets/conecta-logo.png";
 import { listEventosPublic } from "@/lib/admin.functions";
 import { useLocale } from "@/hooks/useLocale";
 
@@ -70,9 +71,7 @@ function EventosPage() {
   }, [eventos]);
 
   const filtered = year
-    ? eventos.filter(
-        (e) => e.data_evento && new Date(e.data_evento).getFullYear() === year,
-      )
+    ? eventos.filter((e) => e.data_evento && new Date(e.data_evento).getFullYear() === year)
     : eventos;
 
   return (
@@ -142,12 +141,20 @@ function EventoCard({ evento }: { evento: Evento }) {
       params={{ slug: evento.slug }}
       className="group block bg-paper border border-line rounded-2xl overflow-hidden hover:border-line-strong transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_-8px_rgba(10,10,10,0.08)]"
     >
-      <div className="aspect-[4/3] overflow-hidden bg-bone">
-        <img
-          src={evento.capa_url ?? ""}
-          alt={evento.nome}
-          className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
-        />
+      <div className="aspect-[4/3] overflow-hidden bg-bone flex items-center justify-center">
+        {evento.capa_url ? (
+          <img
+            src={evento.capa_url}
+            alt={evento.nome}
+            className="h-full w-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+          />
+        ) : (
+          <img
+            src={logoConecta}
+            alt="Conecta"
+            className="max-h-[42%] max-w-[52%] object-contain opacity-60"
+          />
+        )}
       </div>
       <div className="p-6">
         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-conecta-orange">
@@ -161,9 +168,7 @@ function EventoCard({ evento }: { evento: Evento }) {
           <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0" />
           {evento.local}
         </p>
-        <p className="mt-3 text-sm text-ink-soft line-clamp-2">
-          {evento.descricao_curta}
-        </p>
+        <p className="mt-3 text-sm text-ink-soft line-clamp-2">{evento.descricao_curta}</p>
         <p className="mt-4 text-xs font-mono uppercase tracking-wider text-ink-soft">
           {evento.galeria.length} fotos →
         </p>

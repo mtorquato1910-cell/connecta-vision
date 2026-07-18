@@ -19,11 +19,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
-import {
-  TIPO_LABELS,
-  type Formulario,
-  type FormularioTipo,
-} from "@/lib/admin-formularios-repo";
+import { TIPO_LABELS, type Formulario, type FormularioTipo } from "@/lib/admin-formularios-repo";
 import {
   listFormularios,
   updateFormulario,
@@ -37,12 +33,7 @@ export const Route = createFileRoute("/admin/formularios")({
   component: AdminFormulariosPage,
 });
 
-const TIPOS: FormularioTipo[] = [
-  "contato",
-  "orcamento_geral",
-  "orcamento_produto",
-  "orcamento_lp",
-];
+const TIPOS: FormularioTipo[] = ["contato", "orcamento_geral", "orcamento_produto", "orcamento_lp"];
 
 /** Uma etapa do funil (coluna do Kanban), lida da tabela `pipelines`. */
 type Pipeline = {
@@ -138,17 +129,13 @@ function AdminFormulariosPage() {
   const refreshLeads = useCallback(() => {
     return listFormularios()
       .then((rows) => setAll((rows as Record<string, any>[]).map(mapRow)))
-      .catch((e) =>
-        toast.error(e instanceof Error ? e.message : "Erro ao carregar leads."),
-      );
+      .catch((e) => toast.error(e instanceof Error ? e.message : "Erro ao carregar leads."));
   }, []);
 
   const refreshPipelines = useCallback(() => {
     return listPipelines()
       .then((rows) => setPipelines(rows as unknown as Pipeline[]))
-      .catch((e) =>
-        toast.error(e instanceof Error ? e.message : "Erro ao carregar etapas."),
-      );
+      .catch((e) => toast.error(e instanceof Error ? e.message : "Erro ao carregar etapas."));
   }, []);
 
   useEffect(() => {
@@ -165,10 +152,7 @@ function AdminFormulariosPage() {
     return c;
   }, [all, pipelines]);
 
-  const novosCount = useMemo(
-    () => all.filter((f) => f.status === "novo").length,
-    [all],
-  );
+  const novosCount = useMemo(() => all.filter((f) => f.status === "novo").length, [all]);
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
@@ -190,29 +174,24 @@ function AdminFormulariosPage() {
   const primeiraChave = pipelines[0]?.chave ?? "novo";
 
   /** Move um lead para uma etapa (otimista + servidor). */
-  const moveLead = useCallback(
-    async (lead: Formulario, destino: Pipeline) => {
-      if (lead.status === destino.chave) return;
-      const anterior = lead.status;
-      // Atualização otimista do estado local.
-      setAll((prev) =>
-        prev.map((f) =>
-          f.id === lead.id ? { ...f, status: destino.chave as Formulario["status"] } : f,
-        ),
-      );
-      try {
-        await updateFormulario({ data: { id: lead.id, status: destino.chave } });
-        toast.success(`Lead movido para "${destino.nome}".`);
-      } catch (e) {
-        // Reverte em caso de erro.
-        setAll((prev) =>
-          prev.map((f) => (f.id === lead.id ? { ...f, status: anterior } : f)),
-        );
-        toast.error(e instanceof Error ? e.message : "Erro ao mover lead.");
-      }
-    },
-    [],
-  );
+  const moveLead = useCallback(async (lead: Formulario, destino: Pipeline) => {
+    if (lead.status === destino.chave) return;
+    const anterior = lead.status;
+    // Atualização otimista do estado local.
+    setAll((prev) =>
+      prev.map((f) =>
+        f.id === lead.id ? { ...f, status: destino.chave as Formulario["status"] } : f,
+      ),
+    );
+    try {
+      await updateFormulario({ data: { id: lead.id, status: destino.chave } });
+      toast.success(`Lead movido para "${destino.nome}".`);
+    } catch (e) {
+      // Reverte em caso de erro.
+      setAll((prev) => prev.map((f) => (f.id === lead.id ? { ...f, status: anterior } : f)));
+      toast.error(e instanceof Error ? e.message : "Erro ao mover lead.");
+    }
+  }, []);
 
   /** Renomeia uma etapa inline. */
   const renamePipeline = useCallback(
@@ -350,12 +329,7 @@ function AdminFormulariosPage() {
               Todos
             </FilterPill>
             {TIPOS.map((t) => (
-              <FilterPill
-                key={t}
-                active={tipoFilter === t}
-                onClick={() => setTipoFilter(t)}
-                small
-              >
+              <FilterPill key={t} active={tipoFilter === t} onClick={() => setTipoFilter(t)} small>
                 {TIPO_LABELS[t]}
               </FilterPill>
             ))}
@@ -686,8 +660,23 @@ function LeadCard({
         </div>
         <div className="flex-1 min-w-0">
           <h4 className="font-serif font-normal text-sm text-ink truncate">{f.nome}</h4>
-          <span className="text-[9px] font-medium uppercase tracking-wider text-ink-mute font-mono">
-            {f.tipo === "orcamento_lp" ? "LP" : "Site"} · {TIPO_LABELS[f.tipo]}
+          <span
+            className={`inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider ${
+              f.tipo === "blog"
+                ? "bg-orange-100 text-orange-900"
+                : f.tipo === "orcamento_lp"
+                  ? "bg-violet-100 text-violet-900"
+                  : "bg-blue-100 text-blue-900"
+            }`}
+            title={f.origem_pagina}
+          >
+            {f.tipo === "blog"
+              ? "Blog"
+              : f.tipo === "orcamento_lp"
+                ? f.origem_pagina && f.origem_pagina !== "/"
+                  ? f.origem_pagina
+                  : "Landing Page"
+                : "Site"}
           </span>
         </div>
       </div>
@@ -938,11 +927,18 @@ function FormularioDrawer({
 
           <Section title="Contato">
             <Row icon={User} label="Nome" value={formulario.nome} />
-            <Row icon={Mail} label="E-mail" value={formulario.email} href={`mailto:${formulario.email}`} />
+            <Row
+              icon={Mail}
+              label="E-mail"
+              value={formulario.email}
+              href={`mailto:${formulario.email}`}
+            />
             {formulario.whatsapp && (
               <Row icon={Phone} label="WhatsApp" value={formulario.whatsapp} />
             )}
-            {formulario.telefone && <Row icon={Phone} label="Telefone" value={formulario.telefone} />}
+            {formulario.telefone && (
+              <Row icon={Phone} label="Telefone" value={formulario.telefone} />
+            )}
             {formulario.cidade && (
               <Row
                 icon={MapPin}
@@ -1090,14 +1086,9 @@ function Row({
     <div className="flex items-start gap-3 text-sm">
       {Icon && <Icon className="h-4 w-4 text-ink-mute mt-0.5 shrink-0" />}
       <div className="min-w-0">
-        <div className="text-[11px] uppercase tracking-wider text-ink-mute font-mono">
-          {label}
-        </div>
+        <div className="text-[11px] uppercase tracking-wider text-ink-mute font-mono">{label}</div>
         {href ? (
-          <a
-            href={href}
-            className="text-ink hover:text-conecta-blue hover:underline break-all"
-          >
+          <a href={href} className="text-ink hover:text-conecta-blue hover:underline break-all">
             {value}
           </a>
         ) : (

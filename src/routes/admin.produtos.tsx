@@ -16,7 +16,8 @@ import {
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
-import { ImagensEditor } from "@/components/admin/ImagensEditor";
+import { ImageInput } from "@/components/admin/ImageInput";
+import { GaleriaEditor } from "@/components/admin/GaleriaEditor";
 import {
   listAllProdutos,
   listAllCategorias,
@@ -730,15 +731,21 @@ function ProductForm({
           </Section>
 
           <Section title="Imagens">
-            <ImagensEditor
-              capa={imagemCapa}
-              galeria={imagemRest}
-              pasta="produtos"
-              onChange={({ capa, galeria }) => {
-                setImagemCapa(capa);
-                setImagemRest(galeria);
-              }}
-            />
+            <Field
+              label="Imagem de capa"
+              hint="Imagem principal do produto (aparece no card e no topo da página). Envie do computador ou cole uma URL."
+            >
+              <ImageInput value={imagemCapa} onChange={setImagemCapa} pasta="produtos" />
+            </Field>
+
+            <div className="mt-5">
+              <Field
+                label="Outras imagens do produto"
+                hint="Fotos adicionais que formam o carrossel/galeria na página do produto."
+              >
+                <GaleriaEditor imagens={imagemRest} onChange={setImagemRest} pasta="produtos" />
+              </Field>
+            </div>
 
             {/* Ajuste de como a capa aparece nos cards do site */}
             <div className="mt-5 pt-5 border-t border-line">

@@ -5,18 +5,14 @@ import formulariosJson from "@/data/formularios.json";
 
 const LS_KEY = "conecta_admin_formularios_v1";
 
-export type FormularioStatus =
-  | "novo"
-  | "em_contato"
-  | "qualificado"
-  | "convertido"
-  | "perdido";
+export type FormularioStatus = "novo" | "em_contato" | "qualificado" | "convertido" | "perdido";
 
 export type FormularioTipo =
   | "contato"
   | "orcamento_geral"
   | "orcamento_produto"
-  | "orcamento_lp";
+  | "orcamento_lp"
+  | "blog";
 
 export type Formulario = {
   id: string;
@@ -59,10 +55,7 @@ function writeLs(items: Formulario[]) {
 export function getAll(): Formulario[] {
   return (readLs() ?? (formulariosJson as Formulario[]))
     .slice()
-    .sort(
-      (a, b) =>
-        new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime(),
-    );
+    .sort((a, b) => new Date(b.criado_em).getTime() - new Date(a.criado_em).getTime());
 }
 
 export type NewFormularioInput = Partial<Omit<Formulario, "id" | "criado_em" | "status">> & {
@@ -148,6 +141,7 @@ export const TIPO_LABELS: Record<FormularioTipo, string> = {
   orcamento_geral: "Orçamento geral",
   orcamento_produto: "Orçamento de produto",
   orcamento_lp: "Orçamento (Landing Page)",
+  blog: "Blog (enviar artigo)",
 };
 
 export const STATUS_COLORS: Record<FormularioStatus, string> = {

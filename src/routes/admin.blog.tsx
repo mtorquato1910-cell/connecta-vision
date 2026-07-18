@@ -29,6 +29,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ImageInput } from "@/components/admin/ImageInput";
+import { GaleriaEditor } from "@/components/admin/GaleriaEditor";
+import logoConecta from "@/assets/conecta-logo.png";
 
 export const Route = createFileRoute("/admin/blog")({
   component: AdminBlogPage,
@@ -54,9 +56,8 @@ type BlogPost = {
   motivo_rejeicao?: string | null;
   destaque?: boolean;
   ordem?: number;
+  galeria?: string[] | null;
 };
-
-const FALLBACK_CAPA = "https://images.unsplash.com/photo-1551884170-09fb70a3a2ed?w=1600&q=85";
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -334,9 +335,11 @@ function PostRow({
   return (
     <div className="border rounded-lg bg-background p-4 flex gap-4 items-start">
       <img
-        src={post.capa_url || FALLBACK_CAPA}
+        src={post.capa_url || logoConecta}
         alt={post.titulo}
-        className="h-20 w-28 rounded-md object-cover bg-muted shrink-0"
+        className={`h-20 w-28 rounded-md bg-muted shrink-0 ${
+          post.capa_url ? "object-cover" : "object-contain p-2 opacity-70"
+        }`}
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
@@ -477,6 +480,7 @@ function PostModal({
   const [conteudo, setConteudo] = useState(post?.conteudo ?? "");
   const [tags, setTags] = useState((post?.tags ?? []).join(", "));
   const [capa, setCapa] = useState(post?.capa_url ?? "");
+  const [galeria, setGaleria] = useState<string[]>(post?.galeria ?? []);
   const [videoUrl, setVideoUrl] = useState(post?.video_url ?? "");
 
   const [saving, setSaving] = useState(false);
@@ -516,6 +520,7 @@ function PostModal({
           status: editando ? post!.status : "publicado",
           destaque: post?.destaque ?? false,
           ordem: post?.ordem ?? 0,
+          galeria,
         },
       });
       toast.success(editando ? "Artigo atualizado." : "Artigo publicado.");
@@ -580,9 +585,15 @@ function PostModal({
           </Field>
           <Field
             label="Imagem de capa"
-            hint="Imagem usada se não houver vídeo. Envie do computador ou cole uma URL."
+            hint="Imagem usada se não houver vídeo. Envie do computador ou cole uma URL. Sem capa, o site usa a logo da Conecta."
           >
             <ImageInput value={capa} onChange={setCapa} pasta="blog" />
+          </Field>
+          <Field
+            label="Outras imagens (carrossel)"
+            hint="Opcional. Adicione mais fotos para virar um carrossel na página do artigo."
+          >
+            <GaleriaEditor imagens={galeria} onChange={setGaleria} pasta="blog" />
           </Field>
           <Field
             label="URL do vídeo YouTube"

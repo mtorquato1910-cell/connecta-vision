@@ -1,8 +1,7 @@
 import { createFileRoute, Outlet, Link, useRouter, useRouterState } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Camera,
-  ChevronDown,
   ExternalLink,
   FileText,
   FolderTree,
@@ -89,13 +88,6 @@ function isItemActive(pathname: string, item: NavLink): boolean {
   return item.exact ? pathname === item.to : pathname.startsWith(item.to);
 }
 
-function activeGroupId(pathname: string): string {
-  for (const g of NAV_GROUPS) {
-    if (g.items.some((it) => isItemActive(pathname, it))) return g.id;
-  }
-  return NAV_GROUPS[0].id;
-}
-
 const COLLAPSE_KEY = "admin:sidebar-collapsed";
 
 function AdminLayout() {
@@ -118,27 +110,6 @@ function AdminLayout() {
       if (typeof window !== "undefined") {
         window.localStorage.setItem(COLLAPSE_KEY, next ? "1" : "0");
       }
-      return next;
-    });
-  }
-
-  // Accordion: grupos expandidos; o grupo da seção ativa já vem aberto
-  const currentGroup = useMemo(() => activeGroupId(pathname), [pathname]);
-  const [openGroups, setOpenGroups] = useState<Set<string>>(() => new Set([currentGroup]));
-  // Garante que o grupo ativo esteja expandido ao navegar
-  useEffect(() => {
-    setOpenGroups((prev) => {
-      if (prev.has(currentGroup)) return prev;
-      const next = new Set(prev);
-      next.add(currentGroup);
-      return next;
-    });
-  }, [currentGroup]);
-  function toggleGroup(id: string) {
-    setOpenGroups((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
       return next;
     });
   }
@@ -299,16 +270,9 @@ function AdminLayout() {
         </div>
 
         {/* Navegação */}
-        <nav className="flex-1 px-2 py-4 space-y-1 text-sm overflow-y-auto overflow-x-hidden">
+        <nav className="flex-1 min-h-0 px-2 py-3 space-y-0.5 text-sm overflow-x-hidden">
           {NAV_GROUPS.map((group) => (
-            <NavGroup
-              key={group.id}
-              group={group}
-              pathname={pathname}
-              collapsed={collapsed}
-              open={openGroups.has(group.id)}
-              onToggle={() => toggleGroup(group.id)}
-            />
+            <NavGroup key={group.id} group={group} pathname={pathname} collapsed={collapsed} />
           ))}
         </nav>
 
@@ -436,47 +400,33 @@ function AdminLayout() {
   );
 }
 
-// ─── Grupo de navegação (accordion) ─────────────────────────────────────────
+// ─── Grupo de navegação (sempre aberto) ─────────────────────────────────────
 
 function NavGroup({
   group,
   pathname,
   collapsed,
-  open,
-  onToggle,
 }: {
   group: NavGroupDef;
   pathname: string;
   collapsed: boolean;
-  open: boolean;
-  onToggle: () => void;
 }) {
   const groupActive = group.items.some((it) => isItemActive(pathname, it));
 
   return (
     <div className="pt-2 first:pt-0">
-      {/* Cabeçalho do grupo: botão accordion no full; oculto no rail/colapsado */}
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
+      {/* Título do grupo (sempre visível no full; sem accordion). Oculto no rail/colapsado. */}
+      <div
         className={[
-          "group/header w-full items-center justify-between rounded-md px-3 py-1.5",
-          "font-mono text-[10px] uppercase tracking-[0.2em]",
+          "px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.2em]",
           groupActive ? "text-white/70" : "text-white/40",
-          "hover:text-white/80 transition-colors motion-reduce:transition-none",
-          "flex", // base (drawer full)
+          "block", // base (drawer full)
           "md:hidden", // rail
-          collapsed ? "lg:hidden" : "lg:flex",
+          collapsed ? "lg:hidden" : "lg:block",
         ].join(" ")}
       >
         <span className="truncate">{group.title}</span>
-        <ChevronDown
-          className={`h-3.5 w-3.5 shrink-0 transition-transform duration-200 motion-reduce:transition-none ${
-            open ? "rotate-0" : "-rotate-90"
-          }`}
-        />
-      </button>
+      </div>
 
       {/* Separador discreto no rail/colapsado (substitui o título) */}
       <div
@@ -489,19 +439,8 @@ function NavGroup({
         aria-hidden
       />
 
-      {/* Itens: no full respeitam o accordion; no rail/colapsado sempre visíveis (só ícones).
-          Visibilidade por breakpoint:
-          - base (<md, drawer full): segue accordion (open)
-          - md (rail): sempre visível
-          - lg colapsado: sempre visível; lg full: segue accordion (open) */}
-      <div
-        className={[
-          "space-y-0.5",
-          open ? "block" : "hidden",
-          "md:block",
-          collapsed ? "lg:block" : open ? "lg:block" : "lg:hidden",
-        ].join(" ")}
-      >
+      {/* Itens sempre visíveis (grupos não recolhem). */}
+      <div className="space-y-0.5">
         {group.items.map((item) => (
           <NavItem
             key={item.to}

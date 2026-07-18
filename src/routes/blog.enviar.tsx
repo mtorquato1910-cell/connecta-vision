@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { submitBlogPost } from "@/lib/admin.functions";
+import { ImageInput } from "@/components/admin/ImageInput";
+import { GaleriaEditor } from "@/components/admin/GaleriaEditor";
 
 export const Route = createFileRoute("/blog/enviar")({
   head: () => ({
@@ -26,11 +28,11 @@ export const Route = createFileRoute("/blog/enviar")({
 const schema = z.object({
   autor_nome: z.string().min(3, "Informe seu nome completo"),
   autor_email: z.string().email("E-mail inválido"),
+  autor_telefone: z.string().min(8, "Informe um telefone/WhatsApp válido"),
   titulo: z.string().min(10, "Título precisa ter pelo menos 10 caracteres"),
   resumo: z.string().min(30, "Resumo de no mínimo 30 caracteres"),
   conteudo: z.string().min(200, "Texto de no mínimo 200 caracteres"),
   tags: z.string().optional(),
-  capa_url: z.string().url("URL inválida").optional().or(z.literal("")),
   video_url: z.string().url("URL inválida").optional().or(z.literal("")),
   honeypot: z.string().max(0, "spam"),
   consent: z.literal(true, { message: "Necessário concordar" }),
@@ -41,6 +43,8 @@ type FormData = z.infer<typeof schema>;
 function SubmitPage() {
   const [sent, setSent] = useState(false);
   const [openedAt] = useState(() => Date.now());
+  const [capa, setCapa] = useState("");
+  const [galeria, setGaleria] = useState<string[]>([]);
 
   const {
     register,
@@ -66,15 +70,19 @@ function SubmitPage() {
           titulo: data.titulo,
           resumo: data.resumo,
           conteudo: data.conteudo,
-          capa_url: data.capa_url || null,
+          capa_url: capa || null,
           video_url: data.video_url || null,
           autor_nome: data.autor_nome,
           autor_email: data.autor_email,
+          autor_telefone: data.autor_telefone,
           tags,
+          galeria,
         },
       });
       setSent(true);
       reset();
+      setCapa("");
+      setGaleria([]);
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Erro ao enviar artigo.");
     }
@@ -92,8 +100,8 @@ function SubmitPage() {
               Recebemos seu artigo.
             </h1>
             <p className="mt-4 text-lg text-ink-soft">
-              Vamos revisar editorialmente e publicar em breve. Você receberá um
-              email quando estiver no ar. Obrigado por contribuir!
+              Vamos revisar editorialmente e publicar em breve. Você receberá um email quando
+              estiver no ar. Obrigado por contribuir!
             </p>
             <div className="mt-8 flex justify-center gap-3">
               <Link to="/blog" className="btn-primary">
@@ -118,16 +126,12 @@ function SubmitPage() {
             Compartilhe sua experiência técnica.
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-ink-soft">
-            Toda submissão passa pelo nosso processo editorial. Aprovamos
-            artigos com valor técnico para a comunidade veterinária.
+            Toda submissão passa pelo nosso processo editorial. Aprovamos artigos com valor técnico
+            para a comunidade veterinária.
           </p>
         </Reveal>
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="mt-10 max-w-3xl space-y-6"
-          noValidate
-        >
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-10 max-w-3xl space-y-6" noValidate>
           {/* honeypot invisível */}
           <input
             {...register("honeypot")}
@@ -155,6 +159,19 @@ function SubmitPage() {
               />
             </Field>
           </Grid>
+
+          <Field
+            label="Seu telefone / WhatsApp"
+            error={errors.autor_telefone?.message}
+            hint="Para a nossa equipe entrar em contato sobre o seu artigo."
+          >
+            <input
+              {...register("autor_telefone")}
+              type="tel"
+              className="input"
+              placeholder="(11) 99999-9999"
+            />
+          </Field>
 
           <Field label="Título do artigo" error={errors.titulo?.message}>
             <input
@@ -186,26 +203,24 @@ function SubmitPage() {
             />
           </Field>
 
-          <Grid>
-            <Field label="Tags (separe por vírgula)" hint="Opcional">
-              <input
-                {...register("tags")}
-                className="input"
-                placeholder="anestesia, felinos, monitorização"
-              />
-            </Field>
-            <Field
-              label="URL da capa (imagem)"
-              hint="Opcional. Se vazio usaremos uma padrão."
-              error={errors.capa_url?.message}
-            >
-              <input
-                {...register("capa_url")}
-                className="input"
-                placeholder="https://..."
-              />
-            </Field>
-          </Grid>
+          <Field label="Tags (separe por vírgula)" hint="Opcional">
+            <input
+              {...register("tags")}
+              className="input"
+              placeholder="anestesia, felinos, monitorização"
+            />
+          </Field>
+
+          <Field
+            label="Imagem de capa"
+            hint="Opcional. Envie do computador ou cole uma URL. Sem capa, usamos a logo da Conecta."
+          >
+            <ImageInput value={capa} onChange={setCapa} pasta="blog" publico />
+          </Field>
+
+          <Field label="Outras imagens (carrossel)" hint="Opcional. Vire um carrossel no artigo.">
+            <GaleriaEditor imagens={galeria} onChange={setGaleria} pasta="blog" publico />
+          </Field>
 
           <Field
             label="URL do vídeo YouTube"
@@ -226,23 +241,17 @@ function SubmitPage() {
               className="mt-1 h-4 w-4 accent-conecta-orange"
             />
             <span>
-              Concordo que meu artigo possa ser publicado no blog da Conecta após
-              revisão editorial. Aceito a{" "}
+              Concordo que meu artigo possa ser publicado no blog da Conecta após revisão editorial.
+              Aceito a{" "}
               <a href="#" className="underline">
                 política de privacidade
               </a>
               .
             </span>
           </label>
-          {errors.consent && (
-            <p className="text-sm text-red-600">{errors.consent.message}</p>
-          )}
+          {errors.consent && <p className="text-sm text-red-600">{errors.consent.message}</p>}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="btn-primary text-base"
-          >
+          <button type="submit" disabled={isSubmitting} className="btn-primary text-base">
             <Send className="h-4 w-4" />
             {isSubmitting ? "Enviando..." : "Enviar para aprovação"}
           </button>

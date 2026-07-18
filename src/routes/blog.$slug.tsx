@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, MessageCircle } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight, MessageCircle } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
@@ -9,6 +10,7 @@ import { articleSchema } from "@/lib/schema-org";
 import { getPostPublic } from "@/lib/admin.functions";
 import { isYoutubeUrl } from "@/lib/youtube";
 import { waLink } from "@/lib/site-data";
+import logoConecta from "@/assets/conecta-logo.png";
 
 type BlogPost = {
   id: string;
@@ -18,6 +20,7 @@ type BlogPost = {
   conteudo: string | null;
   capa_url: string | null;
   video_url: string | null;
+  galeria: string[] | null;
   autor_nome: string;
   autor_email: string;
   tags: string[] | null;
@@ -28,8 +31,58 @@ type BlogPost = {
   motivo_rejeicao?: string | null;
 };
 
-const FALLBACK_CAPA =
-  "https://images.unsplash.com/photo-1666214280391-8ff5bd3c0bf0?w=1600&q=85";
+// Carrossel de imagens do post (capa + galeria). Sem imagem = logo da Conecta.
+function BlogCarousel({ imagens, titulo }: { imagens: string[]; titulo: string }) {
+  const [idx, setIdx] = useState(0);
+  if (imagens.length === 0) {
+    return (
+      <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line flex items-center justify-center">
+        <img
+          src={logoConecta}
+          alt="Conecta"
+          className="max-h-[40%] max-w-[50%] object-contain opacity-70"
+        />
+      </div>
+    );
+  }
+  const atual = imagens[Math.min(idx, imagens.length - 1)];
+  return (
+    <div className="relative aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line flex items-center justify-center">
+      <img src={atual} alt={titulo} className="h-full w-full object-contain" />
+      {imagens.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={() => setIdx((i) => (i - 1 + imagens.length) % imagens.length)}
+            aria-label="Imagem anterior"
+            className="absolute left-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-ink/50 text-white hover:bg-ink/70 flex items-center justify-center"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setIdx((i) => (i + 1) % imagens.length)}
+            aria-label="Próxima imagem"
+            className="absolute right-3 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full bg-ink/50 text-white hover:bg-ink/70 flex items-center justify-center"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </button>
+          <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
+            {imagens.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                onClick={() => setIdx(i)}
+                aria-label={`Ir para imagem ${i + 1}`}
+                className={`h-2 rounded-full transition-all ${i === idx ? "w-6 bg-white" : "w-2 bg-white/60"}`}
+              />
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 function formatDate(iso: string | null): string {
   if (!iso) return "";
@@ -77,7 +130,10 @@ function PostPage() {
   }
   if (!post) return <NotFoundView />;
 
-  const capa = post.capa_url || FALLBACK_CAPA;
+  const imagens = [post.capa_url, ...(post.galeria ?? [])].filter(
+    (u): u is string => !!u && u.trim().length > 0,
+  );
+  const capaSchema = imagens[0] ?? `https://www.conecta2lab.com.br/icon-512.png`;
   const conteudo = post.conteudo ?? "";
   const resumo = post.resumo ?? "";
   const minutos = Math.max(1, Math.round(conteudo.split(/\s+/).length / 220));
@@ -88,7 +144,7 @@ function PostPage() {
         schema={articleSchema({
           titulo: post.titulo,
           resumo: resumo,
-          capa: capa,
+          capa: capaSchema,
           slug: post.slug,
           autor: post.autor_nome,
           publicado_em: post.publicado_em ?? post.created_at,
@@ -123,27 +179,15 @@ function PostPage() {
 
         <div className="container-edge mt-8 md:mt-12">
           {isYoutubeUrl(post.video_url) ? (
-            <YouTubeEmbed
-              url={post.video_url!}
-              title={post.titulo}
-              className="max-h-[560px]"
-            />
+            <YouTubeEmbed url={post.video_url!} title={post.titulo} className="max-h-[560px]" />
           ) : (
-            <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line">
-              <img
-                src={capa}
-                alt={post.titulo}
-                className="h-full w-full object-cover"
-              />
-            </div>
+            <BlogCarousel imagens={imagens} titulo={post.titulo} />
           )}
         </div>
 
         <div className="container-edge py-12 md:py-16">
           <div className="max-w-3xl mx-auto prose-conecta">
-            <p className="text-xl text-ink-soft leading-relaxed font-serif italic">
-              {resumo}
-            </p>
+            <p className="text-xl text-ink-soft leading-relaxed font-serif italic">{resumo}</p>
             <div className="hairline my-8" />
             {conteudo.split("\n\n").map((p, i) => (
               <PostBlock key={i} content={p} />
@@ -158,15 +202,17 @@ function PostPage() {
               Quer conversar sobre um equipamento mencionado?
             </h2>
             <p className="mt-4 text-ink-soft">
-              Nossa equipe técnica responde dúvidas e monta cotações personalizadas
-              em até 1 dia útil.
+              Nossa equipe técnica responde dúvidas e monta cotações personalizadas em até 1 dia
+              útil.
             </p>
             <div className="mt-6 flex flex-col sm:flex-row gap-3">
               <Link to="/contato" className="btn-primary">
                 Solicitar orçamento →
               </Link>
               <a
-                href={waLink(`Olá! Acabei de ler o artigo "${post.titulo}" no blog da Conecta. Quero conversar.`)}
+                href={waLink(
+                  `Olá! Acabei de ler o artigo "${post.titulo}" no blog da Conecta. Quero conversar.`,
+                )}
                 target="_blank"
                 rel="noreferrer"
                 className="btn-ghost"
@@ -186,11 +232,7 @@ function PostBlock({ content }: { content: string }) {
   if (!trimmed) return null;
 
   if (trimmed.startsWith("## ")) {
-    return (
-      <h2 className="mt-10 mb-4 font-serif text-3xl text-ink">
-        {trimmed.slice(3)}
-      </h2>
-    );
+    return <h2 className="mt-10 mb-4 font-serif text-3xl text-ink">{trimmed.slice(3)}</h2>;
   }
   if (trimmed.startsWith("- ")) {
     const items = trimmed.split("\n").map((l) => l.replace(/^-\s*/, ""));

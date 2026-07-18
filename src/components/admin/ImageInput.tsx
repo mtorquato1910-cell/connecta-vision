@@ -8,7 +8,7 @@ import {
   processImageFile,
   type ImagePasta,
 } from "@/lib/image-upload";
-import { uploadImagem } from "@/lib/admin.functions";
+import { uploadImagem, uploadImagemPublica } from "@/lib/admin.functions";
 
 export interface ImageInputProps {
   /** Valor atual: URL pública (http://...) ou data URL (base64). */
@@ -23,6 +23,8 @@ export interface ImageInputProps {
   urlPlaceholder?: string;
   /** Pasta no Storage onde a imagem será gravada (default "conteudo"). */
   pasta?: ImagePasta;
+  /** Quando true, usa o upload público (sem auth) — para formulários do site. */
+  publico?: boolean;
 }
 
 /**
@@ -39,6 +41,7 @@ export function ImageInput({
   maxDimension,
   urlPlaceholder = "https://... (cole uma URL ou envie do computador)",
   pasta = "conteudo",
+  publico = false,
 }: ImageInputProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
@@ -56,7 +59,9 @@ export function ImageInput({
     setBusy(true);
     try {
       const dataUrl = await processImageFile(file, { maxDimension });
-      const { url } = await uploadImagem({ data: { dataUrl, pasta } });
+      const { url } = publico
+        ? await uploadImagemPublica({ data: { dataUrl } })
+        : await uploadImagem({ data: { dataUrl, pasta } });
       onChange(url);
       toast.success("Imagem enviada.");
     } catch (e) {

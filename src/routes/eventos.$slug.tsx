@@ -7,6 +7,7 @@ import { Reveal } from "@/components/site/Reveal";
 import { SchemaOrg } from "@/components/shared/SchemaOrg";
 import { eventSchema } from "@/lib/schema-org";
 import { getEventoPublic } from "@/lib/admin.functions";
+import logoConecta from "@/assets/conecta-logo.png";
 
 type EventoFoto = { url: string; ordem: number; alt: string; caption?: string };
 
@@ -130,11 +131,15 @@ function EventoPage() {
         </header>
 
         <div className="container-edge mt-8 md:mt-12">
-          <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line">
+          <div className="aspect-[16/9] max-h-[520px] rounded-3xl overflow-hidden bg-bone border border-line flex items-center justify-center">
             <img
-              src={evento.capa_url ?? ""}
+              src={evento.capa_url || logoConecta}
               alt={evento.nome}
-              className="h-full w-full object-cover"
+              className={
+                evento.capa_url
+                  ? "h-full w-full object-contain"
+                  : "max-h-[45%] max-w-[55%] object-contain opacity-70"
+              }
             />
           </div>
         </div>
@@ -147,9 +152,7 @@ function EventoPage() {
 
         <section className="container-edge pb-24">
           <span className="eyebrow">Galeria</span>
-          <h2 className="mt-3 font-serif text-3xl md:text-4xl text-ink">
-            Bastidores do evento
-          </h2>
+          <h2 className="mt-3 font-serif text-3xl md:text-4xl text-ink">Bastidores do evento</h2>
           <div className="mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4">
             {evento.galeria.map((foto, i) => (
               <button

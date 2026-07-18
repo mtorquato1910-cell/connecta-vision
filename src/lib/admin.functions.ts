@@ -422,10 +422,24 @@ export const submitFormulario = createServerFn({ method: "POST" })
     const { website, ...rest } = data;
     // Honeypot preenchido → bot. Finge sucesso e descarta (não grava no banco).
     if (website && website.trim() !== "") return { ok: true };
-    const { error } = await supabaseAdmin.from("formularios").insert(rest);
+    // O lead cai SEMPRE na primeira etapa do funil (menor ordem), de forma
+    // dinâmica — se o admin renomear/reordenar as etapas, continua caindo na 1ª.
+    const status = await primeiraEtapaChave();
+    const { error } = await supabaseAdmin.from("formularios").insert({ ...rest, status });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+// Chave da primeira etapa do funil (menor ordem). Fallback "novo".
+async function primeiraEtapaChave(): Promise<string> {
+  const sb = supabaseAdmin as unknown as { from: (t: string) => any };
+  const { data } = await sb
+    .from("pipelines")
+    .select("chave")
+    .order("ordem", { ascending: true })
+    .limit(1);
+  return (data?.[0]?.chave as string) ?? "novo";
+}
 
 export const listFormularios = createServerFn({ method: "GET" })
   .middleware([requireAdmin])

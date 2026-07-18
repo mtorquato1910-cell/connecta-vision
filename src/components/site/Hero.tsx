@@ -4,9 +4,12 @@ import { waLink } from "@/lib/site-data";
 import { Reveal } from "./Reveal";
 import { Counter } from "./Counter";
 import { useLocale } from "@/hooks/useLocale";
+import { useSiteConfig } from "@/hooks/useSiteConfig";
 
 export function Hero() {
   const { t } = useLocale();
+  // Eyebrow, título e subtítulo editáveis no admin (aba "Textos do site" → Home).
+  const { texto } = useSiteConfig();
   return (
     <section className="relative overflow-hidden">
       {/* Glow/gradiente: ESTA é a única seção-herói com brilho (constraint). */}
@@ -17,18 +20,24 @@ export function Hero() {
       <div className="container-edge pt-10 sm:pt-16 md:pt-24 pb-16 md:pb-28 grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
         <div className="lg:col-span-7">
           <Reveal>
-            <span className="eyebrow">Distribuidor oficial Shinova no Brasil</span>
+            <span className="eyebrow">
+              {texto("home.eyebrow", "Distribuidor oficial Shinova no Brasil")}
+            </span>
           </Reveal>
           <Reveal delay={0.05}>
             <h1 className="mt-5 sm:mt-6 font-serif h1-hero text-ink">
-              Equipe sua clínica com tecnologia veterinária <em className="italic text-conecta-blue">de verdade</em>, instalada e calibrada por quem entende.
+              {texto(
+                "home.hero.titulo",
+                "Equipe sua clínica com tecnologia veterinária de verdade, instalada e calibrada por quem entende.",
+              )}
             </h1>
           </Reveal>
           <Reveal delay={0.1}>
             <p className="mt-5 sm:mt-6 text-base sm:text-lg text-ink-soft max-w-xl leading-relaxed">
-              Somos o distribuidor oficial <strong className="text-ink">Shinova</strong> no Brasil, com a linha completa em um só fornecedor:
-              anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária.
-              Mais de 230 equipamentos importados de alta tecnologia, instalados, calibrados e com treinamento da sua equipe incluído.
+              {texto(
+                "home.hero.subtitulo",
+                "Somos o distribuidor oficial Shinova no Brasil, com a linha completa em um só fornecedor: anestesia, monitoramento, imagem, laboratório, odontologia, cirurgia, oftalmologia e estética veterinária. Mais de 230 equipamentos importados de alta tecnologia, instalados, calibrados e com treinamento da sua equipe incluído.",
+              )}
             </p>
           </Reveal>
           <Reveal delay={0.15}>
@@ -36,7 +45,12 @@ export function Hero() {
               <Link to="/produtos" className="btn-primary min-h-[44px]">
                 {t("home.cta_primary")} <ArrowRight className="h-4 w-4" />
               </Link>
-              <a href={waLink()} target="_blank" rel="noreferrer" className="btn-ghost min-h-[44px]">
+              <a
+                href={waLink()}
+                target="_blank"
+                rel="noreferrer"
+                className="btn-ghost min-h-[44px]"
+              >
                 {t("home.cta_secondary")} <ArrowRight className="h-4 w-4" />
               </a>
             </div>
@@ -49,11 +63,17 @@ export function Hero() {
                   "https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=120&q=80",
                   "https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=120&q=80",
                 ].map((src) => (
-                  <img key={src} src={src} alt="" className="h-10 w-10 rounded-full border-2 border-paper object-cover" />
+                  <img
+                    key={src}
+                    src={src}
+                    alt=""
+                    className="h-10 w-10 rounded-full border-2 border-paper object-cover"
+                  />
                 ))}
               </div>
               <p className="text-sm text-ink-soft max-w-xs">
-                <strong className="text-ink">Mais de 300 clientes ativos</strong> já operam com equipamentos distribuídos pela Conecta em todo o Brasil.
+                <strong className="text-ink">Mais de 300 clientes ativos</strong> já operam com
+                equipamentos distribuídos pela Conecta em todo o Brasil.
               </p>
             </div>
           </Reveal>
@@ -82,7 +102,9 @@ export function Hero() {
                     <div className="font-serif text-xl text-conecta-blue">
                       {s.text ? s.text : <Counter value={s.num} suffix={s.suffix} />}
                     </div>
-                    <div className="text-[10px] tracking-wide uppercase text-ink-soft mt-0.5">{s.l}</div>
+                    <div className="text-[10px] tracking-wide uppercase text-ink-soft mt-0.5">
+                      {s.l}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -92,7 +114,10 @@ export function Hero() {
       </div>
 
       {/* glow sutil herói (único) */}
-      <div aria-hidden className="pointer-events-none absolute -right-20 -bottom-20 h-[420px] w-[420px] rounded-full bg-conecta-orange/5 blur-3xl hidden md:block" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-20 -bottom-20 h-[420px] w-[420px] rounded-full bg-conecta-orange/5 blur-3xl hidden md:block"
+      />
     </section>
   );
 }

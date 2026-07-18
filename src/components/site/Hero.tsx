@@ -43,7 +43,8 @@ export function Hero() {
           <Reveal delay={0.15}>
             <div className="mt-7 sm:mt-8 flex flex-wrap gap-3">
               <Link to="/produtos" className="btn-primary min-h-[44px]">
-                {t("home.cta_primary")} <ArrowRight className="h-4 w-4" />
+                {texto("home.hero.cta_primario", t("home.cta_primary"))}{" "}
+                <ArrowRight className="h-4 w-4" />
               </Link>
               <a
                 href={waLink()}
@@ -51,7 +52,8 @@ export function Hero() {
                 rel="noreferrer"
                 className="btn-ghost min-h-[44px]"
               >
-                {t("home.cta_secondary")} <ArrowRight className="h-4 w-4" />
+                {texto("home.hero.cta_secundario", t("home.cta_secondary"))}{" "}
+                <ArrowRight className="h-4 w-4" />
               </a>
             </div>
           </Reveal>

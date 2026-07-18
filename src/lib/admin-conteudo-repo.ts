@@ -137,24 +137,6 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     pagina: "sobre",
     multiline: true,
   },
-  {
-    chave: "sobre.missao",
-    label: "Missão",
-    valor:
-      "Equipar cada clínica e hospital veterinário do Brasil com tecnologia importada de alta performance, instalada, calibrada e com a equipe treinada, sem intermediário inflando preço.",
-    tipo: "texto",
-    pagina: "sobre",
-    multiline: true,
-  },
-  {
-    chave: "sobre.visao",
-    label: "Visão",
-    valor:
-      "Ser a distribuidora veterinária de referência no Brasil, reconhecida por entregar equipamento certo, no prazo combinado, com suporte técnico que responde de verdade.",
-    tipo: "texto",
-    pagina: "sobre",
-    multiline: true,
-  },
 
   // SOLUÇÕES
   {
@@ -207,13 +189,6 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     pagina: "contato",
     multiline: true,
   },
-  {
-    chave: "contato.horario",
-    label: "Horário de atendimento",
-    valor: "Segunda a sexta · 8h às 18h",
-    tipo: "texto",
-    pagina: "contato",
-  },
 
   // GLOBAL
   {
@@ -224,16 +199,6 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     tipo: "texto",
     pagina: "global",
     multiline: true,
-  },
-  {
-    chave: "global.whatsapp_msg",
-    label: "Mensagem padrão do WhatsApp",
-    valor:
-      "Olá! Vim pelo site da Conecta e gostaria de saber mais sobre os equipamentos veterinários.",
-    tipo: "texto",
-    pagina: "global",
-    multiline: true,
-    descricao: "Aparece pré-preenchida ao clicar no botão WhatsApp.",
   },
 
   // FOOTER
@@ -251,13 +216,6 @@ export const DEFAULT_CONTEUDO: ConteudoItem[] = [
     label: "Copyright",
     valor: "© 2026 Conecta Equipamentos Veterinários. Todos os direitos reservados.",
     tipo: "texto",
-    pagina: "footer",
-  },
-  {
-    chave: "footer.lgpd_url",
-    label: "URL Política de Privacidade",
-    valor: "/politica-privacidade",
-    tipo: "url",
     pagina: "footer",
   },
 ];

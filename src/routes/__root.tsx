@@ -9,6 +9,13 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import { getConfigPublic } from "@/lib/admin.functions";
+import { rowsToConfig } from "@/lib/site-config-adapter";
+
+const SITE_URL = "https://www.conecta2lab.com.br";
+const DEFAULT_TITULO = "Conecta | Equipamentos Veterinários Premium, Distribuidor Shinova";
+const DEFAULT_DESC =
+  "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil.";
 
 function NotFoundComponent() {
   return (
@@ -68,41 +75,65 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  head: () => ({
-    meta: [
-      { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Conecta | Equipamentos Veterinários Premium, Distribuidor Shinova" },
-      { name: "description", content: "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil." },
-      { name: "twitter:card", content: "summary_large_image" },
-      { property: "og:title", content: "Conecta, Equipamentos Veterinários Premium | Distribuidor Shinova" },
-      { name: "twitter:title", content: "Conecta, Equipamentos Veterinários Premium | Distribuidor Shinova" },
-      { property: "og:description", content: "230+ equipamentos veterinários Shinova instalados, calibrados e com treinamento incluso. 300 clientes ativos, entrega para todo o Brasil." },
-      { name: "twitter:description", content: "230+ equipamentos veterinários Shinova instalados, calibrados e com treinamento incluso. 300 clientes ativos, entrega para todo o Brasil." },
-      { property: "og:image", content: "https://www.conecta2lab.com.br/icon-512.png" },
-      { name: "twitter:image", content: "https://www.conecta2lab.com.br/icon-512.png" },
-      { property: "og:type", content: "website" },
-      { property: "og:site_name", content: "Conecta Equipamentos Veterinários" },
-      { property: "og:locale", content: "pt_BR" },
-      { name: "theme-color", content: "#1A1F8F" },
-    ],
-    links: [
-      { rel: "stylesheet", href: appCss },
-      // Favicons: 'c' da logo com erlenmeyer
-      { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
-      { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
-      { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
-      { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96.png" },
-      { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
-      { rel: "manifest", href: "/site.webmanifest" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
-      },
-    ],
-  }),
+  // Carrega a config de SEO editável no admin (Configurações → SEO) no SSR, para
+  // as meta tags default do site refletirem o que o admin definiu.
+  loader: async () => {
+    try {
+      const cfg = rowsToConfig(await getConfigPublic());
+      return { seo: cfg.seo };
+    } catch {
+      return { seo: null };
+    }
+  },
+  head: ({ loaderData }) => {
+    const seo = loaderData?.seo ?? null;
+    const titulo = seo?.meta_titulo_global || DEFAULT_TITULO;
+    const descricao = seo?.meta_descricao_global || DEFAULT_DESC;
+    const ogImg = seo?.og_imagem_url
+      ? seo.og_imagem_url.startsWith("http")
+        ? seo.og_imagem_url
+        : `${SITE_URL}${seo.og_imagem_url}`
+      : `${SITE_URL}/icon-512.png`;
+    const keywords = seo?.palavras_chave || "";
+    const gsc = seo?.google_search_console_token || "";
+    return {
+      meta: [
+        { charSet: "utf-8" },
+        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { title: titulo },
+        { name: "description", content: descricao },
+        ...(keywords ? [{ name: "keywords", content: keywords }] : []),
+        ...(gsc ? [{ name: "google-site-verification", content: gsc }] : []),
+        { name: "twitter:card", content: "summary_large_image" },
+        { property: "og:title", content: titulo },
+        { name: "twitter:title", content: titulo },
+        { property: "og:description", content: descricao },
+        { name: "twitter:description", content: descricao },
+        { property: "og:image", content: ogImg },
+        { name: "twitter:image", content: ogImg },
+        { property: "og:type", content: "website" },
+        { property: "og:site_name", content: "Conecta Equipamentos Veterinários" },
+        { property: "og:locale", content: "pt_BR" },
+        { name: "theme-color", content: "#1A1F8F" },
+      ],
+      links: [
+        { rel: "stylesheet", href: appCss },
+        // Favicons: 'c' da logo com erlenmeyer
+        { rel: "icon", type: "image/x-icon", href: "/favicon.ico" },
+        { rel: "icon", type: "image/png", sizes: "16x16", href: "/favicon-16.png" },
+        { rel: "icon", type: "image/png", sizes: "32x32", href: "/favicon-32.png" },
+        { rel: "icon", type: "image/png", sizes: "96x96", href: "/favicon-96.png" },
+        { rel: "apple-touch-icon", sizes: "180x180", href: "/apple-touch-icon.png" },
+        { rel: "manifest", href: "/site.webmanifest" },
+        { rel: "preconnect", href: "https://fonts.googleapis.com" },
+        { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+        {
+          rel: "stylesheet",
+          href: "https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap",
+        },
+      ],
+    };
+  },
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,

@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  ArrowDown,
+  ArrowUp,
   Calendar,
   Camera,
   ExternalLink,
@@ -11,6 +13,7 @@ import {
   MapPin,
   Pencil,
   Plus,
+  Star,
   Trash2,
   X,
 } from "lucide-react";
@@ -23,6 +26,9 @@ import {
   listAllEventos,
   upsertEvento,
   deleteEvento,
+  setEventoDestaque,
+  setEventoVisivel,
+  reorderEventos,
 } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin/eventos")({
@@ -42,6 +48,7 @@ type Evento = {
   capa_url: string | null;
   galeria: EventoFoto[];
   publicado: boolean;
+  destaque: boolean;
   ordem: number;
 };
 
@@ -56,6 +63,7 @@ type EventoInput = {
   capa_url: string;
   galeria: EventoFoto[];
   publicado: boolean;
+  destaque?: boolean;
   ordem?: number;
 };
 
@@ -86,8 +94,7 @@ function AdminEventosPage() {
     },
   });
 
-  const invalidate = () =>
-    queryClient.invalidateQueries({ queryKey: ["admin-eventos"] });
+  const invalidate = () => queryClient.invalidateQueries({ queryKey: ["admin-eventos"] });
 
   const saveMutation = useMutation({
     mutationFn: (payload: EventoInput) => upsertEvento({ data: payload }),
@@ -97,8 +104,7 @@ function AdminEventosPage() {
       setCreating(false);
       invalidate();
     },
-    onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Erro ao salvar evento."),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Erro ao salvar evento."),
   });
 
   const deleteMutation = useMutation({
@@ -108,24 +114,42 @@ function AdminEventosPage() {
       setConfirmDelete(null);
       invalidate();
     },
-    onError: (e) =>
-      toast.error(e instanceof Error ? e.message : "Erro ao excluir."),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Erro ao excluir."),
   });
 
-  const togglePublicado = (e: Evento) => {
-    saveMutation.mutate({
-      id: e.id,
-      slug: e.slug,
-      nome: e.nome,
-      data_evento: e.data_evento ?? "",
-      local: e.local ?? "",
-      descricao_curta: e.descricao_curta ?? "",
-      descricao_longa: e.descricao_longa ?? "",
-      capa_url: e.capa_url ?? "",
-      galeria: e.galeria,
-      publicado: !e.publicado,
-      ordem: e.ordem,
-    });
+  // Ações leves (não reenviam o evento inteiro): ocultar, destacar, reordenar.
+  const togglePublicado = async (e: Evento) => {
+    try {
+      await setEventoVisivel({ data: { id: e.id, visivel: !e.publicado } });
+      toast.success(e.publicado ? "Evento ocultado do site." : "Evento publicado.");
+      invalidate();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao alterar visibilidade.");
+    }
+  };
+
+  const toggleDestaque = async (e: Evento) => {
+    try {
+      await setEventoDestaque({ data: { id: e.id, destaque: !e.destaque } });
+      toast.success(!e.destaque ? "Fixado no topo." : "Removido do topo.");
+      invalidate();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao destacar.");
+    }
+  };
+
+  const moveEvento = async (e: Evento, dir: -1 | 1) => {
+    const idx = eventos.findIndex((x) => x.id === e.id);
+    const target = idx + dir;
+    if (idx < 0 || target < 0 || target >= eventos.length) return;
+    const reordered = [...eventos];
+    [reordered[idx], reordered[target]] = [reordered[target], reordered[idx]];
+    try {
+      await reorderEventos({ data: { ids: reordered.map((x) => x.id) } });
+      invalidate();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erro ao reordenar.");
+    }
   };
 
   return (
@@ -137,7 +161,10 @@ function AdminEventosPage() {
         icon={Camera}
         tone="rose"
         actions={
-          <Button onClick={() => setCreating(true)} className="gap-2 bg-rose-600 hover:bg-rose-700 text-white">
+          <Button
+            onClick={() => setCreating(true)}
+            className="gap-2 bg-rose-600 hover:bg-rose-700 text-white"
+          >
             <Plus className="h-4 w-4" />
             Novo evento
           </Button>
@@ -146,9 +173,7 @@ function AdminEventosPage() {
 
       <div className="px-4 sm:px-6 md:px-10 py-5 sm:py-6 md:py-8 max-w-7xl">
         <div className="text-xs text-ink-soft mb-3 px-1">
-          {isLoading
-            ? "Carregando…"
-            : `${eventos.length} evento${eventos.length === 1 ? "" : "s"}`}
+          {isLoading ? "Carregando…" : `${eventos.length} evento${eventos.length === 1 ? "" : "s"}`}
         </div>
 
         {eventos.length === 0 ? (
@@ -158,20 +183,28 @@ function AdminEventosPage() {
               {isLoading ? "Carregando eventos…" : "Nenhum evento cadastrado."}
             </p>
             {!isLoading && (
-              <Button onClick={() => setCreating(true)} className="bg-rose-600 hover:bg-rose-700 text-white gap-2">
+              <Button
+                onClick={() => setCreating(true)}
+                className="bg-rose-600 hover:bg-rose-700 text-white gap-2"
+              >
                 <Plus className="h-4 w-4" /> Adicionar primeiro evento
               </Button>
             )}
           </div>
         ) : (
           <div className="space-y-4">
-            {eventos.map((ev) => (
+            {eventos.map((ev, i) => (
               <EventoRow
                 key={ev.id}
                 ev={ev}
+                isFirst={i === 0}
+                isLast={i === eventos.length - 1}
                 onEdit={() => setEditing(ev)}
                 onDelete={() => setConfirmDelete(ev)}
                 onTogglePublicado={() => togglePublicado(ev)}
+                onToggleDestaque={() => toggleDestaque(ev)}
+                onMoveUp={() => moveEvento(ev, -1)}
+                onMoveDown={() => moveEvento(ev, 1)}
               />
             ))}
           </div>
@@ -207,14 +240,24 @@ function AdminEventosPage() {
 
 function EventoRow({
   ev,
+  isFirst,
+  isLast,
   onEdit,
   onDelete,
   onTogglePublicado,
+  onToggleDestaque,
+  onMoveUp,
+  onMoveDown,
 }: {
   ev: Evento;
+  isFirst: boolean;
+  isLast: boolean;
   onEdit: () => void;
   onDelete: () => void;
   onTogglePublicado: () => void;
+  onToggleDestaque: () => void;
+  onMoveUp: () => void;
+  onMoveDown: () => void;
 }) {
   return (
     <div className="bg-paper border border-line rounded-2xl overflow-hidden flex flex-col md:flex-row hover:border-rose-300 transition-colors">
@@ -248,6 +291,11 @@ function EventoRow({
           {!ev.publicado && (
             <span className="text-[10px] font-medium uppercase tracking-wider text-slate-700 bg-slate-100 rounded-full px-2 py-0.5">
               Rascunho
+            </span>
+          )}
+          {ev.destaque && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-medium uppercase tracking-wider text-rose-700 bg-rose-100 rounded-full px-2 py-0.5">
+              <Star className="h-2.5 w-2.5 fill-current" /> Topo
             </span>
           )}
         </div>
@@ -286,6 +334,40 @@ function EventoRow({
           >
             <Trash2 className="h-3.5 w-3.5" /> Excluir
           </button>
+
+          {/* Fixar no topo + reordenar (empurrados para a direita) */}
+          <div className="ml-auto flex items-center gap-1">
+            <button
+              onClick={onToggleDestaque}
+              title={ev.destaque ? "Tirar do topo" : "Fixar no topo"}
+              aria-label={ev.destaque ? "Tirar do topo" : "Fixar no topo"}
+              className={`h-8 w-8 rounded-md flex items-center justify-center border transition-colors ${
+                ev.destaque
+                  ? "border-rose-400 bg-rose-50 text-rose-600"
+                  : "border-line text-ink-soft hover:bg-bone hover:text-ink"
+              }`}
+            >
+              <Star className={`h-4 w-4 ${ev.destaque ? "fill-current" : ""}`} />
+            </button>
+            <button
+              onClick={onMoveUp}
+              disabled={isFirst}
+              title="Mover para cima"
+              aria-label="Mover para cima"
+              className="h-8 w-8 rounded-md flex items-center justify-center border border-line text-ink-soft hover:bg-bone hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ArrowUp className="h-4 w-4" />
+            </button>
+            <button
+              onClick={onMoveDown}
+              disabled={isLast}
+              title="Mover para baixo"
+              aria-label="Mover para baixo"
+              className="h-8 w-8 rounded-md flex items-center justify-center border border-line text-ink-soft hover:bg-bone hover:text-ink transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <ArrowDown className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -364,6 +446,8 @@ function EventoForm({
       capa_url: capaUrl.trim() || galeriaUrls[0] || "",
       galeria,
       publicado,
+      // Preserva o destaque atual (controlado pelo botão ★ na listagem).
+      destaque: evento?.destaque ?? false,
       ordem: evento?.ordem,
     });
   };
@@ -457,9 +541,8 @@ function EventoForm({
             <ImagensEditor
               capa={galeriaUrls[0] ?? ""}
               galeria={galeriaUrls.slice(1)}
-              onChange={({ capa, galeria }) =>
-                setGaleriaUrls(capa ? [capa, ...galeria] : galeria)
-              }
+              pasta="eventos"
+              onChange={({ capa, galeria }) => setGaleriaUrls(capa ? [capa, ...galeria] : galeria)}
             />
           </Field>
 
@@ -478,7 +561,11 @@ function EventoForm({
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} disabled={saving} className="bg-rose-600 hover:bg-rose-700 text-white">
+          <Button
+            onClick={handleSubmit}
+            disabled={saving}
+            className="bg-rose-600 hover:bg-rose-700 text-white"
+          >
             {saving ? "Salvando…" : editing ? "Salvar alterações" : "Criar evento"}
           </Button>
         </footer>

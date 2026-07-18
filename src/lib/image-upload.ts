@@ -1,21 +1,16 @@
 /**
- * Processamento de upload de imagens no client.
+ * Processamento de imagens no client antes do upload.
  *
- * Enquanto o servidor próprio do cliente não está disponível, imagens
- * enviadas pelo desktop são redimensionadas + comprimidas via Canvas e
- * persistidas como data URL (base64) dentro do mock localStorage.
- *
- * Quando o storage real estiver pronto (Sprint 6), basta trocar
- * `processImageFile` por uma chamada PUT ao servidor, o retorno
- * continua sendo uma string (URL pública).
+ * `processImageFile` redimensiona + comprime via Canvas e devolve uma data URL
+ * (base64). Essa data URL é então enviada à server fn `uploadImagem`, que grava
+ * no Supabase Storage e devolve a URL pública curta — é essa URL que fica salva
+ * nas tabelas (nunca mais o base64 inteiro).
  */
 
-export const ACCEPTED_IMAGE_TYPES = [
-  "image/png",
-  "image/jpeg",
-  "image/jpg",
-  "image/webp",
-];
+/** Pastas válidas no bucket "produtos" do Storage. */
+export type ImagePasta = "blog" | "eventos" | "produtos" | "conteudo" | "categorias";
+
+export const ACCEPTED_IMAGE_TYPES = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
 
 export const ACCEPTED_IMAGE_EXTS = ".png,.jpg,.jpeg,.webp";
 
@@ -40,11 +35,7 @@ export async function processImageFile(
   file: File,
   options: ProcessImageOptions = {},
 ): Promise<string> {
-  const {
-    maxDimension = 1600,
-    quality = 0.85,
-    forceJpeg = true,
-  } = options;
+  const { maxDimension = 1600, quality = 0.85, forceJpeg = true } = options;
 
   if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
     throw new Error("Formato não suportado. Envie PNG, JPG ou WebP.");
@@ -102,11 +93,7 @@ function loadImage(src: string): Promise<HTMLImageElement> {
   });
 }
 
-function fitWithin(
-  width: number,
-  height: number,
-  max: number,
-): { width: number; height: number } {
+function fitWithin(width: number, height: number, max: number): { width: number; height: number } {
   if (width <= max && height <= max) return { width, height };
   const ratio = width / height;
   if (width >= height) {

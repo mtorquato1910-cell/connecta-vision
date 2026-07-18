@@ -6,12 +6,14 @@ import {
   ACCEPTED_IMAGE_TYPES,
   MAX_FILE_SIZE_MB,
   processImageFile,
+  type ImagePasta,
 } from "@/lib/image-upload";
+import { uploadImagem } from "@/lib/admin.functions";
 
 export interface ImageInputProps {
   /** Valor atual: URL pública (http://...) ou data URL (base64). */
   value: string;
-  /** Disparado com a nova URL/data URL ou string vazia ao remover. */
+  /** Disparado com a nova URL pública (Storage) ou string vazia ao remover. */
   onChange: (value: string) => void;
   /** Texto curto explicativo. Ex.: "1200×630 recomendado para WhatsApp/LinkedIn". */
   hint?: string;
@@ -19,6 +21,8 @@ export interface ImageInputProps {
   maxDimension?: number;
   /** Mostra um placeholder no input URL. */
   urlPlaceholder?: string;
+  /** Pasta no Storage onde a imagem será gravada (default "conteudo"). */
+  pasta?: ImagePasta;
 }
 
 /**
@@ -34,6 +38,7 @@ export function ImageInput({
   hint,
   maxDimension,
   urlPlaceholder = "https://... (cole uma URL ou envie do computador)",
+  pasta = "conteudo",
 }: ImageInputProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const dragCounter = useRef(0);
@@ -51,10 +56,11 @@ export function ImageInput({
     setBusy(true);
     try {
       const dataUrl = await processImageFile(file, { maxDimension });
-      onChange(dataUrl);
+      const { url } = await uploadImagem({ data: { dataUrl, pasta } });
+      onChange(url);
       toast.success("Imagem enviada.");
     } catch (e) {
-      const msg = e instanceof Error ? e.message : "Falha ao processar imagem.";
+      const msg = e instanceof Error ? e.message : "Falha ao enviar imagem.";
       toast.error(msg);
     } finally {
       setBusy(false);
@@ -73,7 +79,7 @@ export function ImageInput({
     setUrlDraft("");
   };
 
-  const isUploaded = value.startsWith("data:");
+  const isUploaded = value.includes("/storage/v1/object/public/");
 
   // Drag handlers no container raiz, funcionam sempre, tenha imagem ou não.
   const onDragEnter = (e: React.DragEvent) => {

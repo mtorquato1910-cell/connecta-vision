@@ -12,73 +12,71 @@ import { Principles } from "@/components/site/Principles";
 import { AboutBanner } from "@/components/site/AboutBanner";
 import { Testimonial } from "@/components/site/Testimonial";
 import { ContactSection } from "@/components/site/ContactSection";
-import { supabase } from "@/integrations/supabase/client";
+import { getConteudoPublic } from "@/lib/admin.functions";
+import { DEFAULT_HOME, type HomeConfig, type SecaoHome } from "@/lib/admin-home-repo";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Conecta | Equipamentos Veterinários Premium, Distribuidor Shinova" },
-      { name: "description", content: "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil." },
-      { property: "og:title", content: "Conecta, Equipamentos Veterinários Premium | Distribuidor Shinova" },
-      { property: "og:description", content: "230+ equipamentos veterinários Shinova instalados, calibrados e com treinamento incluso. 300 clientes ativos, entrega para todo o Brasil." },
+      {
+        name: "description",
+        content:
+          "Distribuidor oficial Shinova no Brasil, com 300 clientes ativos. 230+ equipamentos veterinários importados, instalados, calibrados e com treinamento incluso. Entrega para todo o Brasil.",
+      },
+      {
+        property: "og:title",
+        content: "Conecta, Equipamentos Veterinários Premium | Distribuidor Shinova",
+      },
+      {
+        property: "og:description",
+        content:
+          "230+ equipamentos veterinários Shinova instalados, calibrados e com treinamento incluso. 300 clientes ativos, entrega para todo o Brasil.",
+      },
       { property: "og:type", content: "website" },
     ],
   }),
   component: HomePage,
 });
 
-type Bloco = { id: string; visivel: boolean };
-
-const DEFAULT_BLOCOS: Bloco[] = [
-  { id: "hero", visivel: true },
-  { id: "marcas", visivel: true },
-  { id: "categorias", visivel: true },
-  { id: "destaques", visivel: true },
-  { id: "diferenciais", visivel: true },
-  { id: "depoimentos", visivel: true },
-  { id: "cta", visivel: true },
-  { id: "contato", visivel: true },
-];
-
-const BLOCK_COMPONENTS: Record<string, React.ComponentType> = {
+// Mapeia cada seção configurável no admin (mesmos IDs de admin-home-repo)
+// para o componente real da home. `marquee_top` não tem componente dedicado.
+const BLOCK_COMPONENTS: Record<SecaoHome, React.ComponentType | null> = {
   hero: Hero,
-  marcas: () => null,
+  marquee_top: null,
   categorias: CategoriesBanner,
   destaques: FeaturedProducts,
-  diferenciais: Principles,
-  cta: AboutBanner,
-  depoimentos: Testimonial,
-  contato: ContactSection,
+  principios: Principles,
+  sobre: AboutBanner,
+  depoimento: Testimonial,
+  cta_final: ContactSection,
 };
 
 function HomePage() {
-  const { data: blocos } = useQuery({
-    queryKey: ["home-blocos"],
+  // Lê a MESMA chave/estrutura que o admin salva (home_config) via server fn
+  // com service role — o role anon não tem mais SELECT em conteudo_site.
+  const { data: config } = useQuery({
+    queryKey: ["home-config"],
     queryFn: async () => {
-      const { data } = await supabase
-        .from("conteudo_site")
-        .select("valor")
-        .eq("chave", "home.blocos")
-        .maybeSingle();
-      const v = data?.valor as { blocos?: Bloco[] } | null;
-      if (!v?.blocos || !Array.isArray(v.blocos)) return DEFAULT_BLOCOS;
-      return v.blocos;
+      const rows = (await getConteudoPublic()) as Array<{ chave: string; valor: unknown }>;
+      const row = rows.find((r) => r.chave === "home_config");
+      return (row?.valor as HomeConfig) ?? DEFAULT_HOME;
     },
+    initialData: DEFAULT_HOME,
   });
 
-  const lista = blocos ?? DEFAULT_BLOCOS;
+  const secoes = (config ?? DEFAULT_HOME).secoes.slice().sort((a, b) => a.ordem - b.ordem);
 
   return (
     <div className="min-h-screen bg-bone">
       <TopBar />
       <Navbar />
       <main>
-        {lista
-          .filter((b) => b.visivel)
-          .map((b) => {
-            const Comp = BLOCK_COMPONENTS[b.id];
-            if (!Comp) return null;
-            return <Comp key={b.id} />;
+        {secoes
+          .filter((s) => s.ativa)
+          .map((s) => {
+            const Comp = BLOCK_COMPONENTS[s.id];
+            return Comp ? <Comp key={s.id} /> : null;
           })}
       </main>
       <Footer />

@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { ImageInput } from "@/components/admin/ImageInput";
 import { DEFAULT_CONFIG, type ConfigAll } from "@/lib/admin-config-repo";
-import {
-  getConfigPublic,
-  upsertConfigEmpresa,
-  deleteConfigEmpresa,
-} from "@/lib/admin.functions";
+import { getConfigPublic, upsertConfigEmpresa, deleteConfigEmpresa } from "@/lib/admin.functions";
 import { rowsToConfig } from "@/lib/site-config-adapter";
 
 export const Route = createFileRoute("/admin/configuracoes")({
@@ -140,7 +136,11 @@ function EmpresaForm({
     <Section title="Dados da empresa" onSave={() => onSave(data)}>
       <Grid>
         <Field label="Razão social / Nome">
-          <input value={data.nome} onChange={(e) => set("nome", e.target.value)} className="input" />
+          <input
+            value={data.nome}
+            onChange={(e) => set("nome", e.target.value)}
+            className="input"
+          />
         </Field>
         <Field label="Nome curto / Marca">
           <input
@@ -162,7 +162,11 @@ function EmpresaForm({
       </Field>
       <Grid>
         <Field label="Cidade">
-          <input value={data.cidade} onChange={(e) => set("cidade", e.target.value)} className="input" />
+          <input
+            value={data.cidade}
+            onChange={(e) => set("cidade", e.target.value)}
+            className="input"
+          />
         </Field>
         <Field label="Estado">
           <input
@@ -260,7 +264,10 @@ function ContatoForm({
           />
         </Field>
       </Grid>
-      <Field label="Mensagem padrão do WhatsApp" hint="Pré-preenche o link wa.me em todos os botões do site.">
+      <Field
+        label="Mensagem padrão do WhatsApp"
+        hint="Pré-preenche o link wa.me em todos os botões do site."
+      >
         <textarea
           value={data.whatsapp_msg_padrao}
           onChange={(e) => set("whatsapp_msg_padrao", e.target.value)}
@@ -369,11 +376,15 @@ function SeoForm({
           className="input"
         />
       </Field>
-      <Field label="Imagem Open Graph" hint="Aparece ao compartilhar no WhatsApp/LinkedIn (1200×630px). Envie do computador ou cole uma URL.">
+      <Field
+        label="Imagem Open Graph"
+        hint="Aparece ao compartilhar no WhatsApp/LinkedIn (1200×630px). Envie do computador ou cole uma URL."
+      >
         <ImageInput
           value={data.og_imagem_url}
           onChange={(v) => set("og_imagem_url", v)}
           maxDimension={1200}
+          pasta="conteudo"
         />
       </Field>
       <Field

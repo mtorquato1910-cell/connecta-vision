@@ -1,20 +1,14 @@
 import { useRef, useState } from "react";
-import {
-  ArrowDown,
-  ArrowUp,
-  ImagePlus,
-  Loader2,
-  Star,
-  Trash2,
-  Upload,
-} from "lucide-react";
+import { ArrowDown, ArrowUp, ImagePlus, Loader2, Star, Trash2, Upload } from "lucide-react";
 import { toast } from "sonner";
 import {
   ACCEPTED_IMAGE_EXTS,
   ACCEPTED_IMAGE_TYPES,
   MAX_FILE_SIZE_MB,
   processImageFile,
+  type ImagePasta,
 } from "@/lib/image-upload";
+import { uploadImagem } from "@/lib/admin.functions";
 
 export interface ImagensEditorProps {
   /** URL da imagem principal (capa). */
@@ -22,6 +16,8 @@ export interface ImagensEditorProps {
   /** Lista ordenada de URLs adicionais (sem incluir a capa). */
   galeria: string[];
   onChange: (next: { capa: string; galeria: string[] }) => void;
+  /** Pasta no Storage onde as imagens serão gravadas (default "produtos"). */
+  pasta?: ImagePasta;
 }
 
 /**
@@ -32,10 +28,10 @@ export interface ImagensEditorProps {
  * - A primeira imagem é sempre a CAPA (badge laranja).
  * - Botões por imagem: marcar como capa (★), mover ↑/↓, remover ×.
  *
- * Quando o servidor estiver pronto (Sprint 6), adicionar upload real
- * substituindo o input de URL, o estado interno fica idêntico.
+ * O upload envia ao Supabase Storage (server fn uploadImagem) e guarda a URL
+ * pública curta; URLs externas coladas também são aceitas.
  */
-export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
+export function ImagensEditor({ capa, galeria, onChange, pasta = "produtos" }: ImagensEditorProps) {
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [dragOver, setDragOver] = useState(false);
@@ -76,9 +72,7 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
 
   const handleFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
-    const valid = Array.from(files).filter((f) =>
-      ACCEPTED_IMAGE_TYPES.includes(f.type),
-    );
+    const valid = Array.from(files).filter((f) => ACCEPTED_IMAGE_TYPES.includes(f.type));
     if (valid.length === 0) {
       toast.error("Envie arquivos PNG, JPG ou WebP.");
       return;
@@ -88,9 +82,10 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
     for (const file of valid) {
       try {
         const dataUrl = await processImageFile(file);
-        added.push(dataUrl);
+        const { url } = await uploadImagem({ data: { dataUrl, pasta } });
+        added.push(url);
       } catch (e) {
-        const msg = e instanceof Error ? e.message : "Falha ao processar.";
+        const msg = e instanceof Error ? e.message : "Falha ao enviar.";
         toast.error(`${file.name}: ${msg}`);
       }
     }
@@ -201,11 +196,7 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
             disabled={busy}
             className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-paper hover:bg-bone text-ink text-sm font-medium px-4 py-2 transition-colors whitespace-nowrap disabled:opacity-60"
           >
-            {busy ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4" />
-            )}
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
             Enviar
           </button>
         </div>
@@ -219,9 +210,8 @@ export function ImagensEditor({ capa, galeria, onChange }: ImagensEditorProps) {
         onChange={(e) => handleFiles(e.target.files)}
       />
       <p className="text-xs text-ink-soft">
-        Cole URLs ou envie PNG/JPG/WebP do computador (até {MAX_FILE_SIZE_MB} MB
-        cada). A primeira imagem é a capa, você pode mudar com ★. Pode arrastar
-        arquivos para esta área.
+        Cole URLs ou envie PNG/JPG/WebP do computador (até {MAX_FILE_SIZE_MB} MB cada). A primeira
+        imagem é a capa, você pode mudar com ★. Pode arrastar arquivos para esta área.
       </p>
 
       {all.length === 0 ? (

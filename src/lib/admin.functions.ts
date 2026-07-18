@@ -46,6 +46,41 @@ export const meSouAdmin = createServerFn({ method: "GET" })
     return { isAdmin: !!data };
   });
 
+// ---------- Upload de imagens ao Storage (bucket público "produtos") ----------
+// O client redimensiona/comprime e manda uma data URL (base64); aqui decodificamos,
+// gravamos no Storage e devolvemos a URL pública curta. Isso elimina o base64
+// gigante que era salvo direto nas colunas (raiz do erro "capa_url > 1000" em
+// eventos e do banco inchado no blog/produtos).
+const IMG_PASTAS = ["blog", "eventos", "produtos", "conteudo", "categorias"] as const;
+
+export const uploadImagem = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z
+      .object({
+        dataUrl: z.string().regex(/^data:image\/(png|jpe?g|webp);base64,/i, "Imagem inválida"),
+        pasta: z.enum(IMG_PASTAS).default("conteudo"),
+      })
+      .parse(i),
+  )
+  .handler(async ({ data }): Promise<{ url: string }> => {
+    const match = data.dataUrl.match(/^data:(image\/[a-z+]+);base64,(.+)$/i);
+    if (!match) throw new Error("Formato de imagem inválido.");
+    const contentType = match[1].toLowerCase();
+    const buffer = Buffer.from(match[2], "base64");
+    if (buffer.byteLength > 10 * 1024 * 1024) {
+      throw new Error("Imagem grande demais (máx. 10 MB).");
+    }
+    const ext = contentType === "image/png" ? "png" : contentType === "image/webp" ? "webp" : "jpg";
+    const path = `${data.pasta}/${crypto.randomUUID()}.${ext}`;
+    const { error } = await supabaseAdmin.storage
+      .from("produtos")
+      .upload(path, buffer, { contentType, upsert: false, cacheControl: "31536000" });
+    if (error) throw new Error(`Falha ao enviar imagem: ${error.message}`);
+    const { data: pub } = supabaseAdmin.storage.from("produtos").getPublicUrl(path);
+    return { url: pub.publicUrl };
+  });
+
 // ---------- Dashboard stats ----------
 export const dashboardStats = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
@@ -84,7 +119,11 @@ export const dashboardStats = createServerFn({ method: "GET" })
 // ---------- Categorias ----------
 const categoriaSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().min(1).max(80).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(80)
+    .regex(/^[a-z0-9-]+$/),
   nome: z.string().min(1).max(160),
   numero: z.string().min(1).max(8),
   descricao: z.string().max(500).optional().nullable(),
@@ -146,10 +185,17 @@ export const reorderCategorias = createServerFn({ method: "POST" })
   });
 
 // ---------- Produtos ----------
-const especSchema = z.object({ label: z.string().min(1).max(120), valor: z.string().min(1).max(240) });
+const especSchema = z.object({
+  label: z.string().min(1).max(120),
+  valor: z.string().min(1).max(240),
+});
 const produtoSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().min(1).max(120).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(120)
+    .regex(/^[a-z0-9-]+$/),
   modelo: z.string().min(1).max(80),
   nome: z.string().min(1).max(200),
   categoria_id: z.string().uuid(),
@@ -411,7 +457,12 @@ export const upsertPipeline = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid().optional(),
-        chave: z.string().min(1).max(40).regex(/^[a-z0-9_]+$/).optional(),
+        chave: z
+          .string()
+          .min(1)
+          .max(40)
+          .regex(/^[a-z0-9_]+$/)
+          .optional(),
         nome: z.string().min(1).max(80),
         ordem: z.number().int().min(0).max(999).optional(),
         cor: z.enum(CORES_PIPELINE).optional().default("slate"),
@@ -528,7 +579,11 @@ export const upsertConteudo = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) =>
     z
       .object({
-        chave: z.string().min(1).max(120).regex(/^[a-z0-9_.-]+$/i),
+        chave: z
+          .string()
+          .min(1)
+          .max(120)
+          .regex(/^[a-z0-9_.-]+$/i),
         valor: z.any(),
       })
       .parse(i),
@@ -582,7 +637,11 @@ export const upsertConfigEmpresa = createServerFn({ method: "POST" })
   .inputValidator((i: unknown) =>
     z
       .object({
-        chave: z.string().min(1).max(120).regex(/^[a-z0-9_.-]+$/i),
+        chave: z
+          .string()
+          .min(1)
+          .max(120)
+          .regex(/^[a-z0-9_.-]+$/i),
         valor: z.any(),
       })
       .parse(i),
@@ -625,10 +684,13 @@ function slugifyBlog(text: string): string {
 const sbUntyped = supabaseAdmin as unknown as { from: (table: string) => any };
 
 export const listPublishedPosts = createServerFn({ method: "GET" }).handler(async () => {
+  // Ordem no site: destaque (fixados no topo) → ordem manual → mais recentes.
   const { data, error } = await sbUntyped
     .from("blog_posts")
     .select("*")
     .eq("status", "publicado")
+    .order("destaque", { ascending: false })
+    .order("ordem", { ascending: true })
     .order("publicado_em", { ascending: false });
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -663,7 +725,9 @@ export const submitBlogPost = createServerFn({ method: "POST" })
       .parse(i),
   )
   .handler(async ({ data }) => {
-    const slug = `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo + data.autor_email)).toString(36).slice(0, 5)}`;
+    const slug = `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo + data.autor_email))
+      .toString(36)
+      .slice(0, 5)}`;
     const { error } = await sbUntyped
       .from("blog_posts")
       .insert({ ...data, slug, status: "pendente", origem: "publico" } as never);
@@ -703,7 +767,9 @@ export const approvePost = createServerFn({ method: "POST" })
 export const rejectPost = createServerFn({ method: "POST" })
   .middleware([requireAdmin])
   .inputValidator((i: unknown) =>
-    z.object({ id: z.string().uuid(), motivo: z.string().max(600).optional().default("") }).parse(i),
+    z
+      .object({ id: z.string().uuid(), motivo: z.string().max(600).optional().default("") })
+      .parse(i),
   )
   .handler(async ({ data }) => {
     const { error } = await sbUntyped
@@ -727,22 +793,85 @@ export const adminUpsertPost = createServerFn({ method: "POST" })
         capa_url: z.string().max(1000).optional().nullable(),
         video_url: z.string().max(1000).optional().nullable(),
         tags: z.array(z.string().max(60)).max(20).optional().default([]),
-        status: z.enum(["pendente", "publicado", "rascunho", "rejeitado"]).optional().default("publicado"),
+        status: z
+          .enum(["pendente", "publicado", "rascunho", "rejeitado"])
+          .optional()
+          .default("publicado"),
+        destaque: z.boolean().optional().default(false),
+        ordem: z.number().int().min(0).max(9999).optional().default(0),
       })
       .parse(i),
   )
   .handler(async ({ data }) => {
-    const slug = data.slug || `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo)).toString(36).slice(0, 5)}`;
-    const row = {
+    const slug =
+      data.slug ||
+      `${slugifyBlog(data.titulo)}-${Math.abs(hashStr(data.titulo)).toString(36).slice(0, 5)}`;
+    // Ao criar: define autor "Equipe Conecta" e carimba publicado_em.
+    // Ao editar: NÃO reenvia autor nem publicado_em, para preservar os valores
+    // originais (edição não deve fazer o post "subir" na ordenação por data).
+    const row: Record<string, unknown> = {
       ...data,
       slug,
       origem: "admin",
-      autor_nome: "Equipe Conecta",
-      autor_email: "editorial@conectavet.com.br",
-      publicado_em: data.status === "publicado" ? nowIso() : null,
     };
-    const { error } = await sbUntyped.from("blog_posts").upsert(row as never, { onConflict: "slug" });
+    if (!data.id) {
+      row.autor_nome = "Equipe Conecta";
+      row.autor_email = "editorial@conectavet.com.br";
+      row.publicado_em = data.status === "publicado" ? nowIso() : null;
+    }
+    const { error } = await sbUntyped
+      .from("blog_posts")
+      .upsert(row as never, { onConflict: "slug" });
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// Fixar no topo (destaque) / ocultar (status) / reordenar posts do blog.
+export const setPostDestaque = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), destaque: z.boolean() }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped
+      .from("blog_posts")
+      .update({ destaque: data.destaque } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// "Ocultar" um post publicado = voltar para rascunho (some do site); "mostrar" = publicar.
+export const setPostVisivel = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), visivel: z.boolean() }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped
+      .from("blog_posts")
+      .update({
+        status: data.visivel ? "publicado" : "rascunho",
+        publicado_em: data.visivel ? nowIso() : null,
+      } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// Recebe a lista de ids na ordem desejada e grava `ordem` = índice.
+export const reorderPosts = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ ids: z.array(z.string().uuid()).max(500) }).parse(i))
+  .handler(async ({ data }) => {
+    await Promise.all(
+      data.ids.map((id, idx) =>
+        sbUntyped
+          .from("blog_posts")
+          .update({ ordem: idx } as never)
+          .eq("id", id),
+      ),
+    );
     return { ok: true };
   });
 
@@ -763,17 +892,21 @@ function nowIso(): string {
 // ---------- Eventos ----------
 const eventoSchema = z.object({
   id: z.string().uuid().optional(),
-  slug: z.string().min(1).max(160).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(160)
+    .regex(/^[a-z0-9-]+$/),
   nome: z.string().min(1).max(200),
   data_evento: z.string().max(40).optional().nullable(),
   local: z.string().max(200).optional().nullable(),
   descricao_curta: z.string().max(600).optional().nullable(),
   descricao_longa: z.string().max(8000).optional().nullable(),
-  capa_url: z.string().max(1000).optional().nullable(),
+  capa_url: z.string().max(2048).optional().nullable(),
   galeria: z
     .array(
       z.object({
-        url: z.string().max(1000),
+        url: z.string().max(2048),
         ordem: z.number().int().min(0).max(999).default(0),
         alt: z.string().max(300).optional().default(""),
         caption: z.string().max(300).optional().nullable(),
@@ -783,14 +916,18 @@ const eventoSchema = z.object({
     .optional()
     .default([]),
   publicado: z.boolean().optional().default(true),
+  destaque: z.boolean().optional().default(false),
   ordem: z.number().int().min(0).max(999).optional().default(0),
 });
 
 export const listEventosPublic = createServerFn({ method: "GET" }).handler(async () => {
+  // Ordem no site: destacados (topo) → ordem manual → mais recentes.
   const { data, error } = await sbUntyped
     .from("eventos")
     .select("*")
     .eq("publicado", true)
+    .order("destaque", { ascending: false })
+    .order("ordem", { ascending: true })
     .order("data_evento", { ascending: false });
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -811,9 +948,12 @@ export const getEventoPublic = createServerFn({ method: "GET" })
 export const listAllEventos = createServerFn({ method: "GET" })
   .middleware([requireAdmin])
   .handler(async () => {
+    // Mesma ordem do site, para que as setas de reordenar façam sentido.
     const { data, error } = await sbUntyped
       .from("eventos")
       .select("*")
+      .order("destaque", { ascending: false })
+      .order("ordem", { ascending: true })
       .order("data_evento", { ascending: false });
     if (error) throw new Error(error.message);
     return data ?? [];
@@ -834,5 +974,49 @@ export const deleteEvento = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { error } = await sbUntyped.from("eventos").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+// Fixar no topo / ocultar / reordenar eventos.
+export const setEventoDestaque = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), destaque: z.boolean() }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped
+      .from("eventos")
+      .update({ destaque: data.destaque } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const setEventoVisivel = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) =>
+    z.object({ id: z.string().uuid(), visivel: z.boolean() }).parse(i),
+  )
+  .handler(async ({ data }) => {
+    const { error } = await sbUntyped
+      .from("eventos")
+      .update({ publicado: data.visivel } as never)
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const reorderEventos = createServerFn({ method: "POST" })
+  .middleware([requireAdmin])
+  .inputValidator((i: unknown) => z.object({ ids: z.array(z.string().uuid()).max(500) }).parse(i))
+  .handler(async ({ data }) => {
+    await Promise.all(
+      data.ids.map((id, idx) =>
+        sbUntyped
+          .from("eventos")
+          .update({ ordem: idx } as never)
+          .eq("id", id),
+      ),
+    );
     return { ok: true };
   });

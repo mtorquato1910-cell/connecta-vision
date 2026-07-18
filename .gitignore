@@ -34,3 +34,6 @@ dist-ssr
 
 # Claude local settings (pode conter segredos em allowlist)
 .claude/settings.local.json
+
+# Supabase CLI: artefatos locais de link (por máquina, não versionar)
+supabase/.temp/

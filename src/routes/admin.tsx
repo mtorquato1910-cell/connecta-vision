@@ -1,10 +1,4 @@
-import {
-  createFileRoute,
-  Outlet,
-  Link,
-  useRouter,
-  useRouterState,
-} from "@tanstack/react-router";
+import { createFileRoute, Outlet, Link, useRouter, useRouterState } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   Camera,
@@ -53,16 +47,14 @@ const NAV_GROUPS: NavGroupDef[] = [
   {
     id: "geral",
     title: "Geral",
-    items: [
-      { to: "/admin", label: "Visão geral", icon: LayoutDashboard, exact: true },
-    ],
+    items: [{ to: "/admin", label: "Visão geral", icon: LayoutDashboard, exact: true }],
   },
   {
     id: "catalogo",
     title: "Catálogo",
     items: [
-      { to: "/admin/produtos", label: "Produtos", icon: Package },
       { to: "/admin/categorias", label: "Categorias", icon: FolderTree },
+      { to: "/admin/produtos", label: "Produtos", icon: Package },
     ],
   },
   {
@@ -132,9 +124,7 @@ function AdminLayout() {
 
   // Accordion: grupos expandidos; o grupo da seção ativa já vem aberto
   const currentGroup = useMemo(() => activeGroupId(pathname), [pathname]);
-  const [openGroups, setOpenGroups] = useState<Set<string>>(
-    () => new Set([currentGroup]),
-  );
+  const [openGroups, setOpenGroups] = useState<Set<string>>(() => new Set([currentGroup]));
   // Garante que o grupo ativo esteja expandido ao navegar
   useEffect(() => {
     setOpenGroups((prev) => {
@@ -272,9 +262,7 @@ function AdminLayout() {
                   collapsed ? "lg:hidden" : "lg:block",
                 ].join(" ")}
               >
-                <div className="font-semibold text-base text-white/90">
-                  Painel administrativo
-                </div>
+                <div className="font-semibold text-base text-white/90">Painel administrativo</div>
                 <div className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.22em] text-white/50">
                   Conecta
                 </div>
@@ -373,9 +361,7 @@ function AdminLayout() {
                 collapsed ? "lg:hidden" : "lg:block",
               ].join(" ")}
             >
-              <p className="text-sm font-medium text-white truncate">
-                {session?.nome ?? "Admin"}
-              </p>
+              <p className="text-sm font-medium text-white truncate">{session?.nome ?? "Admin"}</p>
               <p className="text-[11px] text-white/60 truncate">{session?.email}</p>
             </div>
             <button

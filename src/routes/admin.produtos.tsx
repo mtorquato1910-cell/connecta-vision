@@ -107,7 +107,9 @@ function AdminProdutosPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState<string>("");
-  const [statusFilter, setStatusFilter] = useState<"all" | "publicado" | "rascunho" | "destaque">("all");
+  const [statusFilter, setStatusFilter] = useState<"all" | "publicado" | "rascunho" | "destaque">(
+    "all",
+  );
   const [page, setPage] = useState(1);
   const [editing, setEditing] = useState<ProdutoFull | null>(null);
   const [creating, setCreating] = useState(false);
@@ -205,7 +207,10 @@ function AdminProdutosPage() {
           tone: "amber",
         }}
         actions={
-          <Button onClick={() => setCreating(true)} className="gap-2 bg-conecta-blue hover:bg-conecta-blue-deep text-white">
+          <Button
+            onClick={() => setCreating(true)}
+            className="gap-2 bg-conecta-blue hover:bg-conecta-blue-deep text-white"
+          >
             <Plus className="h-4 w-4" /> Novo produto
           </Button>
         }
@@ -288,13 +293,23 @@ function AdminProdutosPage() {
         {/* Paginação */}
         {totalPages > 1 && (
           <div className="flex items-center justify-center gap-2 mt-6">
-            <Button variant="outline" size="sm" disabled={currentPage === 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+            >
               Anterior
             </Button>
             <span className="text-sm text-ink-soft px-3">
               {currentPage} / {totalPages}
             </span>
-            <Button variant="outline" size="sm" disabled={currentPage === totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={currentPage === totalPages}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            >
               Próxima
             </Button>
           </div>
@@ -395,7 +410,9 @@ function ProductRow({
           aria-label={p.destaque ? "Remover destaque" : "Marcar destaque"}
           title={p.destaque ? "Remover destaque" : "Marcar destaque"}
           className={`h-8 w-8 rounded-md flex items-center justify-center transition-colors ${
-            p.destaque ? "text-amber-600 bg-amber-50" : "text-ink-soft hover:text-amber-700 hover:bg-amber-50"
+            p.destaque
+              ? "text-amber-600 bg-amber-50"
+              : "text-ink-soft hover:text-amber-700 hover:bg-amber-50"
           }`}
         >
           <Star className="h-4 w-4" />
@@ -405,7 +422,9 @@ function ProductRow({
           aria-label={p.publicado ? "Despublicar" : "Publicar"}
           title={p.publicado ? "Despublicar" : "Publicar"}
           className={`h-8 w-8 rounded-md flex items-center justify-center transition-colors ${
-            p.publicado ? "text-emerald-700 hover:bg-emerald-50" : "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50"
+            p.publicado
+              ? "text-emerald-700 hover:bg-emerald-50"
+              : "text-slate-500 hover:text-emerald-700 hover:bg-emerald-50"
           }`}
         >
           {p.publicado ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -523,8 +542,14 @@ function ProductForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4" onClick={onClose}>
-      <div className="bg-paper border rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-auto" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-paper border rounded-2xl w-full max-w-3xl max-h-[92vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
         <header className="sticky top-0 z-10 bg-paper border-b border-line px-5 sm:px-6 py-4 flex items-center justify-between">
           <div>
             <div className="text-[10px] uppercase tracking-[0.2em] text-ink-soft font-mono">
@@ -534,7 +559,11 @@ function ProductForm({
               {editing ? `${produto?.modelo}, ${produto?.nome}` : "Cadastrar novo equipamento"}
             </h2>
           </div>
-          <button onClick={onClose} aria-label="Fechar" className="h-9 w-9 rounded-md text-ink-soft hover:text-ink hover:bg-bone flex items-center justify-center">
+          <button
+            onClick={onClose}
+            aria-label="Fechar"
+            className="h-9 w-9 rounded-md text-ink-soft hover:text-ink hover:bg-bone flex items-center justify-center"
+          >
             <X className="h-5 w-5" />
           </button>
         </header>
@@ -543,18 +572,34 @@ function ProductForm({
           <Section title="Identificação">
             <Grid>
               <Field label="Modelo *" hint="Ex.: Moni 3L">
-                <input required value={modelo} onChange={(e) => setModelo(e.target.value)} className="input" placeholder="MONI 3L" />
+                <input
+                  required
+                  value={modelo}
+                  onChange={(e) => setModelo(e.target.value)}
+                  className="input"
+                  placeholder="MONI 3L"
+                />
               </Field>
               <Field label="Marca">
                 <input value={marca} onChange={(e) => setMarca(e.target.value)} className="input" />
               </Field>
             </Grid>
             <Field label="Nome completo *">
-              <input required value={nome} onChange={(e) => setNome(e.target.value)} className="input" placeholder="Monitor Multiparâmetros Veterinário Touchscreen 15" />
+              <input
+                required
+                value={nome}
+                onChange={(e) => setNome(e.target.value)}
+                className="input"
+                placeholder="Monitor Multiparâmetros Veterinário Touchscreen 15"
+              />
             </Field>
             <Grid>
               <Field label="Categoria">
-                <select value={categoriaSlug} onChange={(e) => setCategoriaSlug(e.target.value)} className="input">
+                <select
+                  value={categoriaSlug}
+                  onChange={(e) => setCategoriaSlug(e.target.value)}
+                  className="input"
+                >
                   {categorias.map((c) => (
                     <option key={c.slug} value={c.slug}>
                       {c.nome}
@@ -563,17 +608,32 @@ function ProductForm({
                 </select>
               </Field>
               <Field label="Subcategoria" hint="Opcional. Ex.: Veterinary Monitor">
-                <input value={subcategoria} onChange={(e) => setSubcategoria(e.target.value)} className="input" />
+                <input
+                  value={subcategoria}
+                  onChange={(e) => setSubcategoria(e.target.value)}
+                  className="input"
+                />
               </Field>
             </Grid>
           </Section>
 
           <Section title="Descrição">
             <Field label="Descrição curta" hint="Aparece nos cards do catálogo (máx 200 chars).">
-              <textarea value={descricaoCurta} onChange={(e) => setDescricaoCurta(e.target.value)} rows={2} maxLength={250} className="input min-h-[60px] resize-y" />
+              <textarea
+                value={descricaoCurta}
+                onChange={(e) => setDescricaoCurta(e.target.value)}
+                rows={2}
+                maxLength={250}
+                className="input min-h-[60px] resize-y"
+              />
             </Field>
             <Field label="Descrição longa" hint="Aparece na tab Descrição da página do produto.">
-              <textarea value={descricaoLonga} onChange={(e) => setDescricaoLonga(e.target.value)} rows={6} className="input min-h-[140px] resize-y" />
+              <textarea
+                value={descricaoLonga}
+                onChange={(e) => setDescricaoLonga(e.target.value)}
+                rows={6}
+                className="input min-h-[140px] resize-y"
+              />
             </Field>
           </Section>
 
@@ -581,6 +641,7 @@ function ProductForm({
             <ImagensEditor
               capa={imagemCapa}
               galeria={imagemRest}
+              pasta="produtos"
               onChange={({ capa, galeria }) => {
                 setImagemCapa(capa);
                 setImagemRest(galeria);
@@ -652,7 +713,8 @@ function ProductForm({
                       </button>
                     </div>
                     <p className="text-xs text-ink-soft">
-                      Inteiro mostra a imagem completa. Preencher cobre todo o quadro (pode cortar bordas).
+                      Inteiro mostra a imagem completa. Preencher cobre todo o quadro (pode cortar
+                      bordas).
                     </p>
                   </div>
 
@@ -713,12 +775,17 @@ function ProductForm({
           </Section>
 
           <Section title="Especificações técnicas">
-            <Field label="Lista (uma por linha no formato chave: valor)" hint="Ex.: Tela: 15 polegadas touchscreen">
+            <Field
+              label="Lista (uma por linha no formato chave: valor)"
+              hint="Ex.: Tela: 15 polegadas touchscreen"
+            >
               <textarea
                 value={especsText}
                 onChange={(e) => setEspecsText(e.target.value)}
                 rows={8}
-                placeholder={"Tela: 15 polegadas touchscreen\nBateria: Lítio 4h autonomia\nParâmetros: ECG, SpO2, NIBP"}
+                placeholder={
+                  "Tela: 15 polegadas touchscreen\nBateria: Lítio 4h autonomia\nParâmetros: ECG, SpO2, NIBP"
+                }
                 className="input min-h-[180px] resize-y font-mono text-xs"
               />
             </Field>
@@ -727,15 +794,30 @@ function ProductForm({
           <Section title="Visibilidade">
             <Grid>
               <Field label="URL do fabricante" hint="Opcional">
-                <input value={urlFabricante} onChange={(e) => setUrlFabricante(e.target.value)} placeholder="https://shinova.com/..." className="input" />
+                <input
+                  value={urlFabricante}
+                  onChange={(e) => setUrlFabricante(e.target.value)}
+                  placeholder="https://shinova.com/..."
+                  className="input"
+                />
               </Field>
               <div className="flex flex-col gap-3 pt-7">
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={publicado} onChange={(e) => setPublicado(e.target.checked)} className="h-4 w-4 accent-conecta-blue" />
+                  <input
+                    type="checkbox"
+                    checked={publicado}
+                    onChange={(e) => setPublicado(e.target.checked)}
+                    className="h-4 w-4 accent-conecta-blue"
+                  />
                   <span className="text-sm text-ink">Publicado no site</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={destaque} onChange={(e) => setDestaque(e.target.checked)} className="h-4 w-4 accent-conecta-orange" />
+                  <input
+                    type="checkbox"
+                    checked={destaque}
+                    onChange={(e) => setDestaque(e.target.checked)}
+                    className="h-4 w-4 accent-conecta-orange"
+                  />
                   <span className="text-sm text-ink">Em destaque na home</span>
                 </label>
               </div>
@@ -747,7 +829,10 @@ function ProductForm({
           <Button variant="outline" onClick={onClose}>
             Cancelar
           </Button>
-          <Button onClick={handleSubmit} className="bg-conecta-blue hover:bg-conecta-blue-deep text-white">
+          <Button
+            onClick={handleSubmit}
+            className="bg-conecta-blue hover:bg-conecta-blue-deep text-white"
+          >
             {editing ? "Salvar alterações" : "Criar produto"}
           </Button>
         </footer>
@@ -759,7 +844,9 @@ function ProductForm({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <fieldset className="border border-line rounded-xl px-4 sm:px-5 py-4 space-y-4">
-      <legend className="px-2 text-[10px] uppercase tracking-[0.2em] font-mono text-ink-soft">{title}</legend>
+      <legend className="px-2 text-[10px] uppercase tracking-[0.2em] font-mono text-ink-soft">
+        {title}
+      </legend>
       {children}
     </fieldset>
   );
@@ -769,7 +856,15 @@ function Grid({ children }: { children: React.ReactNode }) {
   return <div className="grid sm:grid-cols-2 gap-4">{children}</div>;
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1.5">
       <label className="block text-sm font-medium text-ink">{label}</label>
@@ -791,8 +886,14 @@ function ConfirmDialog({
   onConfirm: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4" onClick={onCancel}>
-      <div className="bg-paper rounded-2xl max-w-md w-full p-6" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4"
+      onClick={onCancel}
+    >
+      <div
+        className="bg-paper rounded-2xl max-w-md w-full p-6"
+        onClick={(e) => e.stopPropagation()}
+      >
         <h2 className="font-serif text-xl text-ink">{title}</h2>
         <p className="text-sm text-ink-soft mt-2">{message}</p>
         <div className="flex justify-end gap-2 mt-6">

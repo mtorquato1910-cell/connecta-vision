@@ -1,9 +1,11 @@
+import { Fragment, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Check, Globe2, ShieldCheck, Truck, Wrench } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { SITE } from "@/lib/site-data";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
+import { usePageSecoes } from "@/hooks/usePageSecoes";
 
 export const Route = createFileRoute("/sobre")({
   head: () => ({
@@ -26,10 +28,13 @@ export const Route = createFileRoute("/sobre")({
 });
 
 function SobrePage() {
-  // Textos editáveis no admin (aba "Textos do site" → Sobre). Fallback = valor atual.
+  // Textos editáveis no admin (Textos do site → Sobre). Ordem/visibilidade das
+  // seções controladas no admin (Página inicial → Sobre).
   const { texto } = useSiteConfig();
-  return (
-    <SiteShell>
+  const { ordem } = usePageSecoes("sobre");
+
+  const blocos: Record<string, ReactNode> = {
+    hero: (
       <section className="container-edge pt-16 md:pt-24 pb-12">
         <Reveal>
           <span className="eyebrow">{texto("sobre.eyebrow", "Sobre nós")}</span>
@@ -47,7 +52,8 @@ function SobrePage() {
           </p>
         </Reveal>
       </section>
-
+    ),
+    metricas: (
       <section className="container-edge pb-20">
         <div className="grid md:grid-cols-3 gap-px bg-line rounded-3xl overflow-hidden border border-line">
           <Metric n="300" l="Clientes ativos no Brasil" />
@@ -55,7 +61,8 @@ function SobrePage() {
           <Metric n="Brasil" l="Entrega para todo o país" />
         </div>
       </section>
-
+    ),
+    manifesto: (
       <section className="container-edge pb-24">
         <div className="grid md:grid-cols-2 gap-16 items-start">
           <Reveal>
@@ -85,7 +92,8 @@ function SobrePage() {
           </Reveal>
         </div>
       </section>
-
+    ),
+    pilares: (
       <section className="container-edge pb-24">
         <span className="eyebrow">Pilares</span>
         <h2 className="mt-4 font-serif text-4xl md:text-5xl">Como entregamos valor</h2>
@@ -112,7 +120,8 @@ function SobrePage() {
           />
         </div>
       </section>
-
+    ),
+    cta: (
       <section className="container-edge pb-24">
         <div className="rounded-3xl bg-conecta-blue text-white p-10 md:p-16 grid md:grid-cols-[1fr_auto] gap-8 items-center">
           <div>
@@ -136,6 +145,12 @@ function SobrePage() {
           </div>
         </div>
       </section>
+    ),
+  };
+
+  return (
+    <SiteShell>
+      {ordem.map((id) => (blocos[id] ? <Fragment key={id}>{blocos[id]}</Fragment> : null))}
     </SiteShell>
   );
 }

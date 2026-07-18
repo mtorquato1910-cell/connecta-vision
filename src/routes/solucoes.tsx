@@ -1,8 +1,10 @@
+import { Fragment, type ReactNode } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Building2, Hospital, Stethoscope, Scissors } from "lucide-react";
 import { SiteShell } from "@/components/site/SiteShell";
 import { Reveal } from "@/components/site/Reveal";
 import { useSiteConfig } from "@/hooks/useSiteConfig";
+import { usePageSecoes } from "@/hooks/usePageSecoes";
 
 export const Route = createFileRoute("/solucoes")({
   head: () => ({
@@ -52,10 +54,13 @@ const ITENS = [
 ];
 
 function SolucoesPage() {
-  // Header editável no admin (Textos do site → Soluções).
+  // Header editável no admin (Textos do site → Soluções). Ordem/visibilidade
+  // das seções controladas no admin (Página inicial → Soluções).
   const { texto } = useSiteConfig();
-  return (
-    <SiteShell>
+  const { ordem } = usePageSecoes("solucoes");
+
+  const blocos: Record<string, ReactNode> = {
+    header: (
       <section className="container-edge pt-16 md:pt-24 pb-12">
         <Reveal>
           <span className="eyebrow">{texto("solucoes.eyebrow", "Soluções por perfil")}</span>
@@ -73,7 +78,8 @@ function SolucoesPage() {
           </p>
         </Reveal>
       </section>
-
+    ),
+    cards: (
       <section className="container-edge pb-24">
         <div className="grid md:grid-cols-2 gap-6">
           {ITENS.map((i) => (
@@ -105,6 +111,12 @@ function SolucoesPage() {
           ))}
         </div>
       </section>
+    ),
+  };
+
+  return (
+    <SiteShell>
+      {ordem.map((id) => (blocos[id] ? <Fragment key={id}>{blocos[id]}</Fragment> : null))}
     </SiteShell>
   );
 }
